@@ -1,0 +1,99 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: plasma-desktop\n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"PO-Revision-Date: 2026-01-08 17:28+0300\n"
+"Last-Translator: Emir SARI <emir_sari@îcloud.com>\n"
+"Language-Team: Turkish <kde-l10n-tr@kde.org>\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Lokalize 25.12.0\n"
+
+msgctxt "@action:button"
+msgid "Change global theme"
+msgstr "Global Temayı Değiştir"
+
+msgctxt ""
+"@info:tooltip 1 is the name of a light global theme, 2 is the name of a dark "
+"global theme"
+msgid "Use “%1” during the day and “%2” at night"
+msgstr "Gündüz “%1”, gece “%2” kullanılır"
+
+msgctxt "@info:usagetip"
+msgid "Open by double-clicking instead"
+msgstr "Ögeleri açmak için çift tıklayın"
+
+msgctxt "@info:usagetip"
+msgid "Select by clicking on item's selection marker"
+msgstr "Seçmek için ögenin seçim imleyicisine tıklayın"
+
+msgctxt "@label accessible"
+msgid "Global theme"
+msgstr "Global tema"
+
+msgctxt "@title:group for grid of buttons opening kcms"
+msgid "Most used pages:"
+msgstr "En sık kullanılan sayfalar:"
+
+msgctxt "@title:group for light/dark quick switch"
+msgid "Theme:"
+msgstr "Tema:"
+
+msgctxt "@title:group translate as short as possible"
+msgid "More appearance settings:"
+msgstr "Ek görünüş ayarları:"
+
+msgctxt "@title:group translate as short as possible"
+msgid "More behavior settings:"
+msgstr "Ek davranış ayarları:"
+
+msgctxt "@title:slider"
+msgid "Animation speed:"
+msgstr "Canlandırma hızı:"
+
+msgid "Animation speed"
+msgstr "Canlandırma hızı"
+
+msgctxt "Animation speed"
+msgid "Instant"
+msgstr "Anında"
+
+msgctxt "Animation speed"
+msgid "Slow"
+msgstr "Yavaş"
+
+msgid "Color scheme name"
+msgstr "Renk şeması adı"
+
+msgid "Global Look and Feel package"
+msgstr "Global görünüm ve his paketi"
+
+msgid "Global Look and Feel package, alternate"
+msgstr "Global görünüm ve his paketi, alternatif"
+
+msgid "Single click to open files"
+msgstr "Dosyaları açmak için tek tık"
+
+msgctxt "Switch between dark and light look and feel packages automatically"
+msgid "Automatic"
+msgstr "Kendiliğinden"
+
+msgid "Switch the look and feel package depending on time of day"
+msgstr ""
+"Günün saatine bağlı olarak açık ve koyu global temalar arasında geçiş yap"
+
+msgctxt ""
+"part of a sentence: 'Clicking files or folders [opens them/selects them]'"
+msgid "Clicking files or folders:"
+msgstr "Dosyalara ve klasörlere tıklamak:"
+
+msgctxt "part of a sentence: 'Clicking files or folders opens them'"
+msgid "Opens them"
+msgstr "Onları açar"
+
+msgctxt "part of a sentence: 'Clicking files or folders selects them'"
+msgid "Selects them"
+msgstr "Onları seçer"
