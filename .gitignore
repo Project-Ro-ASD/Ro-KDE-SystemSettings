@@ -7,3 +7,6 @@ __pycache__/
 *.pyc
 .idea/
 .vscode/
+.work/
+*.orig
+*.rej
