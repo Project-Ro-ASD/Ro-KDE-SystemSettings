@@ -12,6 +12,9 @@ required = [
     ROOT / ".roasd" / "component.json",
     ROOT / "docs" / "ARCHITECTURE.md",
     ROOT / "docs" / "UPSTREAM-COMPONENTS.md",
+    ROOT / "docs" / "DEVELOPMENT.md",
+    ROOT / "AGENTS.md",
+    ROOT / ".roasd" / "upstreams.json",
 ]
 for path in required:
     if not path.exists():
