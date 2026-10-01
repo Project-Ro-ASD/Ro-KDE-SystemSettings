@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "component": "ro-kde-systemsettings",
+  "component_type": "component",
+  "component_class": "desktop-integration",
+  "package_names": [
+    "ro-kde-systemsettings"
+  ],
+  "fedora_release": 44,
+  "architectures": [
+    "x86_64"
+  ],
+  "source_rpm": true,
+  "upstream_family": "KDE Plasma System Settings"
+}
