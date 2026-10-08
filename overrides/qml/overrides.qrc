@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/kcm/kcm_landingpage">
+        <file alias="main.qml">landingpage/main.qml</file>
+    </qresource>
+</RCC>

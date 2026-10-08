@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Service
 X-KDE-System-Settings-Category=personalization
-X-KDE-System-Settings-Parent-Category=
+X-KDE-System-Settings-Parent-Category=rootcategory
 X-KDE-Weight=65
 Icon=preferences-desktop-user
 

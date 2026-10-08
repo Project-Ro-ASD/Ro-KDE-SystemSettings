@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Service
 X-KDE-System-Settings-Category=appearance
-X-KDE-System-Settings-Parent-Category=
+X-KDE-System-Settings-Parent-Category=rootcategory
 X-KDE-Weight=40
 Icon=preferences-desktop-theme-global
 

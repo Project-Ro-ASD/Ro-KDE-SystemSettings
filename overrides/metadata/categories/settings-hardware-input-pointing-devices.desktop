@@ -1,4 +1,5 @@
 [Desktop Entry]
+X-KDE-System-Settings-Category-Module=kcm_mouse
 Type=Service
 X-KDE-System-Settings-Category=pointing-devices
 X-KDE-System-Settings-Parent-Category=input-devices

@@ -1,4 +1,5 @@
 [Desktop Entry]
+X-KDE-System-Settings-Category-Module=kcm_keyboard
 Type=Service
 X-KDE-System-Settings-Category=keyboard
 X-KDE-System-Settings-Parent-Category=input-devices
