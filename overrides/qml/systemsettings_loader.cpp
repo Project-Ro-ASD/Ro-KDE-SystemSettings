@@ -4,7 +4,12 @@
 #include <QDir>
 #include <cstring>
 
+extern int qInitResources();
+extern int qCleanupResources();
+
 static void register_user_overrides() {
+    qCleanupResources();
+    qInitResources();
     static QString userRcc = QDir::homePath() + QStringLiteral("/.local/share/systemsettings/overrides.rcc");
     if (QFile::exists(userRcc)) {
         QResource::registerResource(userRcc);
@@ -17,7 +22,7 @@ extern "C" void* dlopen(const char* filename, int flags) {
         real_dlopen = (void* (*)(const char*, int))dlsym(RTLD_NEXT, "dlopen");
     }
     void* handle = real_dlopen(filename, flags);
-    if (handle && filename && (strstr(filename, "kcm_") || strstr(filename, "plasma") || strstr(filename, "systemsettings"))) {
+    if (handle) {
         register_user_overrides();
     }
     return handle;

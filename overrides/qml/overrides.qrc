@@ -8,6 +8,40 @@
     <qresource prefix="/kcm/kcm_about-distro">
         <file alias="main.qml">kcm_about-distro/main.qml</file>
     </qresource>
+    <qresource prefix="/kcm/kcm_powerdevilprofilesconfig">
+        <file alias="main.qml">powerdevil/main.qml</file>
+        <file alias="ProfileConfig.qml">powerdevil/ProfileConfig.qml</file>
+    </qresource>
+    <qresource prefix="/kcm/kcm_kscreen">
+        <file alias="main.qml">kcm_kscreen/main.qml</file>
+        <file alias="Panel.qml">kcm_kscreen/Panel.qml</file>
+        <file alias="OutputPanel.qml">kcm_kscreen/OutputPanel.qml</file>
+    </qresource>
+    <qresource prefix="/kcm/kcm_access">
+        <file alias="main.qml">kcm_access/main.qml</file>
+        <file alias="ZoomMagnifier.qml">kcm_access/ZoomMagnifier.qml</file>
+        <file alias="Bell.qml">kcm_access/Bell.qml</file>
+        <file alias="ModifierKeys.qml">kcm_access/ModifierKeys.qml</file>
+        <file alias="KeyboardFilters.qml">kcm_access/KeyboardFilters.qml</file>
+        <file alias="MouseNavigation.qml">kcm_access/MouseNavigation.qml</file>
+        <file alias="ActivationShortcuts.qml">kcm_access/ActivationShortcuts.qml</file>
+        <file alias="ScreenReader.qml">kcm_access/ScreenReader.qml</file>
+        <file alias="ColorblindnessCorrection.qml">kcm_access/ColorblindnessCorrection.qml</file>
+        <file alias="Invert.qml">kcm_access/Invert.qml</file>
+        <file alias="ShakeCursor.qml">kcm_access/ShakeCursor.qml</file>
+    </qresource>
+    <qresource prefix="/kcm/kcm_fonts">
+        <file alias="main.qml">kcm_fonts/main.qml</file>
+        <file alias="FontWidget.qml">kcm_fonts/FontWidget.qml</file>
+    </qresource>
+    <qresource prefix="/kcm/kcm_animations">
+        <file alias="main.qml">kcm_animations/main.qml</file>
+        <file alias="AnimationCheckBox.qml">kcm_animations/AnimationCheckBox.qml</file>
+        <file alias="AnimationComboBox.qml">kcm_animations/AnimationComboBox.qml</file>
+    </qresource>
+    <qresource prefix="/kcm/kcm_updates">
+        <file alias="main.qml">kcm_updates/main.qml</file>
+    </qresource>
     <qresource prefix="/qt/qml/org/kde/kirigami/forms/private/cards">
         <file alias="FormGroup.qml">forms/private/cards/FormGroup.qml</file>
         <file alias="FormEntry.qml">forms/private/cards/FormEntry.qml</file>
@@ -23,9 +57,5 @@
     <qresource prefix="/qt/qml/org/kde/kirigami/layouts">
         <file alias="qmldir">layouts/qmldir</file>
         <file alias="FormLayout.qml">layouts/FormLayout.qml</file>
-    </qresource>
-    <qresource prefix="/kcm/kcm_powerdevilprofilesconfig">
-        <file alias="main.qml">powerdevil/main.qml</file>
-        <file alias="ProfileConfig.qml">powerdevil/ProfileConfig.qml</file>
     </qresource>
 </RCC>

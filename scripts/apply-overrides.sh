@@ -54,6 +54,7 @@ mkdir -p "$HOME/.local/lib" "$HOME/.local/bin" "$HOME/.local/share/systemsetting
 # RCC Resource derleme / kopyalama
 if command -v /usr/lib64/qt6/libexec/rcc >/dev/null 2>&1 && [ -f "$REPO_DIR/overrides/qml/overrides.qrc" ]; then
     /usr/lib64/qt6/libexec/rcc -binary "$REPO_DIR/overrides/qml/overrides.qrc" -o "$REPO_DIR/overrides/qml/overrides.rcc"
+    /usr/lib64/qt6/libexec/rcc "$REPO_DIR/overrides/qml/overrides.qrc" -o "$REPO_DIR/overrides/qml/qrc_overrides.cpp"
 fi
 if [ -f "$REPO_DIR/overrides/qml/overrides.rcc" ]; then
     cp "$REPO_DIR/overrides/qml/overrides.rcc" "$HOME/.local/share/systemsettings/overrides.rcc"
@@ -62,24 +63,34 @@ fi
 
 # Loader paylaşımlı kütüphane derleme / kopyalama
 if command -v g++ >/dev/null 2>&1 && [ -f "$REPO_DIR/overrides/qml/systemsettings_loader.cpp" ]; then
-    g++ -O2 -shared -fPIC "$REPO_DIR/overrides/qml/systemsettings_loader.cpp" $(pkg-config --cflags --libs Qt6Core) -ldl -o "$REPO_DIR/overrides/qml/libsystemsettings_override.so"
+    g++ -O2 -shared -fPIC "$REPO_DIR/overrides/qml/systemsettings_loader.cpp" "$REPO_DIR/overrides/qml/qrc_overrides.cpp" $(pkg-config --cflags --libs Qt6Core) -ldl -o "$REPO_DIR/overrides/qml/libsystemsettings_override.so"
 fi
 if [ -f "$REPO_DIR/overrides/qml/libsystemsettings_override.so" ]; then
     cp "$REPO_DIR/overrides/qml/libsystemsettings_override.so" "$HOME/.local/lib/libsystemsettings_override.so"
     echo "  [OK] Sistem ayarları QML override kütüphanesi kuruldu (~/.local/lib/)."
 fi
 
+# QML Imports Katmanı (Kirigami FormLayout ve Kart arayüzü)
+if [ -d "$REPO_DIR/overrides/qml/imports" ]; then
+    mkdir -p "$HOME/.local/lib/qt6/qml"
+    cp -r "$REPO_DIR/overrides/qml/imports/"* "$HOME/.local/lib/qt6/qml/"
+    echo "  [OK] Modern Kirigami FormLayout ve QML bileşenleri kuruldu (~/.local/lib/qt6/qml/)."
+fi
+
 # Sistem Ayarları Wrapper ve Desktop Başlatıcısı
 cat << 'EOF' > "$HOME/.local/bin/systemsettings"
 #!/usr/bin/env bash
 export LD_PRELOAD="$HOME/.local/lib/libsystemsettings_override.so${LD_PRELOAD:+:$LD_PRELOAD}"
+export QML2_IMPORT_PATH="$HOME/.local/lib/qt6/qml:${QML2_IMPORT_PATH:+:$QML2_IMPORT_PATH}"
+export QML_IMPORT_PATH="$HOME/.local/lib/qt6/qml:${QML_IMPORT_PATH:+:$QML_IMPORT_PATH}"
 exec /usr/bin/systemsettings "$@"
 EOF
 chmod +x "$HOME/.local/bin/systemsettings"
 
 cat << 'EOF' > "$HOME/.local/share/applications/systemsettings.desktop"
 [Desktop Entry]
-Exec=systemsettings
+Exec=/home/tugba/.local/bin/systemsettings %U
+TryExec=/home/tugba/.local/bin/systemsettings
 Icon=preferences-system
 Type=Application
 Terminal=false
@@ -88,7 +99,11 @@ Name=System Settings
 Name[tr]=Sistem Ayarları
 EOF
 chmod +x "$HOME/.local/share/applications/systemsettings.desktop"
-echo "  [OK] Sistem Ayarları modern başlatıcısı yapılandırıldı."
+cp "$HOME/.local/share/applications/systemsettings.desktop" "$HOME/.local/share/applications/kdesystemsettings.desktop"
+
+mkdir -p "$HOME/.config/environment.d"
+echo 'PATH="$HOME/.local/bin:$PATH"' > "$HOME/.config/environment.d/10-local-bin.conf"
+echo "  [OK] Sistem Ayarları modern başlatıcısı ve ortam değişkenleri yapılandırıldı."
 
 # 6. KDE Sistem Arayüz Önbelleğini Yenile
 if command -v kbuildsycoca6 >/dev/null 2>&1; then

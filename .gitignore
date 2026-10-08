@@ -12,3 +12,4 @@ __pycache__/
 *.rej
 *.so
 *.rcc
+overrides/qml/qrc_overrides.cpp
