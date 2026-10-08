@@ -1,7 +1,6 @@
 /*
-    SPDX-FileCopyrightText: 2018 Tomaz Canabrava <tcanabrava@kde.org>
-
-    SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+    SPDX-FileCopyrightText: 2026 Project Ro KDE
+    SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only
 */
 
 import QtQuick
@@ -12,162 +11,333 @@ import org.kde.kcmutils as KCMUtils
 import org.kde.kquickcontrols as KQuickAddons
 import org.kde.kirigami as Kirigami
 
-Kirigami.FormLayout {
+ColumnLayout {
+    id: root
+    spacing: Kirigami.Units.largeSpacing
+    Layout.fillWidth: true
 
     Dialogs.FileDialog {
         id: fileDialog
-        title: i18nc("@title:window dialog","Please choose an audio file")
-        nameFilters: [i18nc("Name filters in a file dialog. Do not translate `(*.ogg *.oga *.wav)`",
-                            "ogg, oga, and wav audio files (*.ogg *.oga *.wav)")]
+        title: i18nc("@title:window dialog", "Lütfen bir ses dosyası seçin")
+        nameFilters: ["Ses dosyaları (*.ogg *.oga *.wav)"]
         onAccepted: {
             kcm.bellSettings.customBellFile = fileDialog.selectedFile
         }
     }
 
-    QQC2.CheckBox {
-        id: systemBell
-
-        Kirigami.FormData.label: i18nc("@label prefix for checkbox", "Audible bell:")
-        text: i18nc("Enable the system bell", "Enable")
-        KCMUtils.SettingStateBinding {
-            configObject: kcm.bellSettings
-            settingName: "SystemBell"
-        }
-
-        checked: kcm.bellSettings.systemBell
-        onToggled: kcm.bellSettings.systemBell = checked
+    QQC2.ButtonGroup {
+        id: visualBellGroup
     }
 
-    RowLayout {
-        Kirigami.FormData.label: i18nc("Defines if the system will use a sound system bell", "Custom sound:")
-        spacing: 0
+    // ==========================================
+    // 1. Sesli Sistem Zili
+    // ==========================================
+    Kirigami.Heading {
+        level: 4
+        text: i18nc("@title:group", "Sesli Sistem Zili")
+        font.weight: Font.DemiBold
+        Layout.leftMargin: Kirigami.Units.smallSpacing
+    }
 
-        QQC2.CheckBox {
-            id: customBell
-            Layout.alignment: Qt.AlignVCenter
+    Rectangle {
+        Layout.fillWidth: true
+        radius: 12
+        color: "#ffffff"
+        border.color: Qt.rgba(0, 0, 0, 0.08)
+        border.width: 1
+        implicitHeight: audibleCol.implicitHeight + Kirigami.Units.largeSpacing * 2
 
-            KCMUtils.SettingStateBinding {
-                configObject: kcm.bellSettings
-                settingName: "CustomBell"
-                extraEnabledConditions: kcm.bellSettings.systemBell
+        ColumnLayout {
+            id: audibleCol
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+                margins: Kirigami.Units.largeSpacing
+            }
+            spacing: Kirigami.Units.mediumSpacing
+
+            // Row 1: Sesli Zil Aç/Kapat
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check", "Sesli Zil")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Uyarı ve bildirimlerde sistem sesini çal")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.Switch {
+                    checked: kcm.bellSettings.systemBell
+                    onToggled: kcm.bellSettings.systemBell = checked
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.bellSettings
+                        settingName: "SystemBell"
+                    }
+                }
             }
 
-            checked: kcm.bellSettings.customBell
-            onToggled: kcm.bellSettings.customBell= checked
-        }
-
-        QQC2.TextField {
-            id: textEdit
-
-            text: kcm.bellSettings.customBellFile
-
-            KCMUtils.SettingStateBinding {
-                configObject: kcm.bellSettings
-                settingName: "CustomBellFile"
-                extraEnabledConditions: kcm.bellSettings.customBell
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+                visible: kcm.bellSettings.systemBell
             }
 
-            onEditingFinished: kcm.bellSettings.customBellFile = textEdit.text
+            // Row 2: Özel Ses Dosyası
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+                visible: kcm.bellSettings.systemBell
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check", "Özel Zil Sesi")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Varsayılan bip yerine özel bir ses dosyası kullan")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.CheckBox {
+                    id: customBellCheck
+                    checked: kcm.bellSettings.customBell
+                    onToggled: kcm.bellSettings.customBell = checked
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.bellSettings
+                        settingName: "CustomBell"
+                        extraEnabledConditions: kcm.bellSettings.systemBell
+                    }
+                }
+
+                QQC2.TextField {
+                    id: bellFileText
+                    Layout.preferredWidth: Kirigami.Units.gridUnit * 12
+                    enabled: customBellCheck.checked
+                    text: kcm.bellSettings.customBellFile
+                    onEditingFinished: kcm.bellSettings.customBellFile = text
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.bellSettings
+                        settingName: "CustomBellFile"
+                        extraEnabledConditions: kcm.bellSettings.customBell
+                    }
+                }
+
+                QQC2.Button {
+                    icon.name: "folder"
+                    enabled: customBellCheck.checked
+                    onClicked: fileDialog.open()
+                }
+            }
         }
-        QQC2.Button {
-            icon.name: "folder"
-            QQC2.ToolTip.visible: down
-            QQC2.ToolTip.text: i18nc("@action:button icononly tooltip", "Choose audio file for the system bell")
-            Accessible.name: i18nc("@action button accessible only", "Choose audio file")
-            Accessible.description: i18nc("@info:usagetip accessible description for button", "Opens dialog")
-            KCMUtils.SettingStateBinding {
-                configObject: kcm.bellSettings
-                settingName: "CustomBellFile"
-                extraEnabledConditions: kcm.bellSettings.customBell
+    }
+
+    // ==========================================
+    // 2. Görsel Sistem Zili
+    // ==========================================
+    Kirigami.Heading {
+        level: 4
+        text: i18nc("@title:group", "Görsel Sistem Zili")
+        font.weight: Font.DemiBold
+        Layout.leftMargin: Kirigami.Units.smallSpacing
+    }
+
+    Rectangle {
+        Layout.fillWidth: true
+        radius: 12
+        color: "#ffffff"
+        border.color: Qt.rgba(0, 0, 0, 0.08)
+        border.width: 1
+        implicitHeight: visualCol.implicitHeight + Kirigami.Units.largeSpacing * 2
+
+        ColumnLayout {
+            id: visualCol
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+                margins: Kirigami.Units.largeSpacing
+            }
+            spacing: Kirigami.Units.mediumSpacing
+
+            // Row 1: Görsel Zil Aç/Kapat
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check", "Görsel Zil")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Sistem sesi çaldığında ekranı görsel efektle uyar")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.Switch {
+                    checked: kcm.bellSettings.visibleBell
+                    onToggled: kcm.bellSettings.visibleBell = checked
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.bellSettings
+                        settingName: "VisibleBell"
+                    }
+                }
             }
 
-            onClicked: fileDialog.open()
-        }
-    }
-    Item {
-        Kirigami.FormData.isSection: true
-    }
-    QQC2.CheckBox {
-        id: visibleBell
-
-        Kirigami.FormData.label: i18nc("@label prefix for checkbox", "Visual bell:")
-        text: i18nc("@option:check Enable visual bell", "Enable")
-
-        KCMUtils.SettingStateBinding {
-            configObject: kcm.bellSettings
-            settingName: "VisibleBell"
-        }
-
-        checked: kcm.bellSettings.visibleBell
-        onToggled: kcm.bellSettings.visibleBell = checked
-    }
-
-    QQC2.RadioButton {
-        id: invertScreen
-
-        text: i18nc("@option:radio Invert screen colors when a system bell is rung", "Invert screen colors")
-
-        KCMUtils.SettingStateBinding {
-            configObject: kcm.bellSettings
-            settingName: "InvertScreen"
-            extraEnabledConditions: kcm.bellSettings.visibleBell
-        }
-
-        checked: kcm.bellSettings.invertScreen
-        onToggled: kcm.bellSettings.invertScreen = checked
-    }
-    RowLayout {
-        spacing: Kirigami.Units.smallSpacing
-        enabled: kcm.bellSettings.visibleBell
-
-        QQC2.RadioButton {
-            id: flashScreen
-
-            text: i18nc("@option:radio Flash screen when a system bell is rung", "Flash screen")
-
-            KCMUtils.SettingStateBinding {
-                configObject: kcm.bellSettings
-                settingName: "InvertScreen"
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+                visible: kcm.bellSettings.visibleBell
             }
 
-            checked: !kcm.bellSettings.invertScreen
-            onToggled: kcm.bellSettings.invertScreen = !checked
-        }
-        KQuickAddons.ColorButton {
-            text: i18nc("Color of the system bell","Color")
-            // avoid to show text outside button
-            display: QQC2.AbstractButton.IconOnly
+            // Row 2: Ekranı Tersine Çevir
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+                visible: kcm.bellSettings.visibleBell
 
-            KCMUtils.SettingStateBinding {
-                configObject: kcm.bellSettings
-                settingName: "VisibleBellColor"
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:radio", "Ekran Renklerini Tersine Çevir")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Zil çaldığında tüm ekranın renklerini anlık olarak tersine çevirir")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.RadioButton {
+                    QQC2.ButtonGroup.group: visualBellGroup
+                    checked: kcm.bellSettings.invertScreen
+                    onToggled: kcm.bellSettings.invertScreen = checked
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.bellSettings
+                        settingName: "InvertScreen"
+                        extraEnabledConditions: kcm.bellSettings.visibleBell
+                    }
+                }
             }
 
-            color: kcm.bellSettings.visibleBellColor
-            onAccepted: color => kcm.bellSettings.visibleBellColor = color
-        }
-    }
-    QQC2.SpinBox {
-        Kirigami.FormData.label: i18nc("Duration of the system bell", "Duration:")
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+                visible: kcm.bellSettings.visibleBell
+            }
 
-        from: 100
-        to: 2000
+            // Row 3: Ekranı Yanıp Söndür
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+                visible: kcm.bellSettings.visibleBell
 
-        KCMUtils.SettingStateBinding {
-            configObject: kcm.bellSettings
-            settingName: "VisibleBellPause"
-            extraEnabledConditions: kcm.bellSettings.visibleBell
-        }
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:radio", "Ekranı Yanıp Söndür")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Zil çaldığında ekranı seçilen renkle parlatır")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
 
-        value: kcm.bellSettings.visibleBellPause
-        onValueModified: kcm.bellSettings.visibleBellPause = value
+                KQuickAddons.ColorButton {
+                    color: kcm.bellSettings.visibleBellColor
+                    onAccepted: col => kcm.bellSettings.visibleBellColor = col
 
-        textFromValue: function(value, locale) {
-            return i18ncp("@label:valuesuffix %1 is visible bell duration", "%1 ms", "%1 ms", value)
-        }
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.bellSettings
+                        settingName: "VisibleBellColor"
+                    }
+                }
 
-        valueFromText: (text, locale) => {
-            return Number.fromLocaleString(locale, text.replace(i18ncp("@label:valuesuffix short for millisecond(s)", "ms", "ms"), ""))
+                QQC2.RadioButton {
+                    QQC2.ButtonGroup.group: visualBellGroup
+                    checked: !kcm.bellSettings.invertScreen
+                    onToggled: kcm.bellSettings.invertScreen = !checked
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.bellSettings
+                        settingName: "InvertScreen"
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+                visible: kcm.bellSettings.visibleBell
+            }
+
+            // Row 4: Efekt Süresi
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+                visible: kcm.bellSettings.visibleBell
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@label:spinbox", "Görsel Uyarı Süresi")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Efektin ekranda kalma süresini belirler (ms)")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.SpinBox {
+                    from: 100
+                    to: 2000
+                    stepSize: 50
+                    value: kcm.bellSettings.visibleBellPause
+                    textFromValue: val => val + " ms"
+                    onValueModified: kcm.bellSettings.visibleBellPause = value
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.bellSettings
+                        settingName: "VisibleBellPause"
+                        extraEnabledConditions: kcm.bellSettings.visibleBell
+                    }
+                }
+            }
         }
     }
 }

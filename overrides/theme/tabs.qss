@@ -1,0 +1,29 @@
+QTabBar {
+    qproperty-drawBase: 0;
+    background: transparent;
+    border: none;
+    margin: 6px 12px;
+}
+QTabBar::tab {
+    background: rgba(0, 0, 0, 0.06);
+    color: #1e293b;
+    border-radius: 16px;
+    padding: 7px 20px;
+    margin: 4px 6px;
+    font-weight: 600;
+    font-size: 13px;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+}
+QTabBar::tab:selected {
+    background: #3b82f6;
+    color: #ffffff;
+    border: 1px solid #2563eb;
+}
+QTabBar::tab:hover:!selected {
+    background: rgba(0, 0, 0, 0.12);
+    color: #0f172a;
+}
+QTabWidget::pane {
+    border: none;
+    background: transparent;
+}

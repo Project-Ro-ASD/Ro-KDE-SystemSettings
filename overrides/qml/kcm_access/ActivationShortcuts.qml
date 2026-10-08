@@ -1,7 +1,6 @@
 /*
-    SPDX-FileCopyrightText: 2018 Tomaz Canabrava <tcanabrava@kde.org>
-
-    SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+    SPDX-FileCopyrightText: 2026 Project Ro KDE
+    SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only
 */
 
 import QtQuick
@@ -9,120 +8,269 @@ import QtQuick.Layouts
 import QtQuick.Controls as QQC2
 import org.kde.kcmutils as KCMUtils
 import org.kde.kirigami as Kirigami
-import org.kde.plasma.access.kcm
 
-Kirigami.FormLayout {
+ColumnLayout {
+    id: root
+    spacing: Kirigami.Units.largeSpacing
+    Layout.fillWidth: true
 
-    QQC2.CheckBox {
-        id: activationShortcuts
-        Kirigami.FormData.label: i18nc("@option:check", "Activation shortcuts:")
-        text: i18nc("Enable activation shortcuts", "Enable")
-
-        KCMUtils.SettingStateBinding {
-            configObject: kcm.activationGesturesSettings
-            settingName: "Gestures"
-        }
-
-        checked: kcm.activationGesturesSettings.gestures
-        onToggled: kcm.activationGesturesSettings.gestures = checked
-    }
-    QQC2.Label {
-        leftPadding: activationShortcuts.indicator.width
-        text: i18nc("@label", "Press Shift 5 times to enable Sticky Keys")
-        textFormat: Text.PlainText
-        elide: Text.ElideRight
-        font: Kirigami.Theme.smallFont
-    }
-    QQC2.Label {
-        leftPadding: activationShortcuts.indicator.width
-        text: i18nc("@label", "Hold Shift for 8 seconds to enable Slow Keys")
-        textFormat: Text.PlainText
-        elide: Text.ElideRight
-        font: Kirigami.Theme.smallFont
+    // ==========================================
+    // 1. Etkinleştirme Kısayolları
+    // ==========================================
+    Kirigami.Heading {
+        level: 4
+        text: i18nc("@title:group", "Etkinleştirme Kısayolları")
+        font.weight: Font.DemiBold
+        Layout.leftMargin: Kirigami.Units.smallSpacing
     }
 
-    RowLayout {
-        spacing: Kirigami.Units.smallSpacing
-        QQC2.CheckBox {
-            text: i18nc("@option:check", "Disable sticky and slow keys after:")
+    Rectangle {
+        Layout.fillWidth: true
+        radius: 12
+        color: "#ffffff"
+        border.color: Qt.rgba(0, 0, 0, 0.08)
+        border.width: 1
+        implicitHeight: actCol.implicitHeight + Kirigami.Units.largeSpacing * 2
 
-            KCMUtils.SettingStateBinding {
-                configObject: kcm.activationGesturesSettings
-                settingName: "AccessXTimeout"
+        ColumnLayout {
+            id: actCol
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+                margins: Kirigami.Units.largeSpacing
+            }
+            spacing: Kirigami.Units.mediumSpacing
+
+            // Row 1: Kısayolları Aç
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check", "Klavye Jestlerini ve Kısayolları Etkinleştir")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Shift'e 5 kez basarak Yapışkan Tuşları, 8 saniye basılı tutarak Yavaş Tuşları açın")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.Switch {
+                    checked: kcm.activationGesturesSettings.gestures
+                    onToggled: kcm.activationGesturesSettings.gestures = checked
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.activationGesturesSettings
+                        settingName: "Gestures"
+                    }
+                }
             }
 
-            checked: kcm.activationGesturesSettings.accessXTimeout
-            onToggled: kcm.activationGesturesSettings.accessXTimeout = checked
-
-        }
-        QQC2.SpinBox {
-            id: spinbox
-
-            KCMUtils.SettingStateBinding {
-                configObject: kcm.activationGesturesSettings
-                settingName: "AccessXTimeoutDelay"
-                extraEnabledConditions: kcm.activationGesturesSettings.accessXTimeout
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+                visible: kcm.activationGesturesSettings.gestures
             }
 
-            from: 1
-            to: 30
+            // Row 2: Zaman aşımı
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+                visible: kcm.activationGesturesSettings.gestures
 
-            textFromValue: (value, locale) => {
-                return i18ncp("@label:valuesuffix in spinbox %1 is timeout delay", "%1 min", "%1 min", value)
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check", "Hareketsizlik Sonrası Otomatik Kapat")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Belirtilen süre boyunca kullanılmadığında özellikleri kapat")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.CheckBox {
+                    id: timeoutCheck
+                    checked: kcm.activationGesturesSettings.accessXTimeout
+                    onToggled: kcm.activationGesturesSettings.accessXTimeout = checked
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.activationGesturesSettings
+                        settingName: "AccessXTimeout"
+                    }
+                }
+
+                QQC2.SpinBox {
+                    enabled: timeoutCheck.checked
+                    from: 1
+                    to: 30
+                    value: kcm.activationGesturesSettings.accessXTimeoutDelay
+                    onValueChanged: kcm.activationGesturesSettings.accessXTimeoutDelay = value
+                    textFromValue: val => val + " dk"
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.activationGesturesSettings
+                        settingName: "AccessXTimeoutDelay"
+                        extraEnabledConditions: kcm.activationGesturesSettings.accessXTimeout
+                    }
+                }
             }
-
-
-            validator: IntValidatorWithSuffix {
-                bottom: spinbox.from
-                top: spinbox.to
-            }
-            valueFromText: (text, locale) => {
-                return Number.fromLocaleString(locale, text.replace(i18ncp("short for minute(s)", "min", "min"), ""))
-            }
-
-            value: kcm.activationGesturesSettings.accessXTimeoutDelay
-            onValueChanged: kcm.activationGesturesSettings.accessXTimeoutDelay = value
         }
     }
 
-    QQC2.CheckBox {
-        Kirigami.FormData.label: i18nc("@title:group for checkbox group", "When a shortcut is used:")
-        text: i18nc("@option:check when shortcut used", "Display a confirmation dialog")
-
-        KCMUtils.SettingStateBinding {
-            configObject: kcm.activationGesturesSettings
-            settingName: "GestureConfirmation"
-        }
-
-        checked: kcm.activationGesturesSettings.gestureConfirmation
-        onToggled: kcm.activationGesturesSettings.gestureConfirmation = checked
+    // ==========================================
+    // 2. Kısayol Kullanıldığında
+    // ==========================================
+    Kirigami.Heading {
+        level: 4
+        text: i18nc("@title:group", "Kısayol Tetiklendiğinde")
+        font.weight: Font.DemiBold
+        Layout.leftMargin: Kirigami.Units.smallSpacing
+        visible: kcm.activationGesturesSettings.gestures
     }
-    QQC2.CheckBox {
-        text: i18nc("@option:check when shortcut used", "Ring the system bell")
 
-        KCMUtils.SettingStateBinding {
-            configObject: kcm.activationGesturesSettings
-            settingName: "AccessXBeep"
+    Rectangle {
+        Layout.fillWidth: true
+        radius: 12
+        color: "#ffffff"
+        border.color: Qt.rgba(0, 0, 0, 0.08)
+        border.width: 1
+        implicitHeight: triggerCol.implicitHeight + Kirigami.Units.largeSpacing * 2
+        visible: kcm.activationGesturesSettings.gestures
+
+        ColumnLayout {
+            id: triggerCol
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+                margins: Kirigami.Units.largeSpacing
+            }
+            spacing: Kirigami.Units.mediumSpacing
+
+            // Row 1: Onay kutusu
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check", "Onay İletişim Kutusu Göster")
+                        font.weight: Font.DemiBold
+                    }
+                }
+
+                QQC2.Switch {
+                    checked: kcm.activationGesturesSettings.gestureConfirmation
+                    onToggled: kcm.activationGesturesSettings.gestureConfirmation = checked
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.activationGesturesSettings
+                        settingName: "GestureConfirmation"
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+            }
+
+            // Row 2: Sistem zili
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check", "Sistem Zilini Çal")
+                        font.weight: Font.DemiBold
+                    }
+                }
+
+                QQC2.Switch {
+                    checked: kcm.activationGesturesSettings.accessXBeep
+                    onToggled: kcm.activationGesturesSettings.accessXBeep = checked
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.activationGesturesSettings
+                        settingName: "AccessXBeep"
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+            }
+
+            // Row 3: Bildirim göster
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check", "Masaüstü Bildirimi Göster")
+                        font.weight: Font.DemiBold
+                    }
+                }
+
+                QQC2.Switch {
+                    checked: kcm.activationGesturesSettings.keyboardNotifyAccess
+                    onToggled: kcm.activationGesturesSettings.keyboardNotifyAccess = checked
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.activationGesturesSettings
+                        settingName: "KeyboardNotifyAccess"
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+            }
+
+            // Row 4: Bildirimleri yapılandır
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@action:button", "Bildirim Olaylarını Yapılandır")
+                        font.weight: Font.DemiBold
+                    }
+                }
+
+                QQC2.Button {
+                    text: i18nc("@action:button", "Yapılandır…")
+                    icon.name: "preferences-desktop-notification"
+                    onClicked: kcm.configureKNotify()
+                }
+            }
         }
-
-        checked: kcm.activationGesturesSettings.accessXBeep
-        onToggled: kcm.activationGesturesSettings.accessXBeep = checked
-    }
-    QQC2.CheckBox {
-        text: i18nc("@option:check when shortcut used", "Show a notification")
-
-        KCMUtils.SettingStateBinding {
-            configObject: kcm.activationGesturesSettings
-            settingName: "KeyboardNotifyAccess"
-        }
-
-        checked: kcm.activationGesturesSettings.keyboardNotifyAccess
-        onToggled: kcm.activationGesturesSettings.keyboardNotifyAccess = checked
-    }
-    QQC2.Button {
-        text: i18nc("@action:button opens Notifications kcm", "Configure Notifications…")
-        icon.name: "preferences-desktop-notification"
-
-        onClicked: kcm.configureKNotify()
     }
 }

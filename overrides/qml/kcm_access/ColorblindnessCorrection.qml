@@ -1,10 +1,7 @@
 /*
-    SPDX-FileCopyrightText: 2023 Fushan Wen <qydwhotmail@gmail.com>
-    SPDX-FileCopyrightText: 2024 Thomas Duckworth <tduck973564@gmail.com>
-
-    SPDX-License-Identifier: GPL-2.0-or-later
+    SPDX-FileCopyrightText: 2026 Project Ro KDE
+    SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only
 */
-
 
 import QtQuick
 import QtQuick.Layouts
@@ -13,149 +10,226 @@ import org.kde.kcmutils as KCM
 import org.kde.kirigami as Kirigami
 
 ColumnLayout {
-    spacing: Kirigami.Units.gridUnit
+    id: root
+    spacing: Kirigami.Units.largeSpacing
+    Layout.fillWidth: true
 
-    QQC2.Label {
-        Layout.fillWidth: true
-
-        text: i18nc("@info", "If you have trouble with certain colors on the screen, these filters can change them into other colors.")
-        textFormat: Text.PlainText
-        wrapMode: Text.WordWrap
-        horizontalAlignment: Text.AlignHCenter
+    Kirigami.Heading {
+        level: 4
+        text: i18nc("@title:group", "Renk Körlüğü Düzeltmesi")
+        font.weight: Font.DemiBold
+        Layout.leftMargin: Kirigami.Units.smallSpacing
     }
 
-    Kirigami.FormLayout {
-        id: formLayout
-
-        QQC2.CheckBox {
-            text: i18nc("@option check, Enable color blindness correction effect", "Enable")
-
-            KCM.SettingStateBinding {
-                configObject: kcm.colorblindnessCorrectionSettings
-                settingName: "ColorblindnessCorrection"
-            }
-
-            checked: kcm.colorblindnessCorrectionSettings.colorblindnessCorrection
-            onToggled: kcm.colorblindnessCorrectionSettings.colorblindnessCorrection = checked
-        }
-
-        QQC2.ComboBox {
-            id: colorComboBox
-            Kirigami.FormData.label: i18nc("@label:listbox Difficulty seeing any of the following colors on the screen", "Problematic colors:")
-            currentIndex: kcm.colorblindnessCorrectionSettings.mode
-            textRole: "text"
-            valueRole: "value"
-            model: [
-                { value: 0, text: i18nc("@option", "Red & purple (Protanopia)") },
-                { value: 1, text: i18nc("@option", "Green & purple (Deuteranopia)") },
-                { value: 2, text: i18nc("@option", "Yellow, green & purple (Tritanopia)") },
-                { value: 3, text: i18nc("@option", "All (grayscale mode)") },
-            ]
-
-            Layout.preferredWidth: Kirigami.Units.gridUnit * 15
-
-            KCM.SettingStateBinding {
-                configObject: kcm.colorblindnessCorrectionSettings
-                settingName: "Mode"
-                extraEnabledConditions: kcm.colorblindnessCorrectionSettings.colorblindnessCorrection
-            }
-
-            onActivated: kcm.colorblindnessCorrectionSettings.mode = currentValue
-        }
+    Rectangle {
+        Layout.fillWidth: true
+        radius: 12
+        color: "#ffffff"
+        border.color: Qt.rgba(0, 0, 0, 0.08)
+        border.width: 1
+        implicitHeight: colorCol.implicitHeight + Kirigami.Units.largeSpacing * 2
 
         ColumnLayout {
-            Kirigami.FormData.label: i18nc("@label", "Intensity:")
-            Kirigami.FormData.buddyFor: intensitySlider
-            spacing: Kirigami.Units.smallSpacing
-
-            QQC2.Slider {
-                id: intensitySlider
-                Layout.preferredWidth: Kirigami.Units.gridUnit * 15
-
-                KCM.SettingStateBinding {
-                    configObject: kcm.colorblindnessCorrectionSettings
-                    settingName: "Intensity"
-                    extraEnabledConditions: kcm.colorblindnessCorrectionSettings.colorblindnessCorrection
-                }
-
-                from: 0.05 // 0.0 just rolls over to 1? hacky
-                to: 1.0
-                value: kcm.colorblindnessCorrectionSettings.intensity
-                onMoved: kcm.colorblindnessCorrectionSettings.intensity = value
+            id: colorCol
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+                margins: Kirigami.Units.largeSpacing
             }
+            spacing: Kirigami.Units.mediumSpacing
+
+            // Row 1: Etkinleştir
             RowLayout {
-                spacing: 0
-
-                QQC2.Label {
-                    text: i18nc("@label Mild color blindness correction intensity", "Mild")
-                    textFormat: Text.PlainText
-                }
-                Item {
-                    Layout.fillWidth: true
-                }
-                QQC2.Label {
-                    text: i18nc("@label Intense color blindness correction intensity", "Intense")
-                    textFormat: Text.PlainText
-                }
-            }
-        }
-    }
-
-    Kirigami.Separator {
-        Layout.fillWidth: true
-    }
-
-    ColumnLayout {
-        Layout.fillWidth: true
-        spacing: Kirigami.Units.smallSpacing
-
-        QQC2.Label {
-            Layout.fillWidth: true
-
-            text: i18nc("@info", "Adjusted colors:")
-            textFormat: Text.PlainText
-            wrapMode: Text.WordWrap
-            horizontalAlignment: Text.AlignHCenter
-        }
-
-        RowLayout {
-            id: previewArea
-            Layout.fillWidth: true
-            spacing: Kirigami.Units.smallSpacing
-
-            Item {
                 Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check", "Renk Körlüğü Filtresini Etkinleştir")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Ekranda ayırt etmekte zorlandığınız renk tonlarını uyarlar")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.Switch {
+                    checked: kcm.colorblindnessCorrectionSettings.colorblindnessCorrection
+                    onToggled: kcm.colorblindnessCorrectionSettings.colorblindnessCorrection = checked
+
+                    KCM.SettingStateBinding {
+                        configObject: kcm.colorblindnessCorrectionSettings
+                        settingName: "ColorblindnessCorrection"
+                    }
+                }
             }
 
-            Repeater {
-                model: [
-                    { name: i18nc("@title:group for color rectangles", "Reds:"), colors: ["Red", "Orange", "Yellow"] },
-                    { name: i18nc("@title:group for color rectangles", "Greens:"), colors: ["Green", "LimeGreen", "Lime"] },
-                    { name: i18nc("@title:group for color rectangles", "Blues:"), colors: ["Blue", "DeepSkyBlue", "Aqua"] },
-                    { name: i18nc("@title:group for color rectangles", "Purples:"), colors: ["Purple", "Fuchsia", "Violet"] },
-                ]
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+                visible: kcm.colorblindnessCorrectionSettings.colorblindnessCorrection
+            }
 
-                delegate: Column {
-                    spacing: Kirigami.Units.smallSpacing
+            // Row 2: Sorunlu Renkler
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+                visible: kcm.colorblindnessCorrectionSettings.colorblindnessCorrection
 
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
                     QQC2.Label {
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        text: modelData.name
+                        text: i18nc("@label:listbox", "Sorun Yaşanan Renkler")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Renk algısı bozukluğu türüne uygun filtreyi seçin")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.ComboBox {
+                    currentIndex: kcm.colorblindnessCorrectionSettings.mode
+                    textRole: "text"
+                    valueRole: "value"
+                    model: [
+                        { value: 0, text: i18nc("@option", "Kırmızı ve mor (Protanopi)") },
+                        { value: 1, text: i18nc("@option", "Yeşil ve mor (Döteranopi)") },
+                        { value: 2, text: i18nc("@option", "Sarı, yeşil ve mor (Tritanopi)") },
+                        { value: 3, text: i18nc("@option", "Tümü (Gri tonlama modu)") },
+                    ]
+                    Layout.preferredWidth: Kirigami.Units.gridUnit * 13
+
+                    KCM.SettingStateBinding {
+                        configObject: kcm.colorblindnessCorrectionSettings
+                        settingName: "Mode"
                     }
 
-                    Repeater {
-                        model: modelData.colors
-                        delegate: Rectangle {
-                            width: Kirigami.Units.gridUnit * 4
-                            height: Kirigami.Units.gridUnit * 4
-                            color: modelData
+                    onActivated: kcm.colorblindnessCorrectionSettings.mode = currentValue
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+                visible: kcm.colorblindnessCorrectionSettings.colorblindnessCorrection
+            }
+
+            // Row 3: Yoğunluk
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+                visible: kcm.colorblindnessCorrectionSettings.colorblindnessCorrection
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@label", "Düzeltme Yoğunluğu")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Renk dönüşümünün belirginlik seviyesi")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.Slider {
+                    id: intensitySlider
+                    Layout.preferredWidth: Kirigami.Units.gridUnit * 12
+                    from: 0.05
+                    to: 1.0
+                    value: kcm.colorblindnessCorrectionSettings.intensity
+                    onMoved: kcm.colorblindnessCorrectionSettings.intensity = value
+
+                    KCM.SettingStateBinding {
+                        configObject: kcm.colorblindnessCorrectionSettings
+                        settingName: "Intensity"
+                        extraEnabledConditions: kcm.colorblindnessCorrectionSettings.colorblindnessCorrection
+                    }
+                }
+            }
+        }
+    }
+
+    // ==========================================
+    // 2. Renk Önizlemesi
+    // ==========================================
+    Kirigami.Heading {
+        level: 4
+        text: i18nc("@title:group", "Renk Önizlemesi")
+        font.weight: Font.DemiBold
+        Layout.leftMargin: Kirigami.Units.smallSpacing
+        visible: kcm.colorblindnessCorrectionSettings.colorblindnessCorrection
+    }
+
+    Rectangle {
+        Layout.fillWidth: true
+        radius: 12
+        color: "#ffffff"
+        border.color: Qt.rgba(0, 0, 0, 0.08)
+        border.width: 1
+        implicitHeight: previewCol.implicitHeight + Kirigami.Units.largeSpacing * 2
+        visible: kcm.colorblindnessCorrectionSettings.colorblindnessCorrection
+
+        ColumnLayout {
+            id: previewCol
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+                margins: Kirigami.Units.largeSpacing
+            }
+            spacing: Kirigami.Units.largeSpacing
+
+            RowLayout {
+                id: previewArea
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignHCenter
+                spacing: Kirigami.Units.largeSpacing
+
+                Repeater {
+                    model: [
+                        { name: i18n("Kırmızılar"), colors: ["#ef4444", "#f97316", "#eab308"] },
+                        { name: i18n("Yeşiller"), colors: ["#22c55e", "#10b981", "#14b8a6"] },
+                        { name: i18n("Maviler"), colors: ["#3b82f6", "#06b6d4", "#6366f1"] },
+                        { name: i18n("Morlar"), colors: ["#8b5cf6", "#a855f7", "#ec4899"] },
+                    ]
+
+                    delegate: ColumnLayout {
+                        spacing: 6
+                        Layout.alignment: Qt.AlignHCenter
+
+                        QQC2.Label {
+                            Layout.alignment: Qt.AlignHCenter
+                            text: modelData.name
+                            font.weight: Font.DemiBold
+                        }
+
+                        RowLayout {
+                            spacing: 4
+                            Repeater {
+                                model: modelData.colors
+                                delegate: Rectangle {
+                                    width: 36
+                                    height: 36
+                                    radius: 6
+                                    color: modelData
+                                }
+                            }
                         }
                     }
                 }
-            }
-
-            Item {
-                Layout.fillWidth: true
             }
         }
     }

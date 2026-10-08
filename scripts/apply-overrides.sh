@@ -75,7 +75,7 @@ fi
 
 # Loader paylaşımlı kütüphane derleme / kopyalama
 if command -v g++ >/dev/null 2>&1 && [ -f "$REPO_DIR/overrides/qml/systemsettings_loader.cpp" ]; then
-    g++ -O2 -shared -fPIC "$REPO_DIR/overrides/qml/systemsettings_loader.cpp" "$REPO_DIR/overrides/qml/qrc_overrides.cpp" $(pkg-config --cflags --libs Qt6Core Qt6Gui Qt6Quick) -ldl -o "$REPO_DIR/overrides/qml/libsystemsettings_override.so"
+    g++ -O2 -shared -fPIC "$REPO_DIR/overrides/qml/systemsettings_loader.cpp" "$REPO_DIR/overrides/qml/qrc_overrides.cpp" $(pkg-config --cflags --libs Qt6Core Qt6Gui Qt6Quick Qt6Widgets) -ldl -o "$REPO_DIR/overrides/qml/libsystemsettings_override.so"
 fi
 if [ -f "$REPO_DIR/overrides/qml/libsystemsettings_override.so" ]; then
     cp "$REPO_DIR/overrides/qml/libsystemsettings_override.so" "$HOME/.local/lib/libsystemsettings_override.so"
@@ -89,13 +89,23 @@ if [ -d "$REPO_DIR/overrides/qml/imports" ]; then
     echo "  [OK] Modern Kirigami FormLayout ve QML bileşenleri kuruldu (~/.local/lib/qt6/qml/)."
 fi
 
+# 5.1 Tab pill butonları QSS kopyalama
+if [ -f "$REPO_DIR/overrides/theme/tabs.qss" ]; then
+    cp "$REPO_DIR/overrides/theme/tabs.qss" "$HOME/.local/share/systemsettings/tabs.qss"
+    echo "  [OK] Modern hap sekme butonları stilleri kuruldu (~/.local/share/systemsettings/tabs.qss)."
+fi
+
 # Sistem Ayarları Wrapper ve Desktop Başlatıcısı
 cat << 'EOF' > "$HOME/.local/bin/systemsettings"
 #!/usr/bin/env bash
 export LD_PRELOAD="$HOME/.local/lib/libsystemsettings_override.so${LD_PRELOAD:+:$LD_PRELOAD}"
 export QML2_IMPORT_PATH="$HOME/.local/lib/qt6/qml:${QML2_IMPORT_PATH:+:$QML2_IMPORT_PATH}"
 export QML_IMPORT_PATH="$HOME/.local/lib/qt6/qml:${QML_IMPORT_PATH:+:$QML_IMPORT_PATH}"
-exec /usr/bin/systemsettings "$@"
+QSS_ARG=()
+if [ -f "$HOME/.local/share/systemsettings/tabs.qss" ]; then
+    QSS_ARG=(-stylesheet "$HOME/.local/share/systemsettings/tabs.qss")
+fi
+exec /usr/bin/systemsettings "${QSS_ARG[@]}" "$@"
 EOF
 chmod +x "$HOME/.local/bin/systemsettings"
 

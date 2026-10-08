@@ -1,403 +1,556 @@
 /*
-    SPDX-FileCopyrightText: 2025 Oliver Beard <olib141@outlook.com>
-
-    SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+    SPDX-FileCopyrightText: 2026 Project Ro KDE
+    SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only
 */
 
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as QQC2
-
 import org.kde.kcmutils as KCM
 import org.kde.kirigami as Kirigami
 import org.kde.kquickcontrols as KQuickControls
 import org.kde.kwindowsystem
 
-Kirigami.FormLayout {
-    id: pageLayout
+ColumnLayout {
+    id: root
+    spacing: Kirigami.Units.largeSpacing
+    Layout.fillWidth: true
 
-    QQC2.RadioButton {
-        id: zoomRadioButton
-        QQC2.ButtonGroup.group: effectGroup
-        Kirigami.FormData.label: i18nc("@label, followed by 'full screen' or 'magnify region'", "Zoom:")
-
-        text: i18nc("@option:check, enable zoom effect, following 'Zoom:'", "Full screen")
-        checked: kcm.zoomMagnifierSettings.zoom
-        onToggled: { kcm.zoomMagnifierSettings.zoom = true; kcm.zoomMagnifierSettings.magnifier = false; }
-
-        QQC2.ButtonGroup { id: effectGroup }
-
-        KCM.SettingHighlighter { highlight: !kcm.zoomMagnifierSettings.zoom }
+    QQC2.ButtonGroup {
+        id: effectGroup
     }
 
-    RowLayout {
+    // ==========================================
+    // 1. Yakınlaştırma Modu
+    // ==========================================
+    Kirigami.Heading {
+        level: 4
+        text: i18nc("@title:group", "Yakınlaştırma Modu")
+        font.weight: Font.DemiBold
+        Layout.leftMargin: Kirigami.Units.smallSpacing
+    }
+
+    Rectangle {
         Layout.fillWidth: true
+        radius: 12
+        color: "#ffffff"
+        border.color: Qt.rgba(0, 0, 0, 0.08)
+        border.width: 1
+        implicitHeight: modeCol.implicitHeight + Kirigami.Units.largeSpacing * 2
 
-        spacing: 0
-
-        Item {
-            // Provide indentation for child FormLayout
-            implicitWidth: Application.layoutDirection === Qt.RightToLeft ? magnifierRadioButton.contentItem.rightPadding : magnifierRadioButton.contentItem.leftPadding
-        }
-
-        Kirigami.FormLayout {
-            id: zoomLayout
-
-            twinFormLayouts: magnifierLayout
-            wideMode: pageLayout.wideMode
-
-            enabled: kcm.zoomMagnifierSettings.zoom
-
-            QQC2.SpinBox {
-                id: zoomPixelGridZoomSpinBox
-                Kirigami.FormData.label: i18nc("@label:spinbox", "Show pixel grid at zoom level:")
-
-                from: toInt(0)
-                to: toInt(100)
-                stepSize: toInt(1)
-
-                validator: IntValidator {
-                    bottom: Math.min(zoomPixelGridZoomSpinBox.from, zoomPixelGridZoomSpinBox.to)
-                    top: Math.max(zoomPixelGridZoomSpinBox.from, zoomPixelGridZoomSpinBox.to)
-                }
-
-                textFromValue: (value, locale) => fromInt(value).toLocaleString(locale, 'f', 2)
-                valueFromText: (text, locale) => Math.round(toInt(Number.fromLocaleString(locale, text)))
-
-                value: toInt(kcm.zoomMagnifierSettings.zoomPixelGridZoom)
-                onValueModified: kcm.zoomMagnifierSettings.zoomPixelGridZoom = fromInt(value)
-
-                function toInt(value: double) : int {
-                    return value * 100;
-                }
-
-                function fromInt(value: int) : double {
-                    return value / 100;
-                }
-
-                KCM.SettingStateBinding {
-                    configObject: kcm.zoomMagnifierSettings
-                    settingName: "ZoomPixelGridZoom"
-                }
+        ColumnLayout {
+            id: modeCol
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+                margins: Kirigami.Units.largeSpacing
             }
+            spacing: Kirigami.Units.mediumSpacing
 
-            QQC2.ComboBox {
-                Kirigami.FormData.label: i18nc("@label:listbox", "Pointer appearance:")
+            // Option 1: Tam ekran
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
 
-                model: [i18nc("@item:inlistbox", "Scale"), i18nc("@item:inlistbox", "Keep"), i18nc("@item:inlistbox", "Hide")]
-                currentIndex: kcm.zoomMagnifierSettings.zoomMousePointer
-                onActivated: (index) => kcm.zoomMagnifierSettings.zoomMousePointer = index
-                visible: kcm.isPlatformX11
-
-                Layout.preferredWidth: Kirigami.Units.gridUnit * 15
-
-                KCM.SettingStateBinding {
-                    configObject: kcm.zoomMagnifierSettings
-                    settingName: "ZoomMousePointer"
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check, enable zoom effect", "Tam Ekran Yakınlaştırma")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Tüm ekran içeriğini fare işaretçisi odaklı olarak büyütür")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
                 }
-            }
 
-            Component {
-                id: mouseTrackingItemDelegate
-
-                QQC2.ItemDelegate {
-                    id: delegate
-
-                    required property string title
-                    required property string description
-
-                    width: parent?.width ?? 0
-
-                    text: delegate.title
-
-                    contentItem: Kirigami.TitleSubtitle {
-                        title: delegate.title
-                        subtitle: delegate.description
-                        font: delegate.font
-                        selected: delegate.highlighted || delegate.down
-                        wrapMode: Text.Wrap
+                QQC2.RadioButton {
+                    id: zoomRadio
+                    QQC2.ButtonGroup.group: effectGroup
+                    checked: kcm.zoomMagnifierSettings.zoom
+                    onToggled: {
+                        kcm.zoomMagnifierSettings.zoom = true;
+                        kcm.zoomMagnifierSettings.magnifier = false;
                     }
                 }
             }
 
-            QQC2.ComboBox {
-                Kirigami.FormData.label: i18nc("@label:listbox", "Pointer tracking:")
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+            }
 
-                delegate: mouseTrackingItemDelegate
-                model: [
-                    {
-                        title: i18nc("@item:inlistbox", "Proportional"),
-                        description: i18nc("@item:inlistbox", "Zoom area moves in sync with pointer"),
-                        settingIndex: 0
-                    },
-                    {
-                        title: i18nc("@item:inlistbox", "Centered"),
-                        description: i18nc("@item:inlistbox", "Pointer stays centered on-screen, except near screen edges"),
-                        settingIndex: 1
-                    },
-                    {
-                        title: i18nc("@item:inlistbox", "Centered (Strict)"),
-                        description: i18nc("@item:inlistbox", "Pointer stays centered on-screen, even near screen edges"),
-                        settingIndex: 4
-                    },
-                    {
-                        title: i18nc("@item:inlistbox", "Push"),
-                        description: i18nc("@item:inlistbox", "Pointer pushes zoom area at screen edges"),
-                        settingIndex: 2
-                    },
-                    {
-                        title: i18nc("@item:inlistbox", "Disabled"),
-                        description: i18nc("@item:inlistbox", "Zoom area doesn't follow pointer"),
-                        settingIndex: 3
+            // Option 2: Bölgeyi büyüt
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check", "Bölgeyi Büyüt (Büyüteç)")
+                        font.weight: Font.DemiBold
                     }
-                ]
-                textRole: "title"
-                currentIndex: model.findIndex(m => m.settingIndex === kcm.zoomMagnifierSettings.zoomMouseTracking)
-                onActivated: index => kcm.zoomMagnifierSettings.zoomMouseTracking = model[index].settingIndex
+                    QQC2.Label {
+                        text: i18n("İmlecin etrafındaki pencere alanını büyüteç gibi büyütür")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
 
-                Layout.preferredWidth: Kirigami.Units.gridUnit * 15
-
-                KCM.SettingStateBinding {
-                    configObject: kcm.zoomMagnifierSettings
-                    settingName: "ZoomMouseTracking"
+                QQC2.RadioButton {
+                    id: magnifierRadio
+                    QQC2.ButtonGroup.group: effectGroup
+                    checked: kcm.zoomMagnifierSettings.magnifier
+                    onToggled: {
+                        kcm.zoomMagnifierSettings.zoom = false;
+                        kcm.zoomMagnifierSettings.magnifier = true;
+                    }
                 }
             }
 
-            QQC2.CheckBox {
-                text: i18nc("@option:check", "Sharpen screen content while zoomed in")
-                checked: kcm.zoomMagnifierSettings.zoomUsePatternUpscaler
-                onCheckedChanged: kcm.zoomMagnifierSettings.zoomUsePatternUpscaler = checked
-
-                KCM.SettingStateBinding {
-                    configObject: kcm.zoomMagnifierSettings
-                    settingName: "ZoomUsePatternUpscaler"
-                }
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
             }
 
-            QQC2.CheckBox {
-                text: i18nc("@option:check", "Enable focus tracking")
-                checked: kcm.zoomMagnifierSettings.zoomEnableFocusTracking
-                onCheckedChanged: kcm.zoomMagnifierSettings.zoomEnableFocusTracking = checked
-                visible: KWindowSystem.isPlatformX11
+            // Option 3: Devre dışı
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
 
-                KCM.SettingStateBinding {
-                    configObject: kcm.zoomMagnifierSettings
-                    settingName: "ZoomEnableFocusTracking"
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check", "Devre Dışı")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Yakınlaştırma ve büyüteç efektlerini kapatır")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
                 }
-            }
 
-            QQC2.CheckBox {
-                text: i18nc("@option:check", "Enable text caret tracking")
-                checked: kcm.zoomMagnifierSettings.zoomEnableTextCaretTracking
-                onCheckedChanged: kcm.zoomMagnifierSettings.zoomEnableTextCaretTracking = checked
-
-                KCM.SettingStateBinding {
-                    configObject: kcm.zoomMagnifierSettings
-                    settingName: "ZoomEnableTextCaretTracking"
+                QQC2.RadioButton {
+                    id: disabledRadio
+                    QQC2.ButtonGroup.group: effectGroup
+                    checked: !(kcm.zoomMagnifierSettings.zoom || kcm.zoomMagnifierSettings.magnifier)
+                    onToggled: {
+                        kcm.zoomMagnifierSettings.zoom = false;
+                        kcm.zoomMagnifierSettings.magnifier = false;
+                    }
                 }
             }
         }
     }
 
-    QQC2.RadioButton {
-        id: magnifierRadioButton
-        QQC2.ButtonGroup.group: effectGroup
-
-        text: i18nc("@option:check, enable magnify effect, following 'Zoom:'", "Magnify region")
-        checked: kcm.zoomMagnifierSettings.magnifier
-        onToggled: { kcm.zoomMagnifierSettings.zoom = false; kcm.zoomMagnifierSettings.magnifier = true; }
-
-        KCM.SettingHighlighter { highlight: !kcm.zoomMagnifierSettings.zoom }
+    // ==========================================
+    // 2. Yakınlaştırma Seçenekleri
+    // ==========================================
+    Kirigami.Heading {
+        level: 4
+        text: i18nc("@title:group", "Yakınlaştırma Seçenekleri")
+        font.weight: Font.DemiBold
+        Layout.leftMargin: Kirigami.Units.smallSpacing
+        visible: kcm.zoomMagnifierSettings.zoom || kcm.zoomMagnifierSettings.magnifier
     }
 
-    RowLayout {
+    Rectangle {
         Layout.fillWidth: true
+        radius: 12
+        color: "#ffffff"
+        border.color: Qt.rgba(0, 0, 0, 0.08)
+        border.width: 1
+        implicitHeight: optionsCol.implicitHeight + Kirigami.Units.largeSpacing * 2
+        visible: kcm.zoomMagnifierSettings.zoom || kcm.zoomMagnifierSettings.magnifier
 
-        spacing: 0
-
-        Item {
-            // Provide indentation for child FormLayout
-            implicitWidth: Application.layoutDirection === Qt.RightToLeft ? magnifierRadioButton.contentItem.rightPadding : magnifierRadioButton.contentItem.leftPadding
-        }
-
-        Kirigami.FormLayout {
-            id: magnifierLayout
-
-            twinFormLayouts: zoomLayout
-            wideMode: pageLayout.wideMode
-
-            enabled: kcm.zoomMagnifierSettings.magnifier
-
-            QQC2.SpinBox {
-                id: magnifierWidthSpinBox
-                Kirigami.FormData.label: i18nc("@label:spinbox", "Width:")
-
-                from: 100
-                to: 2000
-                stepSize: 10
-
-                validator: IntValidator {
-                    bottom: Math.min(magnifierWidthSpinBox.from, magnifierWidthSpinBox.to)
-                    top: Math.max(magnifierWidthSpinBox.from, magnifierWidthSpinBox.to)
-                }
-
-                textFromValue: (value, locale) => { return i18ncp("short for pixel(s)", "%1 px", "%1 px", value); }
-                valueFromText: (text, locale) => { return Number.fromLocaleString(locale, text.replace(i18nc("short for pixel(s)", "px"), "")); }
-
-                value: kcm.zoomMagnifierSettings.magnifierWidth
-                onValueModified: kcm.zoomMagnifierSettings.magnifierWidth = value
-
-                KCM.SettingStateBinding {
-                    configObject: kcm.zoomMagnifierSettings
-                    settingName: "MagnifierWidth"
-                }
+        ColumnLayout {
+            id: optionsCol
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+                margins: Kirigami.Units.largeSpacing
             }
+            spacing: Kirigami.Units.mediumSpacing
 
-            QQC2.SpinBox {
-                id: magnifierHeightSpinBox
-                Kirigami.FormData.label: i18nc("@label:spinbox", "Height:")
+            // Row 1: Yakınlaştırma çarpanı
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
 
-                from: 100
-                to: 2000
-                stepSize: 10
-
-                validator: IntValidator {
-                    bottom: Math.min(magnifierHeightSpinBox.from, magnifierHeightSpinBox.to)
-                    top: Math.max(magnifierHeightSpinBox.from, magnifierHeightSpinBox.to)
-                }
-
-                textFromValue: (value, locale) => { return i18ncp("short for pixel(s)", "%1 px", "%1 px", value); }
-                valueFromText: (text, locale) => { return Number.fromLocaleString(locale, text.replace(i18nc("short for pixel(s)", "px"), "")); }
-
-                value: kcm.zoomMagnifierSettings.magnifierHeight
-                onValueModified: kcm.zoomMagnifierSettings.magnifierHeight = value
-
-                KCM.SettingStateBinding {
-                    configObject: kcm.zoomMagnifierSettings
-                    settingName: "MagnifierHeight"
-                }
-            }
-        }
-    }
-
-    QQC2.RadioButton {
-        id: noneRadioButton
-        QQC2.ButtonGroup.group: effectGroup
-
-        text: i18nc("@option:check, disable zoom/magnify effect", "Disabled")
-        checked: !(kcm.zoomMagnifierSettings.zoom || kcm.zoomMagnifierSettings.magnifier)
-        onToggled: { kcm.zoomMagnifierSettings.zoom = false; kcm.zoomMagnifierSettings.magnifier = false; }
-
-        KCM.SettingHighlighter { highlight: !kcm.zoomMagnifierSettings.zoom }
-    }
-
-    Item {
-        Kirigami.FormData.isSection: true
-    }
-
-    QQC2.SpinBox {
-        id: sharedZoomFactorSpinBox
-        Kirigami.FormData.label: i18nc("@label:spinbox", "Zoom factor:")
-
-        from: toInt(1.05)
-        to: toInt(4)
-        stepSize: toInt(0.05)
-
-        validator: IntValidator {
-            bottom: Math.min(sharedZoomFactorSpinBox.from, sharedZoomFactorSpinBox.to)
-            top: Math.max(sharedZoomFactorSpinBox.from, sharedZoomFactorSpinBox.to)
-        }
-
-        textFromValue: (value, locale) => fromInt(value).toLocaleString(locale, 'f', 2)
-        valueFromText: (text, locale) => Math.round(toInt(Number.fromLocaleString(locale, text)))
-
-        value: toInt(kcm.zoomMagnifierSettings.sharedZoomFactor)
-        onValueModified: kcm.zoomMagnifierSettings.sharedZoomFactor = fromInt(value)
-
-        function toInt(value: double) : int {
-            return value * 20;
-        }
-
-        function fromInt(value: int) : double {
-            return value / 20;
-        }
-
-        KCM.SettingStateBinding {
-            configObject: kcm.zoomMagnifierSettings
-            settingName: "SharedZoomFactor"
-            extraEnabledConditions: kcm.zoomMagnifierSettings.zoom || kcm.zoomMagnifierSettings.magnifier
-        }
-    }
-
-    RowLayout {
-        Kirigami.FormData.label: i18nc("@label", "Scroll gesture modifier keys:")
-
-        spacing: Kirigami.Units.smallSpacing
-
-        Item {
-            // For some reason, here setting enabled directly on
-            // KeySequenceItem does not work, so we wrap it
-            enabled: !kcm.isPlatformX11 && (kcm.zoomMagnifierSettings.zoom || kcm.zoomMagnifierSettings.magnifier)
-
-            implicitWidth: zoomPointerAxisGestureModifiersBox.implicitWidth
-            implicitHeight: zoomPointerAxisGestureModifiersBox.implicitHeight
-
-            KQuickControls.KeySequenceItem {
-                id: zoomPointerAxisGestureModifiersBox
-
-                keySequence: kcm.zoomMagnifierSettings.zoomPointerAxisGestureModifiers
-                onKeySequenceModified: kcm.zoomMagnifierSettings.zoomPointerAxisGestureModifiers = keySequence
-                patterns: KQuickControls.ShortcutPattern.Modifier
-                multiKeyShortcutsAllowed: false
-
-                Connections {
-                    target: kcm.zoomMagnifierSettings
-
-                    // We have to do this because keySequence binding is broken
-                    function onZoomPointerAxisGestureModifiersChanged() {
-                        zoomPointerAxisGestureModifiersBox.keySequence = kcm.zoomMagnifierSettings.zoomPointerAxisGestureModifiers;
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@label:spinbox", "Yakınlaştırma Çarpanı")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Temel büyütme oranını ayarlar (1.05x - 4.00x)")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
                     }
                 }
 
-                KCM.SettingStateBinding {
-                    configObject: kcm.zoomMagnifierSettings
-                    settingName: "ZoomPointerAxisGestureModifiers"
+                QQC2.SpinBox {
+                    id: sharedZoomFactorSpinBox
+                    from: 21
+                    to: 80
+                    stepSize: 1
+                    value: Math.round(kcm.zoomMagnifierSettings.sharedZoomFactor * 20)
+                    textFromValue: (val, loc) => (val / 20).toLocaleString(loc, 'f', 2) + "x"
+                    valueFromText: (txt, loc) => Math.round(Number.fromLocaleString(loc, txt.replace("x", "")) * 20)
+                    onValueModified: kcm.zoomMagnifierSettings.sharedZoomFactor = value / 20
+
+                    KCM.SettingStateBinding {
+                        configObject: kcm.zoomMagnifierSettings
+                        settingName: "SharedZoomFactor"
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+            }
+
+            // Row 2: İşaretçi izlemesi
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@label:listbox", "İşaretçi İzlemesi")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Fare imlecinin yakınlaştırılmış alan içerisindeki hareketi")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.ComboBox {
+                    id: mouseTrackingCombo
+                    model: [
+                        { title: i18nc("@item:inlistbox", "Oransal"), settingIndex: 0 },
+                        { title: i18nc("@item:inlistbox", "Ortalanmış"), settingIndex: 1 },
+                        { title: i18nc("@item:inlistbox", "Ortalanmış (Katı)"), settingIndex: 4 },
+                        { title: i18nc("@item:inlistbox", "İtme"), settingIndex: 2 },
+                        { title: i18nc("@item:inlistbox", "Devre Dışı"), settingIndex: 3 }
+                    ]
+                    textRole: "title"
+                    currentIndex: model.findIndex(m => m.settingIndex === kcm.zoomMagnifierSettings.zoomMouseTracking)
+                    onActivated: index => kcm.zoomMagnifierSettings.zoomMouseTracking = model[index].settingIndex
+
+                    KCM.SettingStateBinding {
+                        configObject: kcm.zoomMagnifierSettings
+                        settingName: "ZoomMouseTracking"
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+            }
+
+            // Row 3: Piksel ızgarası düzeyi
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@label:spinbox", "Piksel Izgarası Gösterme Düzeyi")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Bu yakınlaştırma düzeyinden itibaren piksel çizgilerini göster")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.SpinBox {
+                    id: zoomPixelGridSpinBox
+                    from: 0
+                    to: 10000
+                    stepSize: 100
+                    value: Math.round(kcm.zoomMagnifierSettings.zoomPixelGridZoom * 100)
+                    textFromValue: (val, loc) => (val / 100).toLocaleString(loc, 'f', 2)
+                    valueFromText: (txt, loc) => Math.round(Number.fromLocaleString(loc, txt) * 100)
+                    onValueModified: kcm.zoomMagnifierSettings.zoomPixelGridZoom = value / 100
+
+                    KCM.SettingStateBinding {
+                        configObject: kcm.zoomMagnifierSettings
+                        settingName: "ZoomPixelGridZoom"
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+            }
+
+            // Row 4: Ekran içeriğini keskinleştir
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check", "Ekran İçeriğini Keskinleştir")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Yakınlaştırıldığında piksel netliğini artıran özel filtre uygula")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.Switch {
+                    checked: kcm.zoomMagnifierSettings.zoomUsePatternUpscaler
+                    onToggled: kcm.zoomMagnifierSettings.zoomUsePatternUpscaler = checked
+
+                    KCM.SettingStateBinding {
+                        configObject: kcm.zoomMagnifierSettings
+                        settingName: "ZoomUsePatternUpscaler"
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+            }
+
+            // Row 5: Metin imlecini izle
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check", "Metin İmlecini İzle")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Yazı yazarken odağı metin imlecine göre otomatik kaydır")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.Switch {
+                    checked: kcm.zoomMagnifierSettings.zoomEnableTextCaretTracking
+                    onToggled: kcm.zoomMagnifierSettings.zoomEnableTextCaretTracking = checked
+
+                    KCM.SettingStateBinding {
+                        configObject: kcm.zoomMagnifierSettings
+                        settingName: "ZoomEnableTextCaretTracking"
+                    }
+                }
+            }
+
+            // Büyüteç boyutları (sadece büyüteç etkinse)
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+                visible: kcm.zoomMagnifierSettings.magnifier
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+                visible: kcm.zoomMagnifierSettings.magnifier
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@label:spinbox", "Büyüteç Genişliği")
+                        font.weight: Font.DemiBold
+                    }
+                }
+
+                QQC2.SpinBox {
+                    from: 100
+                    to: 2000
+                    stepSize: 10
+                    value: kcm.zoomMagnifierSettings.magnifierWidth
+                    textFromValue: val => val + " px"
+                    onValueModified: kcm.zoomMagnifierSettings.magnifierWidth = value
+
+                    KCM.SettingStateBinding {
+                        configObject: kcm.zoomMagnifierSettings
+                        settingName: "MagnifierWidth"
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+                visible: kcm.zoomMagnifierSettings.magnifier
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+                visible: kcm.zoomMagnifierSettings.magnifier
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@label:spinbox", "Büyüteç Yüksekliği")
+                        font.weight: Font.DemiBold
+                    }
+                }
+
+                QQC2.SpinBox {
+                    from: 100
+                    to: 2000
+                    stepSize: 10
+                    value: kcm.zoomMagnifierSettings.magnifierHeight
+                    textFromValue: val => val + " px"
+                    onValueModified: kcm.zoomMagnifierSettings.magnifierHeight = value
+
+                    KCM.SettingStateBinding {
+                        configObject: kcm.zoomMagnifierSettings
+                        settingName: "MagnifierHeight"
+                    }
                 }
             }
         }
+    }
 
-        Kirigami.ContextualHelpButton {
-            visible: kcm.isPlatformX11
-            toolTipText: i18nc("@info:tooltip, indicates feature unavailable on X11", "Zoom scroll gestures are only available on Wayland.")
+    // ==========================================
+    // 3. Kısayollar ve Sarma Eylemleri
+    // ==========================================
+    Kirigami.Heading {
+        level: 4
+        text: i18nc("@title:group", "Kısayollar ve Sarma Eylemleri")
+        font.weight: Font.DemiBold
+        Layout.leftMargin: Kirigami.Units.smallSpacing
+        visible: kcm.zoomMagnifierSettings.zoom || kcm.zoomMagnifierSettings.magnifier
+    }
+
+    Rectangle {
+        Layout.fillWidth: true
+        radius: 12
+        color: "#ffffff"
+        border.color: Qt.rgba(0, 0, 0, 0.08)
+        border.width: 1
+        implicitHeight: shortcutCol.implicitHeight + Kirigami.Units.largeSpacing * 2
+        visible: kcm.zoomMagnifierSettings.zoom || kcm.zoomMagnifierSettings.magnifier
+
+        ColumnLayout {
+            id: shortcutCol
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+                margins: Kirigami.Units.largeSpacing
+            }
+            spacing: Kirigami.Units.mediumSpacing
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@label", "Sarma Hareketini Niteleyici Düğmeler")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Niteleyici tuşa basılı tutarken fare tekerleğini kaydırarak yakınlaştırın")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                KQuickControls.KeySequenceItem {
+                    id: zoomPointerAxisGestureModifiersBox
+                    keySequence: kcm.zoomMagnifierSettings.zoomPointerAxisGestureModifiers
+                    onKeySequenceModified: kcm.zoomMagnifierSettings.zoomPointerAxisGestureModifiers = keySequence
+                    patterns: KQuickControls.ShortcutPattern.Modifier
+                    multiKeyShortcutsAllowed: false
+
+                    Connections {
+                        target: kcm.zoomMagnifierSettings
+                        function onZoomPointerAxisGestureModifiersChanged() {
+                            zoomPointerAxisGestureModifiersBox.keySequence = kcm.zoomMagnifierSettings.zoomPointerAxisGestureModifiers;
+                        }
+                    }
+
+                    KCM.SettingStateBinding {
+                        configObject: kcm.zoomMagnifierSettings
+                        settingName: "ZoomPointerAxisGestureModifiers"
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@action:button", "Klavye Kısayolları")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Yakınlaştırma ve büyütmeyi klavyeden denetlemek için tuş atayın")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.Button {
+                    text: i18nc("@action:button", "Kısayolları Yapılandır…")
+                    icon.name: "preferences-desktop-keyboard-shortcut"
+                    onClicked: kcm.configureZoomMagnifyShortcuts()
+                }
+            }
         }
-    }
-
-    QQC2.Label {
-        enabled: !kcm.isPlatformX11 && zoomPointerAxisGestureModifiersBox.keySequence != ""
-        text: i18nc("@label Hint for scroll gestures", "Scroll while modifier keys are pressed to zoom")
-        textFormat: Text.PlainText
-        wrapMode: Text.Wrap
-        font: Kirigami.Theme.smallFont
-    }
-
-    Item {
-        Kirigami.FormData.isSection: true
-    }
-
-    QQC2.Button {
-        text: i18nc("@action:button", "Configure Shortcuts…")
-        icon.name: "preferences-desktop-keyboard-shortcut"
-
-        enabled: (kcm.zoomMagnifierSettings.zoom || kcm.zoomMagnifierSettings.magnifier)
-
-        onClicked: kcm.configureZoomMagnifyShortcuts()
-    }
-
-    QQC2.Label {
-        enabled: (kcm.zoomMagnifierSettings.zoom || kcm.zoomMagnifierSettings.magnifier)
-        text: i18nc("@label Hint for zoom/magnify effect usage", "Use shortcuts to control zoom")
-        textFormat: Text.PlainText
-        wrapMode: Text.Wrap
-        font: Kirigami.Theme.smallFont
     }
 }

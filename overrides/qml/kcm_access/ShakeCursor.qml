@@ -1,7 +1,6 @@
 /*
-    SPDX-FileCopyrightText: 2024 Vlad Zahorodnii <vlad.zahorodnii@kde.org>
-
-    SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+    SPDX-FileCopyrightText: 2026 Project Ro KDE
+    SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only
 */
 
 import QtQuick
@@ -10,58 +9,115 @@ import QtQuick.Controls as QQC2
 import org.kde.kcmutils as KCMUtils
 import org.kde.kirigami as Kirigami
 
-Kirigami.FormLayout {
-    QQC2.CheckBox {
-        Kirigami.FormData.label: i18nc("@label", "Shake pointer to find it:")
-        text: i18nc("@option check, Enable shake pointer effect", "Enable")
+ColumnLayout {
+    id: root
+    spacing: Kirigami.Units.largeSpacing
+    Layout.fillWidth: true
 
-        KCMUtils.SettingStateBinding {
-            configObject: kcm.shakeCursorSettings
-            settingName: "ShakeCursor"
-        }
-
-        checked: kcm.shakeCursorSettings.shakeCursor
-        onToggled: kcm.shakeCursorSettings.shakeCursor = checked
+    Kirigami.Heading {
+        level: 4
+        text: i18nc("@title:group", "İşaretçiyi Salla Efekti")
+        font.weight: Font.DemiBold
+        Layout.leftMargin: Kirigami.Units.smallSpacing
     }
 
-    ColumnLayout {
-        Kirigami.FormData.label: i18nc("@label Pointer magnification level", "Magnification:")
-        Kirigami.FormData.buddyFor: magnificationSlider
-        spacing: Kirigami.Units.smallSpacing
+    Rectangle {
+        Layout.fillWidth: true
+        radius: 12
+        color: "#ffffff"
+        border.color: Qt.rgba(0, 0, 0, 0.08)
+        border.width: 1
+        implicitHeight: shakeCol.implicitHeight + Kirigami.Units.largeSpacing * 2
 
-        QQC2.Slider {
-            id: magnificationSlider
-
-            Layout.preferredWidth: Kirigami.Units.gridUnit * 15
-
-            KCMUtils.SettingStateBinding {
-                configObject: kcm.shakeCursorSettings
-                settingName: "ShakeCursorMagnification"
-                extraEnabledConditions: kcm.shakeCursorSettings.shakeCursor
+        ColumnLayout {
+            id: shakeCol
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+                margins: Kirigami.Units.largeSpacing
             }
+            spacing: Kirigami.Units.mediumSpacing
 
-            from: 2
-            to: 10
-            stepSize: 1
-            Kirigami.StyleHints.tickMarkStepSize: 1
-            snapMode: QQC2.Slider.SnapAlways
-            value: kcm.shakeCursorSettings.shakeCursorMagnification
-            onMoved: kcm.shakeCursorSettings.shakeCursorMagnification = value
-        }
-
-        RowLayout {
-            spacing: 0
-
-            QQC2.Label {
-                text: i18nc("@label Normal pointer size", "Normal")
-                textFormat: Text.PlainText
-            }
-            Item {
+            // Row 1: Etkinleştir
+            RowLayout {
                 Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check", "Bulmak İçin İşaretçiyi Salla")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Fareyi hızlıca salladığınızda işaretçiyi anlık olarak büyüterek bulmanızı kolaylaştırır")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.Switch {
+                    checked: kcm.shakeCursorSettings.shakeCursor
+                    onToggled: kcm.shakeCursorSettings.shakeCursor = checked
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.shakeCursorSettings
+                        settingName: "ShakeCursor"
+                    }
+                }
             }
-            QQC2.Label {
-                text: i18nc("@label Large pointer size", "Large")
-                textFormat: Text.PlainText
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+                visible: kcm.shakeCursorSettings.shakeCursor
+            }
+
+            // Row 2: Büyütme Oranı
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+                visible: kcm.shakeCursorSettings.shakeCursor
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@label", "Büyütme Düzeyi")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Sallama anında imlecin ulaşacağı maksimum büyüklük")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.Slider {
+                    id: magnificationSlider
+                    Layout.preferredWidth: Kirigami.Units.gridUnit * 12
+                    from: 2
+                    to: 10
+                    stepSize: 1
+                    snapMode: QQC2.Slider.SnapAlways
+                    value: kcm.shakeCursorSettings.shakeCursorMagnification
+                    onMoved: kcm.shakeCursorSettings.shakeCursorMagnification = value
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.shakeCursorSettings
+                        settingName: "ShakeCursorMagnification"
+                        extraEnabledConditions: kcm.shakeCursorSettings.shakeCursor
+                    }
+                }
+
+                QQC2.Label {
+                    text: magnificationSlider.value + "x"
+                    font.weight: Font.DemiBold
+                    Layout.minimumWidth: Kirigami.Units.gridUnit * 2
+                }
             }
         }
     }

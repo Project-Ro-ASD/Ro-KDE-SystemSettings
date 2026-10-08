@@ -155,7 +155,10 @@ Item {
             value: root.implicitWidth
             restoreMode: Binding.RestoreBinding
         }
-        anchors.horizontalCenter: root.horizontalCenter
+        anchors.left: root.left
+        anchors.right: root.right
+        anchors.leftMargin: Platform.Units.largeSpacing
+        anchors.rightMargin: Platform.Units.largeSpacing
 
         property var reverseTwins: []
         property var knownItems: []
@@ -304,11 +307,13 @@ Item {
         id: cardBg
         z: -1
         anchors {
-            horizontalCenter: lay.horizontalCenter
+            left: root.left
+            right: root.right
+            leftMargin: Platform.Units.largeSpacing
+            rightMargin: Platform.Units.largeSpacing
             top: lay.top
             topMargin: -Platform.Units.largeSpacing * 1.5
         }
-        width: Math.min(root.width - Platform.Units.largeSpacing * 2, Math.max(lay.width, lay.implicitWidth) + Platform.Units.largeSpacing * 3)
         height: lay.implicitHeight + Platform.Units.largeSpacing * 3
         radius: 12
         color: "#ffffff"

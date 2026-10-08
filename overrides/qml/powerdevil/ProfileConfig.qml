@@ -397,38 +397,52 @@ ColumnLayout {
                 }
             }
 
-            Kirigami.FormLayout {
-                Layout.fillWidth: true
-            //
-            // Display and Brightness
-        
-            
-        
-            RowLayout {
-                Kirigami.FormData.label: i18nc("@label:slider Brightness level", "Change scr&een brightness:")
-                Kirigami.FormData.buddyFor: displayBrightnessCheck
-        
+            // Display Brightness (Full Card Width)
+            ColumnLayout {
                 visible: kcm.supportedActions["ScreenBrightnessControl"] === true
                 Layout.fillWidth: true
                 spacing: Kirigami.Units.smallSpacing
-        
-                QQC2.CheckBox {
-                    id: displayBrightnessCheck
-        
-                    KCM.SettingStateBinding {
-                        configObject: profileSettings
-                        settingName: "UseProfileSpecificDisplayBrightness"
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: Kirigami.Units.smallSpacing
+
+                    QQC2.CheckBox {
+                        id: displayBrightnessCheck
+                        text: i18nc("@option:check", "Change screen brightness")
+                        font.weight: Font.DemiBold
+
+                        KCM.SettingStateBinding {
+                            configObject: profileSettings
+                            settingName: "UseProfileSpecificDisplayBrightness"
+                        }
+                        checked: profileSettings.useProfileSpecificDisplayBrightness
+                        onToggled: { profileSettings.useProfileSpecificDisplayBrightness = checked; }
                     }
-                    checked: profileSettings.useProfileSpecificDisplayBrightness
-                    onToggled: { profileSettings.useProfileSpecificDisplayBrightness = checked; }
+
+                    Item { Layout.fillWidth: true }
+
+                    QQC2.Label {
+                        enabled: displayBrightnessCheck.checked
+                        text: formatPercentageText(displayBrightnessSlider.value)
+                        font.weight: Font.DemiBold
+                        color: Kirigami.Theme.highlightColor
+                        Layout.preferredWidth: displayBrightnessPercentageMetrics.width
+                    }
+                    TextMetrics {
+                        id: displayBrightnessPercentageMetrics
+                        text: formatPercentageText(100)
+                    }
                 }
+
                 QQC2.Slider {
                     id: displayBrightnessSlider
                     Layout.fillWidth: true
                     from: 1
                     to: 100
                     stepSize: 1
-        
+                    enabled: displayBrightnessCheck.checked
+
                     KCM.SettingStateBinding {
                         configObject: profileSettings
                         settingName: "DisplayBrightness"
@@ -437,16 +451,17 @@ ColumnLayout {
                     value: profileSettings.displayBrightness
                     onMoved: { profileSettings.displayBrightness = value; }
                 }
-                QQC2.Label {
-                    enabled: displayBrightnessCheck.checked
-                    text: formatPercentageText(displayBrightnessSlider.value)
-                    Layout.preferredWidth: displayBrightnessPercentageMetrics.width
-                }
-                TextMetrics {
-                    id: displayBrightnessPercentageMetrics
-                    text: formatPercentageText(100)
-                }
             }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+                visible: kcm.supportedActions["ScreenBrightnessControl"] === true
+            }
+
+            Kirigami.FormLayout {
+                Layout.fillWidth: true
         
             TimeDurationComboBox {
                 id: dimDisplayIdleTimeoutCombo
@@ -648,32 +663,60 @@ ColumnLayout {
                     }
                 }
             }
-        
-            RowLayout {
-                Kirigami.FormData.label: i18nc("@label:slider Brightness level", "Change key&board brightness:")
-                Kirigami.FormData.buddyFor: keyboardBrightnessCheck
-        
+        }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+                visible: kcm.supportedActions["KeyboardBrightnessControl"] === true
+            }
+
+            ColumnLayout {
                 visible: kcm.supportedActions["KeyboardBrightnessControl"] === true
                 Layout.fillWidth: true
                 spacing: Kirigami.Units.smallSpacing
-        
-                QQC2.CheckBox {
-                    id: keyboardBrightnessCheck
-        
-                    KCM.SettingStateBinding {
-                        configObject: profileSettings
-                        settingName: "UseProfileSpecificKeyboardBrightness"
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: Kirigami.Units.smallSpacing
+
+                    QQC2.CheckBox {
+                        id: keyboardBrightnessCheck
+                        text: i18nc("@option:check", "Change keyboard brightness")
+                        font.weight: Font.DemiBold
+
+                        KCM.SettingStateBinding {
+                            configObject: profileSettings
+                            settingName: "UseProfileSpecificKeyboardBrightness"
+                        }
+                        checked: profileSettings.useProfileSpecificKeyboardBrightness
+                        onToggled: { profileSettings.useProfileSpecificKeyboardBrightness = checked; }
                     }
-                    checked: profileSettings.useProfileSpecificKeyboardBrightness
-                    onToggled: { profileSettings.useProfileSpecificKeyboardBrightness = checked; }
+
+                    Item { Layout.fillWidth: true }
+
+                    QQC2.Label {
+                        enabled: keyboardBrightnessCheck.checked
+                        text: formatPercentageText(keyboardBrightnessSlider.value)
+                        font.weight: Font.DemiBold
+                        color: Kirigami.Theme.highlightColor
+                        Layout.preferredWidth: keyboardBrightnessPercentageMetrics.width
+                    }
+                    TextMetrics {
+                        id: keyboardBrightnessPercentageMetrics
+                        text: formatPercentageText(100)
+                    }
                 }
+
                 QQC2.Slider {
                     id: keyboardBrightnessSlider
                     Layout.fillWidth: true
                     from: 0
                     to: 100
                     stepSize: 1
-        
+                    enabled: keyboardBrightnessCheck.checked
+
                     KCM.SettingStateBinding {
                         configObject: profileSettings
                         settingName: "KeyboardBrightness"
@@ -682,20 +725,6 @@ ColumnLayout {
                     value: profileSettings.keyboardBrightness
                     onMoved: { profileSettings.keyboardBrightness = value; }
                 }
-                QQC2.Label {
-                    enabled: keyboardBrightnessCheck.checked
-                    text: formatPercentageText(keyboardBrightnessSlider.value)
-                    Layout.preferredWidth: keyboardBrightnessPercentageMetrics.width
-                }
-                TextMetrics {
-                    id: keyboardBrightnessPercentageMetrics
-                    text: formatPercentageText(100)
-                }
-            }
-        
-            //
-            // Advanced customization options
-        
             }
         }
     }

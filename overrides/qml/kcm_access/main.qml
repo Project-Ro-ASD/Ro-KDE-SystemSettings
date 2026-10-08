@@ -147,7 +147,7 @@ KCMUtils.AbstractKCM {
             Layout.fillHeight: true
             Kirigami.Theme.colorSet: Kirigami.Theme.Window
             Kirigami.Theme.inherit: false
-            color: "transparent"
+            color: "#f6f8fa"
 
             QQC2.ScrollView {
                 id: scrollView
@@ -159,48 +159,33 @@ KCMUtils.AbstractKCM {
 
                     width: scrollView.availableWidth
                     height: Math.max(implicitHeight, scrollView.availableHeight)
-                    implicitHeight: contentCard.implicitHeight + margins * 2
+                    implicitHeight: stackLayout.implicitHeight + margins * 2
 
-                    Rectangle {
-                        id: contentCard
+                    StackLayout {
+                        id: stackLayout
                         anchors {
                             left: parent.left
                             right: parent.right
                             top: parent.top
                             margins: containerItem.margins
                         }
-                        implicitHeight: stackLayout.implicitHeight + Kirigami.Units.largeSpacing * 2
-                        radius: 12
-                        color: "#ffffff"
-                        border.color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.08)
-                        border.width: 1
 
-                        StackLayout {
-                            id: stackLayout
-                            anchors {
-                                left: parent.left
-                                right: parent.right
-                                top: parent.top
-                                margins: Kirigami.Units.largeSpacing
-                            }
+                        currentIndex: listView.currentIndex
+                        implicitHeight: (children.length > 0 && children[currentIndex]) ? children[currentIndex].implicitHeight : 500
 
-                            currentIndex: listView.currentIndex
-                            implicitHeight: (children.length > 0 && children[currentIndex]) ? children[currentIndex].implicitHeight : 500
-
-                            ZoomMagnifier { Layout.fillWidth: true }
-                            Bell { Layout.fillWidth: true }
-                            ModifierKeys { Layout.fillWidth: true }
-                            KeyboardFilters { Layout.fillWidth: true }
-                            MouseNavigation { Layout.fillWidth: true }
-                            ActivationShortcuts { Layout.fillWidth: true }
-                            ScreenReader { Layout.fillWidth: true }
-                            ColorblindnessCorrection { Layout.fillWidth: true }
-                            Invert { Layout.fillWidth: true }
-                            ShakeCursor { Layout.fillWidth: true }
+                        ZoomMagnifier { Layout.fillWidth: true }
+                        Bell { Layout.fillWidth: true }
+                        ModifierKeys { Layout.fillWidth: true }
+                        KeyboardFilters { Layout.fillWidth: true }
+                        MouseNavigation { Layout.fillWidth: true }
+                        ActivationShortcuts { Layout.fillWidth: true }
+                        ScreenReader { Layout.fillWidth: true }
+                        ColorblindnessCorrection { Layout.fillWidth: true }
+                        Invert { Layout.fillWidth: true }
+                        ShakeCursor { Layout.fillWidth: true }
                     }
                 }
             }
         }
     }
-}
 }

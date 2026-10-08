@@ -42,6 +42,23 @@
     <qresource prefix="/kcm/kcm_updates">
         <file alias="main.qml">kcm_updates/main.qml</file>
     </qresource>
+    <qresource prefix="/kcm/kcm_workspace">
+        <file alias="main.qml">kcm_workspace/main.qml</file>
+    </qresource>
+    <qresource prefix="/kcm/kcm_plasmalogin">
+        <file alias="main.qml">kcm_plasmalogin/main.qml</file>
+    </qresource>
+    <qresource prefix="/kcm/kcm_notifications">
+        <file alias="main.qml">kcm_notifications/main.qml</file>
+    </qresource>
+    <qresource prefix="/kcm/kcm_componentchooser">
+        <file alias="main.qml">kcm_componentchooser/main.qml</file>
+    </qresource>
+    <qresource prefix="/kcm/kcm_pulseaudio">
+        <file alias="main.qml">kcm_pulseaudio/main.qml</file>
+        <file alias="DeviceListItem.qml">kcm_pulseaudio/DeviceListItem.qml</file>
+        <file alias="StreamListItem.qml">kcm_pulseaudio/StreamListItem.qml</file>
+    </qresource>
     <qresource prefix="/qt/qml/org/kde/kirigami/forms/private/cards">
         <file alias="FormGroup.qml">forms/private/cards/FormGroup.qml</file>
         <file alias="FormEntry.qml">forms/private/cards/FormEntry.qml</file>

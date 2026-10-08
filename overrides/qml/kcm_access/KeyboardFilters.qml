@@ -1,182 +1,358 @@
 /*
-    SPDX-FileCopyrightText: 2018 Tomaz Canabrava <tcanabrava@kde.org>
-
-    SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+    SPDX-FileCopyrightText: 2026 Project Ro KDE
+    SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only
 */
 
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as QQC2
 import org.kde.kcmutils as KCMUtils
-
 import org.kde.kirigami as Kirigami
-import org.kde.plasma.access.kcm
 
-Kirigami.FormLayout {
-    RowLayout {
-        spacing: Kirigami.Units.smallSpacing
-        Kirigami.FormData.label: i18nc("@title:group prefix", "Slow keys:")
-        Kirigami.FormData.buddyFor: slowKeys
-        QQC2.CheckBox {
-            id: slowKeys
+ColumnLayout {
+    id: root
+    spacing: Kirigami.Units.largeSpacing
+    Layout.fillWidth: true
 
-            text: i18nc("@option:check Enable slow keys", "Enable")
+    // ==========================================
+    // 1. Yavaş Tuşlar
+    // ==========================================
+    Kirigami.Heading {
+        level: 4
+        text: i18nc("@title:group", "Yavaş Tuşlar")
+        font.weight: Font.DemiBold
+        Layout.leftMargin: Kirigami.Units.smallSpacing
+    }
 
-            KCMUtils.SettingStateBinding {
-                configObject: kcm.keyboardFiltersSettings
-                settingName: "SlowKeys"
+    Rectangle {
+        Layout.fillWidth: true
+        radius: 12
+        color: "#ffffff"
+        border.color: Qt.rgba(0, 0, 0, 0.08)
+        border.width: 1
+        implicitHeight: slowCol.implicitHeight + Kirigami.Units.largeSpacing * 2
+
+        ColumnLayout {
+            id: slowCol
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+                margins: Kirigami.Units.largeSpacing
+            }
+            spacing: Kirigami.Units.mediumSpacing
+
+            // Row 1: Yavaş tuşlar aç/kapa
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check", "Yavaş Tuşları Etkinleştir")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Tuşların algılanması için belirli bir süre basılı tutulması gerekir")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.Switch {
+                    checked: kcm.keyboardFiltersSettings.slowKeys
+                    onToggled: kcm.keyboardFiltersSettings.slowKeys = checked
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.keyboardFiltersSettings
+                        settingName: "SlowKeys"
+                    }
+                }
             }
 
-            checked: kcm.keyboardFiltersSettings.slowKeys
-            onToggled: kcm.keyboardFiltersSettings.slowKeys = checked
-        }
-        Kirigami.ContextualHelpButton {
-            toolTipText: i18nc("@info:tooltip", "For a key to be accepted, it has to be held until the set amount of time. Useful if you accidentally type more than one key at a time or have difficulty pressing the key you want the first time.")
-        }
-    }
-
-    QQC2.SpinBox {
-        id: slowKeyDelay
-
-        Kirigami.FormData.label: i18nc("@label:spinbox Slow keys Delay", "Delay:")
-
-        KCMUtils.SettingStateBinding {
-            configObject: kcm.keyboardFiltersSettings
-            settingName: "SlowKeysDelay"
-            extraEnabledConditions: kcm.keyboardFiltersSettings.slowKeys
-        }
-
-        from: 100
-        to: 10000
-
-        value: kcm.keyboardFiltersSettings.slowKeysDelay
-        onValueModified: kcm.keyboardFiltersSettings.slowKeysDelay = value
-
-        textFromValue: function(value, locale) {
-            return i18ncp("@label:valuesuffix %1 is slow keys delay", "%1 ms", "%1 ms", value)
-        }
-
-        validator: IntValidatorWithSuffix {
-            bottom: slowKeyDelay.from
-            top: slowKeyDelay.to
-        }
-
-        valueFromText: (text, locale) => {
-            return Number.fromLocaleString(locale, text.replace(i18ncp("@label:valuesuffix short for millisecond(s)", "ms", "ms"), ""))
-        }
-    }
-    Item {
-        Kirigami.FormData.isSection: true
-    }
-    QQC2.CheckBox {
-        id: slowKeysPressBeep
-
-        Kirigami.FormData.label: i18nc("@title:group prefix for checkbox group", "Ring system bell:")
-        text: i18nc("@option:check Use system bell when a key is pressed", "when any key is &pressed")
-
-        KCMUtils.SettingStateBinding {
-            configObject: kcm.keyboardFiltersSettings
-            settingName: "SlowKeysPressBeep"
-            extraEnabledConditions: kcm.keyboardFiltersSettings.slowKeys
-        }
-
-        checked: kcm.keyboardFiltersSettings.slowKeysPressBeep
-        onToggled: kcm.keyboardFiltersSettings.slowKeysPressBeep = checked
-    }
-    QQC2.CheckBox {
-        id: slowKeysAcceptBeep
-
-        text: i18nc("@option:check Use system bell when a key is accepted", "when any key is &accepted")
-
-        KCMUtils.SettingStateBinding {
-            configObject: kcm.keyboardFiltersSettings
-            settingName: "SlowKeysAcceptBeep"
-            extraEnabledConditions: kcm.keyboardFiltersSettings.slowKeys
-        }
-
-        checked: kcm.keyboardFiltersSettings.slowKeysAcceptBeep
-        onToggled: kcm.keyboardFiltersSettings.slowKeysAcceptBeep = checked
-    }
-    QQC2.CheckBox {
-        id: slowKeysRejectBeep
-
-        text: i18nc("@option:check Use system bell when a key is rejected", "when any key is &rejected")
-
-        KCMUtils.SettingStateBinding {
-            configObject: kcm.keyboardFiltersSettings
-            settingName: "SlowKeysRejectBeep"
-            extraEnabledConditions: kcm.keyboardFiltersSettings.slowKeys
-        }
-
-        checked: kcm.keyboardFiltersSettings.slowKeysRejectBeep
-        onToggled: kcm.keyboardFiltersSettings.slowKeysRejectBeep = checked
-    }
-    Item {
-        Kirigami.FormData.isSection: true
-    }
-    RowLayout {
-        spacing: Kirigami.Units.smallSpacing
-        Kirigami.FormData.label: i18nc("@title:group prefix", "Bounce keys:")
-        Kirigami.FormData.buddyFor: bounceKeys
-        QQC2.CheckBox {
-            id: bounceKeys
-
-            text: i18nc("@option:check Bounce keys enable", "Enable");
-
-            KCMUtils.SettingStateBinding {
-                configObject: kcm.keyboardFiltersSettings
-                settingName: "BounceKeys"
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+                visible: kcm.keyboardFiltersSettings.slowKeys
             }
 
-            checked: kcm.keyboardFiltersSettings.bounceKeys
-            onToggled: kcm.keyboardFiltersSettings.bounceKeys = checked
-        }
-        Kirigami.ContextualHelpButton {
-            toolTipText: i18nc("@info:tooltip", "Ignore rapid, repeated keypresses of the same key. Useful if you have hand tremors that cause you to press a key multiple times when you only intend to press once.")
+            // Row 2: Gecikme süresi
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+                visible: kcm.keyboardFiltersSettings.slowKeys
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@label:spinbox", "Kabul Gecikmesi")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Tuşun basılmış sayılması için gereken süre (ms)")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.SpinBox {
+                    from: 100
+                    to: 10000
+                    stepSize: 50
+                    value: kcm.keyboardFiltersSettings.slowKeysDelay
+                    onValueModified: kcm.keyboardFiltersSettings.slowKeysDelay = value
+                    textFromValue: val => val + " ms"
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.keyboardFiltersSettings
+                        settingName: "SlowKeysDelay"
+                        extraEnabledConditions: kcm.keyboardFiltersSettings.slowKeys
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+                visible: kcm.keyboardFiltersSettings.slowKeys
+            }
+
+            // Row 3: Tuşa basıldığında ses
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+                visible: kcm.keyboardFiltersSettings.slowKeys
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check", "Tuşa Basıldığında Ses Çal")
+                        font.weight: Font.DemiBold
+                    }
+                }
+
+                QQC2.Switch {
+                    checked: kcm.keyboardFiltersSettings.slowKeysPressBeep
+                    onToggled: kcm.keyboardFiltersSettings.slowKeysPressBeep = checked
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.keyboardFiltersSettings
+                        settingName: "SlowKeysPressBeep"
+                        extraEnabledConditions: kcm.keyboardFiltersSettings.slowKeys
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+                visible: kcm.keyboardFiltersSettings.slowKeys
+            }
+
+            // Row 4: Tuş kabul edildiğinde ses
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+                visible: kcm.keyboardFiltersSettings.slowKeys
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check", "Tuş Kabul Edildiğinde Ses Çal")
+                        font.weight: Font.DemiBold
+                    }
+                }
+
+                QQC2.Switch {
+                    checked: kcm.keyboardFiltersSettings.slowKeysAcceptBeep
+                    onToggled: kcm.keyboardFiltersSettings.slowKeysAcceptBeep = checked
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.keyboardFiltersSettings
+                        settingName: "SlowKeysAcceptBeep"
+                        extraEnabledConditions: kcm.keyboardFiltersSettings.slowKeys
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+                visible: kcm.keyboardFiltersSettings.slowKeys
+            }
+
+            // Row 5: Tuş reddedildiğinde ses
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+                visible: kcm.keyboardFiltersSettings.slowKeys
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check", "Tuş Reddedildiğinde Ses Çal")
+                        font.weight: Font.DemiBold
+                    }
+                }
+
+                QQC2.Switch {
+                    checked: kcm.keyboardFiltersSettings.slowKeysRejectBeep
+                    onToggled: kcm.keyboardFiltersSettings.slowKeysRejectBeep = checked
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.keyboardFiltersSettings
+                        settingName: "SlowKeysRejectBeep"
+                        extraEnabledConditions: kcm.keyboardFiltersSettings.slowKeys
+                    }
+                }
+            }
         }
     }
 
-    QQC2.SpinBox {
-        id: bounceKeysDelay
-
-        Kirigami.FormData.label: i18nc("@label:spinbox Bounce keys delay", "Delay:")
-
-        KCMUtils.SettingStateBinding {
-            configObject: kcm.keyboardFiltersSettings
-            settingName: "BounceKeysDelay"
-            extraEnabledConditions: kcm.keyboardFiltersSettings.bounceKeys
-        }
-
-        from: 5
-        to: 10000
-
-        value: kcm.keyboardFiltersSettings.bounceKeysDelay
-        onValueModified: kcm.keyboardFiltersSettings.bounceKeysDelay = value
-
-        textFromValue: function(value, locale) {
-            return i18ncp("@label:valuesuffix %1 is bounce keys delay", "%1 ms", "%1 ms", value)
-        }
-        validator: IntValidatorWithSuffix {
-            bottom: bounceKeysDelay.from
-            top: bounceKeysDelay.to
-        }
-        valueFromText: (text, locale) => {
-            return Number.fromLocaleString(locale, text.replace(i18ncp("@label:valuesuffix short for millisecond(s)", "ms", "ms"), ""))
-        }
+    // ==========================================
+    // 2. Sıçrama Tuşları
+    // ==========================================
+    Kirigami.Heading {
+        level: 4
+        text: i18nc("@title:group", "Sıçrama Tuşları")
+        font.weight: Font.DemiBold
+        Layout.leftMargin: Kirigami.Units.smallSpacing
     }
 
-    QQC2.CheckBox {
-        id: bounceKeysRejectBeep
+    Rectangle {
+        Layout.fillWidth: true
+        radius: 12
+        color: "#ffffff"
+        border.color: Qt.rgba(0, 0, 0, 0.08)
+        border.width: 1
+        implicitHeight: bounceCol.implicitHeight + Kirigami.Units.largeSpacing * 2
 
-        text: i18nc("@option:check for bounce keys", "Ring system bell when rejected")
+        ColumnLayout {
+            id: bounceCol
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+                margins: Kirigami.Units.largeSpacing
+            }
+            spacing: Kirigami.Units.mediumSpacing
 
-        KCMUtils.SettingStateBinding {
-            configObject: kcm.keyboardFiltersSettings
-            settingName: "BounceKeysRejectBeep"
-            extraEnabledConditions: kcm.keyboardFiltersSettings.bounceKeys
+            // Row 1: Sıçrama tuşları aç/kapa
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check", "Sıçrama Tuşlarını Etkinleştir")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Hızlı ve istemsiz peş peşe aynı tuşa basılmaları engeller")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.Switch {
+                    checked: kcm.keyboardFiltersSettings.bounceKeys
+                    onToggled: kcm.keyboardFiltersSettings.bounceKeys = checked
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.keyboardFiltersSettings
+                        settingName: "BounceKeys"
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+                visible: kcm.keyboardFiltersSettings.bounceKeys
+            }
+
+            // Row 2: Gecikme süresi
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+                visible: kcm.keyboardFiltersSettings.bounceKeys
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@label:spinbox", "Yoksayma Süresi")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Aynı tuşa tekrar basılabilmesi için beklenmesi gereken süre (ms)")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.SpinBox {
+                    from: 5
+                    to: 10000
+                    stepSize: 20
+                    value: kcm.keyboardFiltersSettings.bounceKeysDelay
+                    onValueModified: kcm.keyboardFiltersSettings.bounceKeysDelay = value
+                    textFromValue: val => val + " ms"
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.keyboardFiltersSettings
+                        settingName: "BounceKeysDelay"
+                        extraEnabledConditions: kcm.keyboardFiltersSettings.bounceKeys
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+                visible: kcm.keyboardFiltersSettings.bounceKeys
+            }
+
+            // Row 3: Reddedildiğinde ses
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+                visible: kcm.keyboardFiltersSettings.bounceKeys
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check", "Reddedildiğinde Ses Çal")
+                        font.weight: Font.DemiBold
+                    }
+                }
+
+                QQC2.Switch {
+                    checked: kcm.keyboardFiltersSettings.bounceKeysRejectBeep
+                    onToggled: kcm.keyboardFiltersSettings.bounceKeysRejectBeep = checked
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.keyboardFiltersSettings
+                        settingName: "BounceKeysRejectBeep"
+                        extraEnabledConditions: kcm.keyboardFiltersSettings.bounceKeys
+                    }
+                }
+            }
         }
-
-        checked: kcm.keyboardFiltersSettings.bounceKeysRejectBeep
-        onToggled: kcm.keyboardFiltersSettings.bounceKeysRejectBeep = checked
     }
 }

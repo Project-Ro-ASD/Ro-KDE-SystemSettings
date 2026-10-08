@@ -1,7 +1,6 @@
 /*
-    SPDX-FileCopyrightText: 2018 Tomaz Canabrava <tcanabrava@kde.org>
-
-    SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+    SPDX-FileCopyrightText: 2026 Project Ro KDE
+    SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only
 */
 
 import QtQuick
@@ -11,136 +10,184 @@ import org.kde.kcmutils as KCMUtils
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.access.kcm
 
-Kirigami.FormLayout {
-    RowLayout {
-        spacing: Kirigami.Units.smallSpacing
-        Kirigami.FormData.label:  i18nc("@option:check", "Use number pad to move pointer:")
-        Kirigami.FormData.buddyFor: mouseKeys
-        QQC2.CheckBox {
-            id: mouseKeys
+ColumnLayout {
+    id: root
+    spacing: Kirigami.Units.largeSpacing
+    Layout.fillWidth: true
 
-            text: i18nc("@option:check Enable mouse navigation", "Enable")
+    Kirigami.Heading {
+        level: 4
+        text: i18nc("@title:group", "Fare Dolaşımı (Numpad Tuşları)")
+        font.weight: Font.DemiBold
+        Layout.leftMargin: Kirigami.Units.smallSpacing
+    }
 
-            KCMUtils.SettingStateBinding {
-                configObject: kcm.mouseSettings
-                settingName: "MouseKeys"
+    Rectangle {
+        Layout.fillWidth: true
+        radius: 12
+        color: "#ffffff"
+        border.color: Qt.rgba(0, 0, 0, 0.08)
+        border.width: 1
+        implicitHeight: mouseCol.implicitHeight + Kirigami.Units.largeSpacing * 2
+
+        ColumnLayout {
+            id: mouseCol
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+                margins: Kirigami.Units.largeSpacing
+            }
+            spacing: Kirigami.Units.mediumSpacing
+
+            // Row 1: Sayısal tuş takımı ile imleci taşı
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@option:check", "Sayısal Tuş Takımı ile Fareyi Taşı")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Numpad 5 tuşu tıklama, diğer yön tuşları fare hareketini sağlar")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.Switch {
+                    checked: kcm.mouseSettings.mouseKeys
+                    onToggled: kcm.mouseSettings.mouseKeys = checked
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.mouseSettings
+                        settingName: "MouseKeys"
+                    }
+                }
             }
 
-            checked: kcm.mouseSettings.mouseKeys
-            onToggled: kcm.mouseSettings.mouseKeys = checked
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+                visible: kcm.mouseSettings.mouseKeys
+            }
+
+            // Row 2: İvmelenme gecikmesi
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+                visible: kcm.mouseSettings.mouseKeys
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@label:spinbox", "İvmelenme Gecikmesi")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("Tuşa basıldıktan sonra hızlanmanın başlaması için geçen süre (ms)")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.SpinBox {
+                    id: accelerationDelay
+                    from: 1
+                    to: 490
+                    value: kcm.mouseSettings.accelerationDelay
+                    onValueChanged: kcm.mouseSettings.accelerationDelay = value
+                    textFromValue: val => val + " ms"
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.mouseSettings
+                        settingName: "AccelerationDelay"
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+                visible: kcm.mouseSettings.mouseKeys
+            }
+
+            // Row 3: Yineleme aralığı
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+                visible: kcm.mouseSettings.mouseKeys
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@label:spinbox", "Yineleme Aralığı")
+                        font.weight: Font.DemiBold
+                    }
+                    QQC2.Label {
+                        text: i18n("İmleç adımları arasındaki süre aralığı (ms)")
+                        font: Kirigami.Theme.smallFont
+                        opacity: 0.75
+                    }
+                }
+
+                QQC2.SpinBox {
+                    id: repeatInterval
+                    from: 1
+                    to: 130
+                    value: kcm.mouseSettings.repetitionInterval
+                    onValueChanged: kcm.mouseSettings.repetitionInterval = value
+                    textFromValue: val => val + " ms"
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.mouseSettings
+                        settingName: "RepetitionInterval"
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: Qt.rgba(0, 0, 0, 0.06)
+                visible: kcm.mouseSettings.mouseKeys
+            }
+
+            // Row 4: Maksimum Hız
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.mediumSpacing
+                visible: kcm.mouseSettings.mouseKeys
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    QQC2.Label {
+                        text: i18nc("@label:spinbox", "Maksimum Hız")
+                        font.weight: Font.DemiBold
+                    }
+                }
+
+                QQC2.SpinBox {
+                    from: 1
+                    to: 100
+                    value: kcm.mouseSettings.maxSpeed
+                    onValueChanged: kcm.mouseSettings.maxSpeed = value
+
+                    KCMUtils.SettingStateBinding {
+                        configObject: kcm.mouseSettings
+                        settingName: "MaxSpeed"
+                    }
+                }
+            }
         }
-        Kirigami.ContextualHelpButton {
-            toolTipText: xi18nc("@info:tooltip", "The numpad key <shortcut>5</shortcut> functions as a mouse click, toggled by <shortcut>/</shortcut> for middle click, <shortcut>*</shortcut> for right click and <shortcut>NumLock</shortcut> for left click. The keys <shortcut>2</shortcut>, <shortcut>4</shortcut>, <shortcut>6</shortcut>, and <shortcut>8</shortcut> allow for cardinal movement (down, left, right, and up). The keys <shortcut>1</shortcut>, <shortcut>3</shortcut>, <shortcut>7</shortcut>, and <shortcut>9</shortcut> allow for diagonal movement.")
-        }
-    }
-
-    QQC2.SpinBox {
-        id: accelerationDelay
-        Kirigami.FormData.label: i18nc("@label:spinbox", "Acceleration delay:")
-
-        from: 1
-        to: 490
-
-        KCMUtils.SettingStateBinding {
-            configObject: kcm.mouseSettings
-            settingName: "AccelerationDelay"
-        }
-
-        value: kcm.mouseSettings.accelerationDelay
-        onValueChanged: kcm.mouseSettings.accelerationDelay = value
-
-        textFromValue: function(value, locale) {
-            return i18ncp("@label:valuesuffix acceleration delay spinbox %1 is value", "%1 ms", "%1 ms", value)
-        }
-        validator: IntValidatorWithSuffix {
-            bottom: accelerationDelay.from
-            top: accelerationDelay.to
-        }
-
-        valueFromText: (text, locale) => {
-            return Number.fromLocaleString(locale, text.replace(i18ncp("short for millisecond(s)", "ms", "ms"), ""))
-        }
-    }
-    QQC2.SpinBox {
-        id: repeatInterval
-        Kirigami.FormData.label: i18nc("@label:spinbox", "Repeat interval:")
-
-        from: 1
-        to: 130
-
-        KCMUtils.SettingStateBinding {
-            configObject: kcm.mouseSettings
-            settingName: "RepetitionInterval"
-        }
-
-        value: kcm.mouseSettings.repetitionInterval
-        onValueChanged: kcm.mouseSettings.repetitionInterval = value
-
-        validator: IntValidatorWithSuffix {
-            bottom: repeatInterval.from
-            top: repeatInterval.to
-        }
-        textFromValue: function(value, locale) {
-            return i18ncp("@label:valuesuffix repeat interval spinbox %1 is value", "%1 ms", "%1 ms", value)
-        }
-
-        valueFromText: (text, locale) => {
-            return Number.fromLocaleString(locale, text.replace(i18ncp("short for millisecond(s)", "ms", "ms"), ""))
-        }
-    }
-    QQC2.SpinBox {
-        id: accelerationTime
-        Kirigami.FormData.label: i18nc("@label:spinbox", "Acceleration time:")
-
-        from: 1
-        to: 100
-
-        KCMUtils.SettingStateBinding {
-            configObject: kcm.mouseSettings
-            settingName: "AccelerationTime"
-        }
-
-        value: kcm.mouseSettings.accelerationTime
-        onValueChanged: kcm.mouseSettings.accelerationTime = value
-        validator: IntValidatorWithSuffix {
-            bottom: accelerationTime.from
-            top: accelerationTime.to
-        }
-        textFromValue: function(value, locale) {
-            return i18ncp("@label:valuesuffix acceleration time spinbox %1 is value", "%1 ms", "%1 ms", value)
-        }
-
-        valueFromText: (text, locale) => {
-            return Number.fromLocaleString(locale, text.replace(i18ncp("short for millisecond(s)", "ms", "ms"), ""))
-        }
-    }
-    QQC2.SpinBox {
-        Kirigami.FormData.label:  i18nc("@label:spinbox", "Maximum speed:")
-
-        from: 1
-        to: 100
-
-        KCMUtils.SettingStateBinding {
-            configObject: kcm.mouseSettings
-            settingName: "MaxSpeed"
-        }
-
-        value: kcm.mouseSettings.maxSpeed
-        onValueChanged: kcm.mouseSettings.maxSpeed = value
-    }
-    QQC2.SpinBox {
-        Kirigami.FormData.label: i18nc("@label:spinbox", "Pointer acceleration:")
-
-        from: -1000
-        to: 5000
-
-        KCMUtils.SettingStateBinding {
-            configObject: kcm.mouseSettings
-            settingName: "ProfileCurve"
-        }
-
-        value: kcm.mouseSettings.profileCurve
-        onValueChanged: kcm.mouseSettings.profileCurve = value
-
     }
 }
