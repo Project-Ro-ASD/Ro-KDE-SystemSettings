@@ -311,8 +311,8 @@ Item {
         width: Math.min(root.width - Platform.Units.largeSpacing * 2, Math.max(lay.width, lay.implicitWidth) + Platform.Units.largeSpacing * 3)
         height: lay.implicitHeight + Platform.Units.largeSpacing * 3
         radius: 12
-        color: Kirigami.ColorUtils.linearInterpolation(Platform.Theme.backgroundColor, Platform.Theme.textColor, 0.035)
-        border.color: Kirigami.ColorUtils.linearInterpolation(Platform.Theme.backgroundColor, Platform.Theme.textColor, 0.12)
+        color: "#ffffff"
+        border.color: Qt.rgba(Platform.Theme.textColor.r, Platform.Theme.textColor.g, Platform.Theme.textColor.b, 0.08)
         border.width: 1
         visible: lay.knownItems.length > 0 && !findAncestor(root, item => item !== cardBg && item.radius && item.radius >= 8)
     }
@@ -356,7 +356,6 @@ Item {
     }
 
     onChildrenChanged: relayout()
-    Component.onCompleted: console.warn(">>> CUSTOM FORMLAYOUT LOADED! <<<")
     Component.onCompleted: {
         relayout()
         hintCompression.triggered()

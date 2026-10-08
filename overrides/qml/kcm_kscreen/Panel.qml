@@ -18,53 +18,45 @@ ColumnLayout {
     property int selectedOutput
 
     signal reorder()
+
+    Layout.fillWidth: true
     spacing: Kirigami.Units.largeSpacing * 1.5
 
     // ==========================================
-    // CARD 1: Ekran Yapılandırması
+    // KART 1: Ekran Ayarları
     // ==========================================
-    Rectangle {
+    ColumnLayout {
         Layout.fillWidth: true
-        radius: 12
-        color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.035)
-        border.color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
-        border.width: 1
-        implicitHeight: cardCol1.implicitHeight + Kirigami.Units.largeSpacing * 2
+        spacing: Kirigami.Units.smallSpacing
 
-        ColumnLayout {
-            id: cardCol1
-            anchors {
-                left: parent.left
-                right: parent.right
-                top: parent.top
-                margins: Kirigami.Units.largeSpacing
-            }
-            spacing: Kirigami.Units.largeSpacing
+        Kirigami.Heading {
+            level: 4
+            font.weight: Font.DemiBold
+            text: i18n("Ekran Ayarları")
+            leftPadding: 4
+        }
 
-            RowLayout {
-                spacing: Kirigami.Units.smallSpacing
-                Kirigami.Icon {
-                    source: "video-display"
-                    implicitWidth: 20
-                    implicitHeight: 20
-                }
-                Kirigami.Heading {
-                    level: 4
-                    text: i18n("Ekran Ayarları")
-                    font.weight: Font.DemiBold
-                }
-            }
+        Rectangle {
+            Layout.fillWidth: true
+            radius: 12
+            color: "#ffffff"
+            border.color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.08)
+            border.width: 1
+            implicitHeight: panelView.implicitHeight + Kirigami.Units.largeSpacing * 2
 
             StackLayout {
                 id: panelView
                 currentIndex: root.selectedOutput
-                Layout.fillWidth: true
-                implicitHeight: (children.length > 0 && children[currentIndex]) ? children[currentIndex].implicitHeight : 550
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: parent.top
+                    margins: Kirigami.Units.largeSpacing
+                }
 
                 Repeater {
                     model: kcm.outputModel
                     OutputPanel {
-                        twinFormLayouts: globalSettingsLayout
                         enabledOutputs: root.enabledOutputs
                         onReorder: root.reorder()
                     }
@@ -77,156 +69,192 @@ ColumnLayout {
     }
 
     // ==========================================
-    // CARD 2: Gelişmiş ve Uyumluluk Ayarları
+    // KART 2: Gelişmiş ve Uyumluluk Ayarları
     // ==========================================
-    Rectangle {
+    ColumnLayout {
         Layout.fillWidth: true
-        radius: 12
-        color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.035)
-        border.color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
-        border.width: 1
-        implicitHeight: cardCol2.implicitHeight + Kirigami.Units.largeSpacing * 2
+        spacing: Kirigami.Units.smallSpacing
         visible: kcm.xwaylandClientsScaleSupported || kcm.tearingSupported || !kcm.perOutputScaling
 
-        ColumnLayout {
-            id: cardCol2
-            anchors {
-                left: parent.left
-                right: parent.right
-                top: parent.top
-                margins: Kirigami.Units.largeSpacing
-            }
-            spacing: Kirigami.Units.largeSpacing
+        Kirigami.Heading {
+            level: 4
+            font.weight: Font.DemiBold
+            text: i18n("Gelişmiş ve Uyumluluk Ayarları")
+            leftPadding: 4
+        }
 
-            RowLayout {
-                spacing: Kirigami.Units.smallSpacing
-                Kirigami.Icon {
-                    source: "preferences-system-windows"
-                    implicitWidth: 20
-                    implicitHeight: 20
+        Rectangle {
+            Layout.fillWidth: true
+            radius: 12
+            color: "#ffffff"
+            border.color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.08)
+            border.width: 1
+            implicitHeight: cardCol2.implicitHeight + Kirigami.Units.largeSpacing * 2
+
+            ColumnLayout {
+                id: cardCol2
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: parent.top
+                    margins: Kirigami.Units.largeSpacing
                 }
-                Kirigami.Heading {
-                    level: 4
-                    text: i18n("Gelişmiş ve Uyumluluk Ayarları")
-                    font.weight: Font.DemiBold
-                }
-            }
+                spacing: 0
 
-            Kirigami.FormLayout {
-                id: globalSettingsLayout
-                Layout.fillWidth: true
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    Kirigami.FormData.label: i18n("Global scale:")
+                // Row 1: Global scale
+                Item {
                     visible: !kcm.perOutputScaling
+                    Layout.fillWidth: true
+                    implicitHeight: Math.max(Kirigami.Units.gridUnit * 2.5, rowGlobalScale.implicitHeight + 12)
 
-                    QQC2.Slider {
-                        id: globalScaleSlider
-                        Accessible.description: i18nc("@info accessible description of slider value", "in percent of regular scale")
-                        Kirigami.StyleHints.tickMarkStepSize: stepSize
-                        Layout.fillWidth: true
-                        from: 100
-                        to: 300
-                        stepSize: 25
-                        live: true
-                        value: kcm.globalScale * 100
-                        onMoved: kcm.globalScale = value / 100;
-                    }
-                    QQC2.SpinBox {
-                        id: spinbox
-                        Layout.maximumWidth: Kirigami.Units.gridUnit * 7
-                        readonly property real factor: 16.0
-                        readonly property real realValue: value / factor
-                        from: 1.0 * factor
-                        to: 3.0 * factor
-                        stepSize: 1
-                        value: kcm.globalScale * factor
-                        validator: DoubleValidator {
-                            bottom: Math.min(spinbox.from, spinbox.to) * spinbox.factor
-                            top:  Math.max(spinbox.from, spinbox.to) * spinbox.factor
+                    RowLayout {
+                        id: rowGlobalScale
+                        anchors {
+                            fill: parent
+                            leftMargin: Kirigami.Units.smallSpacing
+                            rightMargin: Kirigami.Units.smallSpacing
                         }
-                        textFromValue: (value, locale) =>
-                            i18nc("Global scale factor expressed in percentage form", "%1%",
-                                parseFloat(value * 1.0 / factor * 100.0))
-                        valueFromText: (text, locale) =>
-                            Number.fromLocaleString(locale, text.replace("%", "")) * factor / 100.0
+                        spacing: Kirigami.Units.largeSpacing
 
-                        onValueModified: {
-                            kcm.globalScale = realValue;
-                            if (kcm.globalScale % 0.25) {
-                                weirdScaleFactorMsg.visible = true;
-                            } else {
-                                weirdScaleFactorMsg.visible = false;
+                        QQC2.Label {
+                            text: i18n("Genel Arayüz Ölçeği")
+                            font.weight: Font.DemiBold
+                            Layout.preferredWidth: 200
+                            color: Kirigami.Theme.textColor
+                        }
+
+                        Item { Layout.fillWidth: true }
+
+                        RowLayout {
+                            spacing: 8
+
+                            QQC2.Slider {
+                                id: globalScaleSlider
+                                Accessible.description: i18nc("@info accessible description of slider value", "in percent of regular scale")
+                                Kirigami.StyleHints.tickMarkStepSize: stepSize
+                                implicitWidth: 160
+                                from: 100
+                                to: 300
+                                stepSize: 25
+                                live: true
+                                value: kcm.globalScale * 100
+                                onMoved: kcm.globalScale = value / 100
+                            }
+
+                            QQC2.Label {
+                                text: Math.round(globalScaleSlider.value) + "%"
+                                font.weight: Font.DemiBold
+                                Layout.preferredWidth: 45
+                                horizontalAlignment: Text.AlignRight
+                                color: Kirigami.Theme.textColor
                             }
                         }
                     }
                 }
-
-                QQC2.ButtonGroup {
-                    id: x11AppsScaling
-                    onClicked: kcm.xwaylandClientsScale = (button === x11ScalingApps)
-                }
-
-                RowLayout {
-                    visible: kcm.xwaylandClientsScaleSupported
-                    Kirigami.FormData.label: i18n("Legacy applications (X11):")
-                    spacing: Kirigami.Units.smallSpacing
-
-                    QQC2.RadioButton {
-                        id: x11ScalingApps
-                        text: i18nc("The apps themselves should scale to fit the displays", "Apply scaling themselves")
-                        checked: kcm.xwaylandClientsScale
-                        QQC2.ButtonGroup.group: x11AppsScaling
-                    }
-                    Kirigami.ContextualHelpButton {
-                        toolTipText: i18n("Legacy applications that support scaling will use it and look crisp, however those that don’t will not be scaled at all.")
-                    }
-                }
-
-                RowLayout {
-                    visible: kcm.xwaylandClientsScaleSupported
-                    spacing: Kirigami.Units.smallSpacing
-
-                    QQC2.RadioButton {
-                        Kirigami.FormData.label: i18n("Legacy applications (X11):")
-                        text: i18nc("The system will perform the x11 apps scaling", "Scaled by the system")
-                        checked: !kcm.xwaylandClientsScale
-                        QQC2.ButtonGroup.group: x11AppsScaling
-                    }
-                    Kirigami.ContextualHelpButton {
-                        toolTipText: i18n("All legacy applications will be scaled by the system to the correct size, however they will always look slightly blurry.")
-                    }
-                }
-
-                RowLayout {
-                    Kirigami.FormData.label: i18nc("@label", "Screen tearing:")
-                    visible: kcm.tearingSupported
-                    QQC2.CheckBox {
-                        text: i18nc("@option:check The thing being allowed in fullscreen windows is screen tearing", "Allow in fullscreen windows")
-                        checked: kcm.tearingAllowed
-                        onToggled: kcm.tearingAllowed = checked
-                    }
-                    Kirigami.ContextualHelpButton {
-                        toolTipText: i18nc("@info:tooltip", "Screen tearing reduces latency with most displays. Note that not all graphics drivers support this setting.")
-                    }
-                }
-
-                Item {
-                    Kirigami.FormData.isSection: false
-                    visible: kcm.xwaylandClientsScaleSupported
-                }
-
-                Kirigami.InlineMessage {
-                    id: weirdScaleFactorMsg
-                    Kirigami.FormData.isSection: true
+                Rectangle {
+                    visible: !kcm.perOutputScaling
                     Layout.fillWidth: true
-                    type: Kirigami.MessageType.Information
-                    text: i18n("The global scale factor is limited to multiples of 6.25% to minimize visual glitches in applications using the X11 windowing system.")
-                    visible: false
-                    showCloseButton: true
+                    height: 1
+                    color: Kirigami.Theme.textColor
+                    opacity: 0.06
+                }
+
+                // Row 2: Legacy apps (X11) scaling
+                Item {
+                    visible: kcm.xwaylandClientsScaleSupported
+                    Layout.fillWidth: true
+                    implicitHeight: Math.max(Kirigami.Units.gridUnit * 2.5, rowX11Scale.implicitHeight + 12)
+
+                    RowLayout {
+                        id: rowX11Scale
+                        anchors {
+                            fill: parent
+                            leftMargin: Kirigami.Units.smallSpacing
+                            rightMargin: Kirigami.Units.smallSpacing
+                        }
+                        spacing: Kirigami.Units.largeSpacing
+
+                        QQC2.Label {
+                            text: i18n("Eski Uygulamalar (X11) Ölçekleme")
+                            font.weight: Font.DemiBold
+                            Layout.preferredWidth: 200
+                            color: Kirigami.Theme.textColor
+                        }
+
+                        Item { Layout.fillWidth: true }
+
+                        RowLayout {
+                            spacing: 8
+
+                            QQC2.ComboBox {
+                                implicitWidth: 220
+                                model: [
+                                    { text: i18nc("The apps themselves should scale", "Uygulama Kendisi Ölçeklesin"), val: true },
+                                    { text: i18nc("The system will perform scaling", "Sistem Tarafından Ölçeklensin"), val: false }
+                                ]
+                                textRole: "text"
+                                currentIndex: kcm.xwaylandClientsScale ? 0 : 1
+                                onActivated: kcm.xwaylandClientsScale = model[currentIndex].val
+                            }
+
+                            Kirigami.ContextualHelpButton {
+                                toolTipText: i18n("Eski X11 uygulamalarının yüksek çözünürlüklü ekranlarda nasıl ölçekleneceğini belirler.")
+                            }
+                        }
+                    }
+                }
+                Rectangle {
+                    visible: kcm.xwaylandClientsScaleSupported && kcm.tearingSupported
+                    Layout.fillWidth: true
+                    height: 1
+                    color: Kirigami.Theme.textColor
+                    opacity: 0.06
+                }
+
+                // Row 3: Screen tearing
+                Item {
+                    visible: kcm.tearingSupported
+                    Layout.fillWidth: true
+                    implicitHeight: Math.max(Kirigami.Units.gridUnit * 2.5, rowTearing.implicitHeight + 12)
+
+                    RowLayout {
+                        id: rowTearing
+                        anchors {
+                            fill: parent
+                            leftMargin: Kirigami.Units.smallSpacing
+                            rightMargin: Kirigami.Units.smallSpacing
+                        }
+                        spacing: Kirigami.Units.largeSpacing
+
+                        QQC2.Label {
+                            text: i18n("Tam Ekran Yırtılmasına İzin Ver")
+                            font.weight: Font.DemiBold
+                            Layout.preferredWidth: 200
+                            color: Kirigami.Theme.textColor
+                        }
+
+                        Item { Layout.fillWidth: true }
+
+                        RowLayout {
+                            spacing: 6
+
+                            QQC2.Switch {
+                                checked: kcm.tearingAllowed
+                                onToggled: kcm.tearingAllowed = checked
+                            }
+
+                            Kirigami.ContextualHelpButton {
+                                toolTipText: i18nc("@info:tooltip", "Tam ekran oyunlarda ve uygulamalarda gecikmeyi azaltmak için ekran yırtılmasına izin verir.")
+                            }
+                        }
+                    }
                 }
             }
         }
+    }
+
+    Item {
+        Layout.fillWidth: true
+        implicitHeight: Kirigami.Units.largeSpacing
     }
 }

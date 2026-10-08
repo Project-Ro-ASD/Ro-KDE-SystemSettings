@@ -429,8 +429,8 @@ KCM.AbstractKCM {
                 Panel {
                     id: panel
                     anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: Math.min(parent.width, 740)
 
                     enabled: kcm.outputModel && kcm.backendReady
                     enabledOutputs: enabledOutputsModel

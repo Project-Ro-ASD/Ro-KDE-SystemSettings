@@ -171,8 +171,8 @@ KCMUtils.AbstractKCM {
                         }
                         implicitHeight: stackLayout.implicitHeight + Kirigami.Units.largeSpacing * 2
                         radius: 12
-                        color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.035)
-                        border.color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
+                        color: "#ffffff"
+                        border.color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.08)
                         border.width: 1
 
                         StackLayout {

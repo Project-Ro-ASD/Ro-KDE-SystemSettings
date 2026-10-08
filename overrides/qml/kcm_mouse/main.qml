@@ -102,7 +102,7 @@ KCMUtils.SimpleKCM {
                     Layout.fillWidth: true
                     implicitHeight: card1Layout.implicitHeight + Kirigami.Units.largeSpacing
                     radius: 12
-                    color: Qt.rgba(Kirigami.Theme.backgroundColor.r, Kirigami.Theme.backgroundColor.g, Kirigami.Theme.backgroundColor.b, 0.75)
+                    color: "#ffffff"
                     border.color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.08)
                     border.width: 1
 
@@ -287,7 +287,7 @@ KCMUtils.SimpleKCM {
                     Layout.fillWidth: true
                     implicitHeight: card2Layout.implicitHeight + Kirigami.Units.largeSpacing
                     radius: 12
-                    color: Qt.rgba(Kirigami.Theme.backgroundColor.r, Kirigami.Theme.backgroundColor.g, Kirigami.Theme.backgroundColor.b, 0.75)
+                    color: "#ffffff"
                     border.color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.08)
                     border.width: 1
 
@@ -468,7 +468,7 @@ KCMUtils.SimpleKCM {
                     Layout.fillWidth: true
                     implicitHeight: card3Layout.implicitHeight + Kirigami.Units.largeSpacing
                     radius: 12
-                    color: Qt.rgba(Kirigami.Theme.backgroundColor.r, Kirigami.Theme.backgroundColor.g, Kirigami.Theme.backgroundColor.b, 0.75)
+                    color: "#ffffff"
                     border.color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.08)
                     border.width: 1
 

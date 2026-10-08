@@ -5,7 +5,19 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "==> Ro-KDE-SystemSettings özelleştirmeleri sisteme uygulanıyor..."
 
-# 1. Kvantum Teması (Saydamlık, cam/blur ve modern yuvarlatılmış kontroller)
+# Önceki çalışan systemsettings süreçlerini sonlandır
+pkill -9 systemsettings 2>/dev/null || true
+
+# Saydamlık kwin kurallarını kaldır (arka plan dümdüz opak ve beyaz olsun)
+if [ -f "$HOME/.config/kwinrulesrc" ]; then
+    sed -i '/opacity/d' "$HOME/.config/kwinrulesrc" || true
+    sed -i '/Saydamlık/d' "$HOME/.config/kwinrulesrc" || true
+    if command -v qdbus >/dev/null 2>&1; then
+        qdbus org.kde.KWin /KWin reconfigure >/dev/null 2>&1 || true
+    fi
+fi
+
+# 1. Kvantum Teması (Modern yuvarlatılmış kontroller ve opak pencereler)
 mkdir -p "$HOME/.local/share/Kvantum/KayseriTasarim" "$HOME/.config/Kvantum/KayseriTasarim"
 if [ -d "$REPO_DIR/overrides/theme/kvantum" ]; then
     cp -r "$REPO_DIR/overrides/theme/kvantum/"* "$HOME/.local/share/Kvantum/KayseriTasarim/"
@@ -63,7 +75,7 @@ fi
 
 # Loader paylaşımlı kütüphane derleme / kopyalama
 if command -v g++ >/dev/null 2>&1 && [ -f "$REPO_DIR/overrides/qml/systemsettings_loader.cpp" ]; then
-    g++ -O2 -shared -fPIC "$REPO_DIR/overrides/qml/systemsettings_loader.cpp" "$REPO_DIR/overrides/qml/qrc_overrides.cpp" $(pkg-config --cflags --libs Qt6Core) -ldl -o "$REPO_DIR/overrides/qml/libsystemsettings_override.so"
+    g++ -O2 -shared -fPIC "$REPO_DIR/overrides/qml/systemsettings_loader.cpp" "$REPO_DIR/overrides/qml/qrc_overrides.cpp" $(pkg-config --cflags --libs Qt6Core Qt6Gui Qt6Quick) -ldl -o "$REPO_DIR/overrides/qml/libsystemsettings_override.so"
 fi
 if [ -f "$REPO_DIR/overrides/qml/libsystemsettings_override.so" ]; then
     cp "$REPO_DIR/overrides/qml/libsystemsettings_override.so" "$HOME/.local/lib/libsystemsettings_override.so"

@@ -2,7 +2,7 @@
     SPDX-FileCopyrightText: 2015 Antonis Tsiapaliokas <antonis.tsiapaliokas@kde.org>
     SPDX-FileCopyrightText: 2017 Marco Martin <mart@kde.org>
     SPDX-FileCopyrightText: 2019 Benjamin Port <benjamin.port@enioka.com>
-
+    SPDX-FileCopyrightText: 2026 Ro-KDE Team
     SPDX-License-Identifier: LGPL-2.0-only
 */
 
@@ -26,7 +26,6 @@ KCM.SimpleKCM {
 
     readonly property bool usingInadvisablySmallFont: generalFontWidget.font.pointSize < 7
         || fixedWidthFontWidget.font.pointSize < 7
-        // Deliberately not checking for Small font here since it's designed to be smaller
         || toolbarFontWidget.font.pointSize < 7
         || menuFontWidget.font.pointSize < 7
 
@@ -36,7 +35,7 @@ KCM.SimpleKCM {
         smallFontWidget.font.family,
         toolbarFontWidget.font.family,
         menuFontWidget.font.family
-    ].some(a => a && (a.includes("Display") || a.includes(i18nc("Sub-string in a font name; 'Display' as in display font — a type of font inappropriate for computer screens", "Display"))))
+    ].some(a => a && (a.includes("Display") || a.includes(i18nc("Sub-string in a font name; 'Display' as in display font", "Display"))))
 
     Kirigami.Action {
         id: kscreenAction
@@ -46,7 +45,7 @@ KCM.SimpleKCM {
         onTriggered: KCM.KCMLauncher.open("kcm_kscreen")
     }
 
-    headerPaddingEnabled: false // Let the InlineMessages touch the edges
+    headerPaddingEnabled: false
     header: ColumnLayout {
         spacing: 0
 
@@ -150,403 +149,355 @@ KCM.SimpleKCM {
         window: root.Window.window
     }
 
+    QtControls.ScrollView {
+        anchors.fill: parent
+        contentWidth: availableWidth
 
-    ColumnLayout {
-        id: mainCardsLayout
-        width: parent.width
-        spacing: Kirigami.Units.largeSpacing * 1.5
+        ColumnLayout {
+            id: mainCardsLayout
+            width: Math.min(Math.max(parent ? parent.width - Kirigami.Units.gridUnit * 2 : 720, 300), 720)
+            anchors.horizontalCenter: parent ? parent.horizontalCenter : undefined
+            spacing: Kirigami.Units.largeSpacing * 1.5
 
-        // ==========================================
-        // CARD 1: Sistem Yazıtipleri
-        // ==========================================
-        Rectangle {
-            Layout.fillWidth: true
-            radius: 12
-            color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.035)
-            border.color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
-            border.width: 1
-            implicitHeight: cardCol1.implicitHeight + Kirigami.Units.largeSpacing * 2
-
+            // ==========================================
+            // KART 1: Sistem Yazıtipleri
+            // ==========================================
             ColumnLayout {
-                id: cardCol1
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    top: parent.top
-                    margins: Kirigami.Units.largeSpacing
-                }
-                spacing: Kirigami.Units.largeSpacing
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.smallSpacing
 
                 RowLayout {
-                    spacing: Kirigami.Units.smallSpacing
-                    Kirigami.Icon {
-                        source: "preferences-desktop-font"
-                        implicitWidth: 20
-                        implicitHeight: 20
-                    }
+                    Layout.fillWidth: true
                     Kirigami.Heading {
                         level: 4
                         text: i18n("Sistem Yazıtipleri")
                         font.weight: Font.DemiBold
+                        leftPadding: 4
+                    }
+                    Item { Layout.fillWidth: true }
+                    // Pill button
+                    Rectangle {
+                        implicitWidth: 180
+                        implicitHeight: 32
+                        radius: 16
+                        color: Kirigami.Theme.highlightColor
+
+                        RowLayout {
+                            anchors.centerIn: parent
+                            spacing: 6
+                            Kirigami.Icon {
+                                source: "font-select-symbolic"
+                                implicitWidth: 14
+                                implicitHeight: 14
+                                color: Kirigami.Theme.highlightedTextColor
+                            }
+                            QtControls.Label {
+                                text: i18n("Tümünü Ayarla…")
+                                color: Kirigami.Theme.highlightedTextColor
+                                font.weight: Font.DemiBold
+                            }
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: kcm.adjustAllFonts()
+                        }
                     }
                 }
 
-                Kirigami.FormLayout {
-                    id: formLayout
+                Rectangle {
                     Layout.fillWidth: true
-                    readonly property int maxImplicitWidth: Math.max(adjustAllFontsButton.implicitWidth, excludeField.implicitWidth, subPixelCombo.implicitWidth, hintingCombo.implicitWidth)
+                    radius: 12
+                    color: "#ffffff"
+                    border.color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.08)
+                    border.width: 1
+                    implicitHeight: cardCol1.implicitHeight + Kirigami.Units.largeSpacing * 2
 
-                
-                        QtControls.Button {
-                            id: adjustAllFontsButton
-                            Layout.preferredWidth: formLayout.maxImplicitWidth
-                            icon.name: "font-select-symbolic"
-                            text: i18n("&Adjust All Fonts…")
-                
-                            onClicked: kcm.adjustAllFonts();
-                            enabled: !kcm.fontsSettings.isImmutable("font")
-                                    || !kcm.fontsSettings.isImmutable("fixed")
-                                    || !kcm.fontsSettings.isImmutable("smallestReadableFont")
-                                    || !kcm.fontsSettings.isImmutable("toolBarFont")
-                                    || !kcm.fontsSettings.isImmutable("menuFont")
-                                    || !kcm.fontsSettings.isImmutable("activeFont")
+                    ColumnLayout {
+                        id: cardCol1
+                        anchors {
+                            left: parent.left
+                            right: parent.right
+                            top: parent.top
+                            margins: Kirigami.Units.largeSpacing
                         }
-                
+                        spacing: 0
+
                         FontWidget {
                             id: generalFontWidget
-                            label: i18n("General:")
+                            label: i18n("Genel Yazıtipi")
                             tooltipText: i18n("Select general font")
                             category: "font"
                             font: kcm.fontsSettings.font
-                
+
                             KCM.SettingStateBinding {
                                 configObject: kcm.fontsSettings
                                 settingName: "font"
                             }
                         }
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            height: 1
+                            color: Kirigami.Theme.textColor
+                            opacity: 0.06
+                        }
+
                         FontWidget {
                             id: fixedWidthFontWidget
-                            label: i18n("Fixed width:")
+                            label: i18n("Sabit Genişlikli Yazıtipi")
                             tooltipText: i18n("Select fixed width font")
                             category: "fixed"
                             font: kcm.fontsSettings.fixed
-                
+
                             KCM.SettingStateBinding {
                                 configObject: kcm.fontsSettings
                                 settingName: "fixed"
                             }
                         }
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            height: 1
+                            color: Kirigami.Theme.textColor
+                            opacity: 0.06
+                        }
+
                         FontWidget {
                             id: smallFontWidget
-                            label: i18n("Small:")
+                            label: i18n("Küçük Yazıtipi")
                             tooltipText: i18n("Select small font")
                             category: "smallestReadableFont"
                             font: kcm.fontsSettings.smallestReadableFont
-                
+
                             KCM.SettingStateBinding {
                                 configObject: kcm.fontsSettings
                                 settingName: "smallestReadableFont"
                             }
                         }
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            height: 1
+                            color: Kirigami.Theme.textColor
+                            opacity: 0.06
+                        }
+
                         FontWidget {
                             id: toolbarFontWidget
-                            label: i18n("Toolbar:")
+                            label: i18n("Araç Çubuğu Yazıtipi")
                             tooltipText: i18n("Select toolbar font")
                             category: "toolBarFont"
                             font: kcm.fontsSettings.toolBarFont
-                
+
                             KCM.SettingStateBinding {
                                 configObject: kcm.fontsSettings
                                 settingName: "toolBarFont"
                             }
                         }
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            height: 1
+                            color: Kirigami.Theme.textColor
+                            opacity: 0.06
+                        }
+
                         FontWidget {
                             id: menuFontWidget
-                            label: i18n("Menu:")
+                            label: i18n("Menü Yazıtipi")
                             tooltipText: i18n("Select menu font")
                             category: "menuFont"
                             font: kcm.fontsSettings.menuFont
-                
+
                             KCM.SettingStateBinding {
                                 configObject: kcm.fontsSettings
                                 settingName: "menuFont"
                             }
                         }
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            height: 1
+                            color: Kirigami.Theme.textColor
+                            opacity: 0.06
+                        }
+
                         FontWidget {
-                            label: i18n("Window title:")
+                            label: i18n("Pencere Başlığı Yazıtipi")
                             tooltipText: i18n("Select window title font")
                             category: "activeFont"
                             font: kcm.fontsSettings.activeFont
-                
+
                             KCM.SettingStateBinding {
                                 configObject: kcm.fontsSettings
                                 settingName: "activeFont"
                             }
                         }
-                
-
+                    }
                 }
             }
-        }
 
-        // ==========================================
-        // CARD 2: İşleme ve Kenar Yumuşatma
-        // ==========================================
-        Rectangle {
-            Layout.fillWidth: true
-            radius: 12
-            color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.035)
-            border.color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
-            border.width: 1
-            implicitHeight: cardCol2.implicitHeight + Kirigami.Units.largeSpacing * 2
-
+            // ==========================================
+            // KART 2: İşleme ve Kenar Yumuşatma
+            // ==========================================
             ColumnLayout {
-                id: cardCol2
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    top: parent.top
-                    margins: Kirigami.Units.largeSpacing
-                }
-                spacing: Kirigami.Units.largeSpacing
+                Layout.fillWidth: true
+                spacing: Kirigami.Units.smallSpacing
 
-                RowLayout {
-                    spacing: Kirigami.Units.smallSpacing
-                    Kirigami.Icon {
-                        source: "draw-text"
-                        implicitWidth: 20
-                        implicitHeight: 20
-                    }
-                    Kirigami.Heading {
-                        level: 4
-                        text: i18n("İşleme ve Kenar Yumuşatma")
-                        font.weight: Font.DemiBold
-                    }
+                Kirigami.Heading {
+                    level: 4
+                    text: i18n("İşleme ve Kenar Yumuşatma")
+                    font.weight: Font.DemiBold
+                    leftPadding: 4
                 }
 
-                Kirigami.FormLayout {
-                    id: formLayout2
+                Rectangle {
                     Layout.fillWidth: true
+                    radius: 12
+                    color: "#ffffff"
+                    border.color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.08)
+                    border.width: 1
+                    implicitHeight: cardCol2.implicitHeight + Kirigami.Units.largeSpacing * 2
 
-                
-                        RowLayout {
-                            Kirigami.FormData.label: i18n("Anti-Aliasing:")
-                            QtControls.CheckBox {
-                                id: antiAliasingCheckBox
-                                checked: kcm.fontsAASettings.antiAliasing
-                                onToggled: kcm.fontsAASettings.antiAliasing = checked
-                                text: i18n("Enable")
-                                Layout.fillWidth: true
-                            }
-                            Kirigami.ContextualHelpButton {
-                                toolTipText: xi18nc("@info:tooltip Anti-Aliasing", "Pixels on displays are generally aligned in a grid. Therefore shapes of fonts that do not align with this grid will look blocky and wrong unless <emphasis>anti-aliasing</emphasis> techniques are used to reduce this effect. You generally want to keep this option enabled unless it causes problems.")
-                            }
-                
-                            KCM.SettingStateBinding {
-                                configObject: kcm.fontsAASettings
-                                settingName: "antiAliasing"
-                                extraEnabledConditions: !kcm.fontsAASettings.isAaImmutable
-                            }
+                    ColumnLayout {
+                        id: cardCol2
+                        anchors {
+                            left: parent.left
+                            right: parent.right
+                            top: parent.top
+                            margins: Kirigami.Units.largeSpacing
                         }
-                
-                        QtControls.CheckBox {
-                            id: excludeCheckBox
-                            checked: kcm.fontsAASettings.exclude
-                            onToggled: kcm.fontsAASettings.exclude = checked;
-                            text: i18n("Exclude range from anti-aliasing")
+                        spacing: 0
+
+                        // Anti-Aliasing
+                        Item {
                             Layout.fillWidth: true
-                
-                            KCM.SettingStateBinding {
-                                configObject: kcm.fontsAASettings
-                                settingName: "exclude"
-                                extraEnabledConditions: !kcm.fontsAASettings.isAaImmutable && antiAliasingCheckBox.checked
-                            }
-                        }
-                
-                        RowLayout {
-                            id: excludeField
-                            Layout.preferredWidth: formLayout.maxImplicitWidth
-                            enabled: antiAliasingCheckBox.enabled && antiAliasingCheckBox.checked
-                
-                            QtControls.SpinBox {
-                                id: excludeFromSpinBox
-                                stepSize: 1
-                                onValueModified: kcm.fontsAASettings.excludeFrom = value
-                                textFromValue: function(value, locale) { return i18n("%1 pt", value)}
-                                valueFromText: function(text, locale) { return parseInt(text) }
-                                editable: true
-                                value: kcm.fontsAASettings.excludeFrom
-                
-                                KCM.SettingStateBinding {
-                                    configObject: kcm.fontsAASettings
-                                    settingName: "excludeFrom"
-                                    extraEnabledConditions: excludeCheckBox.checked
+                            implicitHeight: Math.max(Kirigami.Units.gridUnit * 2.5, 48)
+
+                            RowLayout {
+                                anchors {
+                                    fill: parent
+                                    leftMargin: Kirigami.Units.smallSpacing
+                                    rightMargin: Kirigami.Units.smallSpacing
                                 }
-                            }
-                
-                            QtControls.Label {
-                                Layout.fillWidth: true
-                                horizontalAlignment: Text.AlignHCenter
-                                text: i18n("to")
-                                textFormat: Text.PlainText
-                                enabled: excludeCheckBox.checked
-                            }
-                
-                            QtControls.SpinBox {
-                                id: excludeToSpinBox
-                                stepSize: 1
-                                onValueModified: kcm.fontsAASettings.excludeTo = value
-                                textFromValue: function(value, locale) { return i18n("%1 pt", value)}
-                                valueFromText: function(text, locale) { return parseInt(text) }
-                                editable: true
-                                value: kcm.fontsAASettings.excludeTo
-                
-                                KCM.SettingStateBinding {
-                                    configObject: kcm.fontsAASettings
-                                    settingName: "excludeTo"
-                                    extraEnabledConditions: excludeCheckBox.checked
+                                spacing: Kirigami.Units.largeSpacing
+
+                                QtControls.Label {
+                                    text: i18n("Kenar Yumuşatma (Anti-Aliasing)")
+                                    font.weight: Font.DemiBold
+                                    color: Kirigami.Theme.textColor
+                                    Layout.preferredWidth: 200
                                 }
-                            }
-                            Connections {
-                                target: kcm.fontsAASettings
-                                function onExcludeFromChanged() {
-                                    excludeFromSpinBox.value = kcm.fontsAASettings.excludeFrom;
-                                }
-                                function onExcludeToChanged() {
-                                    excludeToSpinBox.value = kcm.fontsAASettings.excludeTo;
-                                }
-                            }
-                        }
-                
-                        RowLayout {
-                            Kirigami.FormData.label: i18nc("Used as a noun, and precedes a combobox full of options", "Sub-pixel rendering:")
-                            QtControls.ComboBox {
-                                id: subPixelCombo
-                                Layout.preferredWidth: formLayout.maxImplicitWidth
-                                currentIndex: kcm.subPixelCurrentIndex
-                                onActivated: (index) => {
-                                    kcm.subPixelCurrentIndex = index
-                                }
-                                model: kcm.subPixelOptionsModel
-                                textRole: "display"
-                                popup.width: popup.implicitWidth
-                                delegate: QtControls.ItemDelegate {
-                                    id: subPixelDelegate
-                                    contentItem: ColumnLayout {
-                                        id: subPixelLayout
-                                        Kirigami.Heading {
-                                            id: subPixelComboText
-                                            text: model.display
-                                            textFormat: Text.PlainText
-                                            level: 5
-                                        }
-                                        Image {
-                                            id: subPixelComboImage
-                                            Layout.preferredWidth: implicitWidth / dprHelper.devicePixelRatio
-                                            Layout.preferredHeight: implicitHeight / dprHelper.devicePixelRatio
-                                            source: kcm.imageProviderReady ? "image://preview/" + model.index + "_" + kcm.hintingCurrentIndex + "_" + dprHelper.devicePixelRatio : ""
-                                            asynchronous: true
-                                        }
+
+                                Item { Layout.fillWidth: true }
+
+                                QtControls.Switch {
+                                    id: antiAliasingCheckBox
+                                    checked: kcm.fontsAASettings.antiAliasing
+                                    onToggled: kcm.fontsAASettings.antiAliasing = checked
+
+                                    KCM.SettingStateBinding {
+                                        configObject: kcm.fontsAASettings
+                                        settingName: "antiAliasing"
+                                        extraEnabledConditions: !kcm.fontsAASettings.isAaImmutable
                                     }
                                 }
-                
-                                KCM.SettingStateBinding {
-                                    configObject: kcm.fontsAASettings
-                                    settingName: "subPixel"
-                                    extraEnabledConditions: antiAliasingCheckBox.checked && !kcm.fontsAASettings.isAaImmutable
-                                }
-                            }
-                            Kirigami.ContextualHelpButton {
-                                toolTipText: xi18nc("@info:tooltip Sub-pixel rendering", "<para>On TFT or LCD screens every single pixel is actually composed of three or four smaller monochrome lights. These <emphasis>sub-pixels</emphasis> can be changed independently to further improve the quality of displayed fonts.</para> <para>The rendering quality is only improved if the selection matches the manner in which the sub-pixels of your display are aligned. Most displays have a linear ordering of <emphasis>RGB</emphasis> sub-pixels, some have <emphasis>BGR</emphasis> and some exotic orderings are not supported by this feature.</para>This does not work with CRT monitors.")
                             }
                         }
-                
-                        RowLayout {
-                            Kirigami.FormData.label: i18nc("Used as a noun, and precedes a combobox full of options", "Hinting:")
-                            QtControls.ComboBox {
-                                id: hintingCombo
-                                Layout.preferredWidth: formLayout.maxImplicitWidth
-                                currentIndex: kcm.hintingCurrentIndex
-                                onActivated: (index) => {
-                                    kcm.hintingCurrentIndex = index
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            height: 1
+                            color: Kirigami.Theme.textColor
+                            opacity: 0.06
+                        }
+
+                        // Sub-pixel rendering
+                        Item {
+                            Layout.fillWidth: true
+                            implicitHeight: Math.max(Kirigami.Units.gridUnit * 2.5, 48)
+
+                            RowLayout {
+                                anchors {
+                                    fill: parent
+                                    leftMargin: Kirigami.Units.smallSpacing
+                                    rightMargin: Kirigami.Units.smallSpacing
                                 }
-                                model: kcm.hintingOptionsModel
-                                textRole: "display"
-                                popup.width: popup.implicitWidth
-                                delegate: QtControls.ItemDelegate {
-                                    id: hintingDelegate
-                                    contentItem: ColumnLayout {
-                                        id: hintingLayout
-                                        Kirigami.Heading {
-                                            id: hintingComboText
-                                            text: model.display
-                                            textFormat: Text.PlainText
-                                            level: 5
-                                        }
-                                        Image {
-                                            id: hintingComboImage
-                                            Layout.preferredWidth: implicitWidth / dprHelper.devicePixelRatio
-                                            Layout.preferredHeight: implicitHeight / dprHelper.devicePixelRatio
-                                            source: kcm.imageProviderReady ? "image://preview/" + kcm.subPixelCurrentIndex + "_" + model.index + "_" + dprHelper.devicePixelRatio : ""
-                                            asynchronous: true
-                                        }
+                                spacing: Kirigami.Units.largeSpacing
+
+                                QtControls.Label {
+                                    text: i18n("Alt Piksel Oluşturma")
+                                    font.weight: Font.DemiBold
+                                    color: Kirigami.Theme.textColor
+                                    Layout.preferredWidth: 200
+                                }
+
+                                Item { Layout.fillWidth: true }
+
+                                QtControls.ComboBox {
+                                    id: subPixelCombo
+                                    implicitWidth: 220
+                                    currentIndex: kcm.subPixelCurrentIndex
+                                    onActivated: (index) => {
+                                        kcm.subPixelCurrentIndex = index
                                     }
+                                    model: kcm.subPixelOptionsModel
+                                    textRole: "display"
                                 }
-                                KCM.SettingStateBinding {
-                                    configObject: kcm.fontsAASettings
-                                    settingName: "hinting"
-                                    extraEnabledConditions: antiAliasingCheckBox.checked && !kcm.fontsAASettings.isAaImmutable
-                                }
-                            }
-                            Kirigami.ContextualHelpButton {
-                                toolTipText: xi18nc("@info:tooltip Hinting", "Hinting is a technique in which hints embedded in a font are used to enhance the rendering quality especially at small sizes. Stronger hinting generally leads to sharper edges but the small letters will less closely resemble their shape at big sizes.")
                             }
                         }
-                
-                        RowLayout {
-                            Layout.preferredWidth: formLayout.maxImplicitWidth
-                            // We don't want people messing with the font DPI on Wayland;
-                            // they should always be using the global scaling system instead
-                            visible: Qt.platform.pluginName === "xcb"
-                
-                            QtControls.CheckBox {
-                                id: dpiCheckBox
-                                checked: kcm.fontsAASettings.dpi !== 0
-                                text: i18n("Force font DPI:")
-                                onToggled: {
-                                    kcm.fontsAASettings.dpi = checked ? dpiSpinBox.value : 0
-                                    dpiTwiddledMessage.visible = checked
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            height: 1
+                            color: Kirigami.Theme.textColor
+                            opacity: 0.06
+                        }
+
+                        // Hinting
+                        Item {
+                            Layout.fillWidth: true
+                            implicitHeight: Math.max(Kirigami.Units.gridUnit * 2.5, 48)
+
+                            RowLayout {
+                                anchors {
+                                    fill: parent
+                                    leftMargin: Kirigami.Units.smallSpacing
+                                    rightMargin: Kirigami.Units.smallSpacing
                                 }
-                
-                                KCM.SettingStateBinding {
-                                    configObject: kcm.fontsAASettings
-                                    settingName: "forceFontDPI"
-                                    extraEnabledConditions: antiAliasingCheckBox.checked && !kcm.fontsAASettings.isAaImmutable
+                                spacing: Kirigami.Units.largeSpacing
+
+                                QtControls.Label {
+                                    text: i18n("Yazıtipi İpuçları (Hinting)")
+                                    font.weight: Font.DemiBold
+                                    color: Kirigami.Theme.textColor
+                                    Layout.preferredWidth: 200
                                 }
-                            }
-                
-                            QtControls.SpinBox {
-                                id: dpiSpinBox
-                                editable: true
-                                value: kcm.fontsAASettings.dpi !== 0 ? kcm.fontsAASettings.dpi : 96
-                                onValueModified: kcm.fontsAASettings.dpi = value
-                                to: 999
-                                from: 1
-                
-                                KCM.SettingStateBinding {
-                                    configObject: kcm.fontsAASettings
-                                    settingName: "forceFontDPI"
-                                    extraEnabledConditions: dpiCheckBox.enabled && dpiCheckBox.checked
+
+                                Item { Layout.fillWidth: true }
+
+                                QtControls.ComboBox {
+                                    id: hintingCombo
+                                    implicitWidth: 220
+                                    currentIndex: kcm.hintingCurrentIndex
+                                    onActivated: (index) => {
+                                        kcm.hintingCurrentIndex = index
+                                    }
+                                    model: kcm.hintingOptionsModel
+                                    textRole: "display"
                                 }
-                            }
-                            Kirigami.ContextualHelpButton {
-                                toolTipText: xi18nc("@info:tooltip Force fonts DPI", "<para>Enter your screen's DPI here to make on-screen fonts match their physical sizes when printed. Changing this option from its default value will conflict with many apps; some icons and images may not scale as expected.</para><para>To increase text size, change the size of the fonts above. To scale everything, use the scaling slider on the <interface>Display & Monitor</interface> page.</para>")
                             }
                         }
                     }
-
                 }
+            }
+
+            Item {
+                Layout.fillWidth: true
+                implicitHeight: Kirigami.Units.largeSpacing
             }
         }
     }
-
+}

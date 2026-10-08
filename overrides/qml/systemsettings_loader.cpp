@@ -2,6 +2,8 @@
 #include <QResource>
 #include <QFile>
 #include <QDir>
+#include <QSurfaceFormat>
+#include <QQuickWindow>
 #include <cstring>
 
 extern int qInitResources();
@@ -30,5 +32,10 @@ extern "C" void* dlopen(const char* filename, int flags) {
 
 __attribute__((constructor))
 static void ro_kde_systemsettings_init() {
+    QSurfaceFormat fmt = QSurfaceFormat::defaultFormat();
+    fmt.setAlphaBufferSize(0);
+    QSurfaceFormat::setDefaultFormat(fmt);
+    QQuickWindow::setDefaultAlphaBuffer(false);
+
     register_user_overrides();
 }

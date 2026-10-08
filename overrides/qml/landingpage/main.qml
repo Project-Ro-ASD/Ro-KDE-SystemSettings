@@ -33,8 +33,8 @@ KCMUtils.SimpleKCM {
         Rectangle {
             Layout.fillWidth: true
             radius: 14
-            color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.035)
-            border.color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
+            color: "#ffffff"
+            border.color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.08)
             border.width: 1
             implicitHeight: heroContent.implicitHeight + Kirigami.Units.largeSpacing * 2
 
@@ -107,8 +107,8 @@ KCMUtils.SimpleKCM {
         Rectangle {
             Layout.fillWidth: true
             radius: 14
-            color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.025)
-            border.color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
+            color: "#ffffff"
+            border.color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.08)
             border.width: 1
             implicitHeight: themeCardCol.implicitHeight + Kirigami.Units.largeSpacing * 2.5
 
@@ -265,8 +265,8 @@ KCMUtils.SimpleKCM {
         Rectangle {
             Layout.fillWidth: true
             radius: 14
-            color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.025)
-            border.color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
+            color: "#ffffff"
+            border.color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.08)
             border.width: 1
             implicitHeight: behaviorCardCol.implicitHeight + Kirigami.Units.largeSpacing * 2.5
 
@@ -419,8 +419,8 @@ KCMUtils.SimpleKCM {
         Rectangle {
             Layout.fillWidth: true
             radius: 14
-            color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.025)
-            border.color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.backgroundColor, Kirigami.Theme.textColor, 0.12)
+            color: "#ffffff"
+            border.color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.08)
             border.width: 1
             visible: recentlyUsedRepeater.count > 0
             implicitHeight: mostUsedCardCol.implicitHeight + Kirigami.Units.largeSpacing * 2.5
