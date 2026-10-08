@@ -2,4 +2,30 @@
     <qresource prefix="/kcm/kcm_landingpage">
         <file alias="main.qml">landingpage/main.qml</file>
     </qresource>
+    <qresource prefix="/kcm/kcm_mouse">
+        <file alias="main.qml">kcm_mouse/main.qml</file>
+    </qresource>
+    <qresource prefix="/kcm/kcm_about-distro">
+        <file alias="main.qml">kcm_about-distro/main.qml</file>
+    </qresource>
+    <qresource prefix="/qt/qml/org/kde/kirigami/forms/private/cards">
+        <file alias="FormGroup.qml">forms/private/cards/FormGroup.qml</file>
+        <file alias="FormEntry.qml">forms/private/cards/FormEntry.qml</file>
+        <file alias="FormSeparator.qml">forms/private/cards/FormSeparator.qml</file>
+        <file alias="Form.qml">forms/private/cards/Form.qml</file>
+    </qresource>
+    <qresource prefix="/qt/qml/org/kde/kirigami/forms/private/flat">
+        <file alias="FormGroup.qml">forms/private/flat/FormGroup.qml</file>
+        <file alias="FormEntry.qml">forms/private/flat/FormEntry.qml</file>
+        <file alias="FormSeparator.qml">forms/private/flat/FormSeparator.qml</file>
+        <file alias="Form.qml">forms/private/flat/Form.qml</file>
+    </qresource>
+    <qresource prefix="/qt/qml/org/kde/kirigami/layouts">
+        <file alias="qmldir">layouts/qmldir</file>
+        <file alias="FormLayout.qml">layouts/FormLayout.qml</file>
+    </qresource>
+    <qresource prefix="/kcm/kcm_powerdevilprofilesconfig">
+        <file alias="main.qml">powerdevil/main.qml</file>
+        <file alias="ProfileConfig.qml">powerdevil/ProfileConfig.qml</file>
+    </qresource>
 </RCC>

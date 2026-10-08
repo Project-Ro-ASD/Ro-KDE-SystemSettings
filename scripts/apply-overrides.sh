@@ -62,7 +62,7 @@ fi
 
 # Loader paylaşımlı kütüphane derleme / kopyalama
 if command -v g++ >/dev/null 2>&1 && [ -f "$REPO_DIR/overrides/qml/systemsettings_loader.cpp" ]; then
-    g++ -O2 -shared -fPIC "$REPO_DIR/overrides/qml/systemsettings_loader.cpp" $(pkg-config --cflags --libs Qt6Core) -o "$REPO_DIR/overrides/qml/libsystemsettings_override.so"
+    g++ -O2 -shared -fPIC "$REPO_DIR/overrides/qml/systemsettings_loader.cpp" $(pkg-config --cflags --libs Qt6Core) -ldl -o "$REPO_DIR/overrides/qml/libsystemsettings_override.so"
 fi
 if [ -f "$REPO_DIR/overrides/qml/libsystemsettings_override.so" ]; then
     cp "$REPO_DIR/overrides/qml/libsystemsettings_override.so" "$HOME/.local/lib/libsystemsettings_override.so"
