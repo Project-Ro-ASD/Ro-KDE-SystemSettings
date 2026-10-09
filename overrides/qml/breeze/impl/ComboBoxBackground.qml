@@ -1,0 +1,76 @@
+/* SPDX-FileCopyrightText: 2020 Noah Davis <noahadvs@gmail.com>
+ * SPDX-License-Identifier: LGPL-2.1-only OR LGPL-3.0-only OR LicenseRef-KDE-Accepted-LGPL
+ */
+
+import QtQuick
+import QtQuick.Templates as T
+import org.kde.kirigami as Kirigami
+
+import "." as Impl
+
+Impl.StandardRectangle {
+    id: mainBackground
+
+    required property T.ComboBox control
+
+    property color flatColor: Qt.rgba(
+        Kirigami.Theme.backgroundColor.r,
+        Kirigami.Theme.backgroundColor.g,
+        Kirigami.Theme.backgroundColor.b,
+        0
+    )
+    property bool highlightBackground: control.down
+    property bool highlightBorder: control.down || control.visualFocus || control.hovered
+
+    implicitWidth: 200
+    implicitHeight: Impl.Units.mediumControlHeight
+
+    visible: !control.flat || control.editable || control.down || control.visualFocus || control.hovered
+
+    color: {
+        if (highlightBackground) {
+            return Kirigami.Theme.alternateBackgroundColor
+        } else if (control.flat) {
+            return flatColor
+        } else {
+            return Kirigami.Theme.backgroundColor
+        }
+    }
+
+    border {
+        color: highlightBorder ?
+            Kirigami.Theme.focusColor : Impl.Theme.buttonSeparatorColor()
+        width: Impl.Units.smallBorder
+    }
+
+    Behavior on color {
+        enabled: mainBackground.highlightBackground
+        ColorAnimation {
+            duration: Kirigami.Units.shortDuration
+            easing.type: Easing.OutCubic
+        }
+    }
+    Behavior on border.color {
+        enabled: mainBackground.highlightBorder
+        ColorAnimation {
+            duration: Kirigami.Units.shortDuration
+            easing.type: Easing.OutCubic
+        }
+    }
+
+    // Modern Oval / Pill radius (fully rounded pill shape matching reference design)
+    radius: Math.round(height / 2)
+
+    SmallBoxShadow {
+        id: shadow
+        opacity: mainBackground.control.down ? 0 : 1
+        visible: !mainBackground.control.editable && !mainBackground.control.flat && mainBackground.control.enabled
+        radius: parent.radius
+    }
+
+    FocusRect {
+        id: focusRect
+        baseRadius: mainBackground.radius
+        visible: mainBackground.control.visualFocus
+    }
+}

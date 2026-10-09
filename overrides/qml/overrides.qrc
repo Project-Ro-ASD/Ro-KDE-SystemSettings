@@ -76,9 +76,17 @@
         <file alias="FormLayout.qml">layouts/FormLayout.qml</file>
     </qresource>
     <qresource prefix="/qt/qml/org/kde/desktop">
+        <file alias="Button.qml">desktop/Button.qml</file>
+        <file alias="ToolButton.qml">desktop/ToolButton.qml</file>
+        <file alias="ComboBox.qml">desktop/ComboBox.qml</file>
         <file alias="RadioButton.qml">desktop/RadioButton.qml</file>
         <file alias="RadioDelegate.qml">desktop/RadioDelegate.qml</file>
         <file alias="Slider.qml">desktop/Slider.qml</file>
+    </qresource>
+    <qresource prefix="/qt/qml/org/kde/breeze/impl">
+        <file alias="ButtonBackground.qml">breeze/impl/ButtonBackground.qml</file>
+        <file alias="ComboBoxBackground.qml">breeze/impl/ComboBoxBackground.qml</file>
+        <file alias="Units.qml">breeze/impl/Units.qml</file>
     </qresource>
     <qresource prefix="/kcm/components">
         <file alias="ModernRadioButton.qml">components/ModernRadioButton.qml</file>

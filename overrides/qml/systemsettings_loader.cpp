@@ -1,3 +1,4 @@
+#include <QQuickStyle>
 #include <dlfcn.h>
 #include <QResource>
 #include <QFile>
@@ -17,6 +18,7 @@
 #include <QQmlEngine>
 #include <QQmlContext>
 #include <QUrl>
+#include <QMetaProperty>
 #include <cstring>
 #include <cstdlib>
 
@@ -40,8 +42,17 @@ __attribute__((constructor)) static void loader_constructor() {
 
 static void configure_engine(QQmlEngine *engine) {
     if (!engine) return;
-    engine->addImportPath(QDir::homePath() + QStringLiteral("/.local/share/systemsettings/qml"));
-    engine->addImportPath(QDir::homePath() + QStringLiteral("/.local/lib/qt6/qml"));
+    QStringList paths = engine->importPathList();
+    QString localQml = QDir::homePath() + QStringLiteral("/.local/lib/qt6/qml");
+    if (!paths.contains(localQml)) {
+        paths.prepend(localQml);
+    }
+    QString localShare = QDir::homePath() + QStringLiteral("/.local/share/systemsettings/qml");
+    if (!paths.contains(localShare)) {
+        paths.prepend(localShare);
+    }
+    engine->setImportPathList(paths);
+
     if (const char *testNav = getenv("RO_TEST_NAV")) {
         engine->rootContext()->setContextProperty(QStringLiteral("roTestNav"), QString::fromUtf8(testNav));
     } else {
@@ -50,16 +61,29 @@ static void configure_engine(QQmlEngine *engine) {
 }
 
 static QUrl redirect_url_if_needed(const QUrl &url, QQmlEngine *engine) {
-    if (url.toString() == QStringLiteral("qrc:/qt/qml/org/kde/systemsettings/Main.qml")) {
+    configure_engine(engine);
+    QString urlStr = url.toString();
+    if (urlStr == QStringLiteral("qrc:/qt/qml/org/kde/systemsettings/Main.qml")) {
         QString localMain = QDir::homePath() + QStringLiteral("/.local/share/systemsettings/qml/Main.qml");
         if (QFile::exists(localMain)) {
-            configure_engine(engine);
-            fprintf(stderr, "[OVERRIDE] Redirected Main.qml to: %s\n", localMain.toUtf8().constData());
             return QUrl::fromLocalFile(localMain);
+        }
+    }
+    if (urlStr == QStringLiteral("qrc:/qt/qml/org/kde/breeze/impl/ButtonBackground.qml")) {
+        QString local = QDir::homePath() + QStringLiteral("/.local/lib/qt6/qml/org/kde/breeze/impl/ButtonBackground.qml");
+        if (QFile::exists(local)) {
+            return QUrl::fromLocalFile(local);
+        }
+    }
+    if (urlStr == QStringLiteral("qrc:/qt/qml/org/kde/breeze/impl/ComboBoxBackground.qml")) {
+        QString local = QDir::homePath() + QStringLiteral("/.local/lib/qt6/qml/org/kde/breeze/impl/ComboBoxBackground.qml");
+        if (QFile::exists(local)) {
+            return QUrl::fromLocalFile(local);
         }
     }
     return url;
 }
+
 
 // Hook QQuickWidget::setSource
 extern "C" void _ZN12QQuickWidget9setSourceERK4QUrl(QQuickWidget *self, const QUrl &url) {
@@ -288,7 +312,45 @@ extern "C" int _ZN10QTabWidget6addTabEP7QWidgetRK7QString(QTabWidget *self, QWid
     return idx;
 }
 
+// Hook Kirigami::Platform::Units qt_metacall & cornerRadius to make all QML buttons, comboboxes, and controls pill-shaped (16px)
+extern "C" int _ZN8Kirigami8Platform5Units11qt_metacallEN11QMetaObject4CallEiPPv(
+    QObject *self, QMetaObject::Call c, int id, void **a)
+{
+    static int (*real_metacall)(QObject*, QMetaObject::Call, int, void**) = nullptr;
+    if (!real_metacall) {
+        real_metacall = (int (*)(QObject*, QMetaObject::Call, int, void**))
+            dlsym(RTLD_NEXT, "_ZN8Kirigami8Platform5Units11qt_metacallEN11QMetaObject4CallEiPPv");
+    }
+    int res = real_metacall ? real_metacall(self, c, id, a) : -1;
+    if (c == QMetaObject::ReadProperty && self && a && a[0]) {
+        const QMetaObject *mo = self->metaObject();
+        if (mo) {
+            int propCount = mo->propertyCount();
+            if (id >= 0 && id < propCount) {
+                const char *propName = mo->property(id).name();
+                if (propName && strcmp(propName, "cornerRadius") == 0) {
+                    *reinterpret_cast<double*>(a[0]) = 16.0;
+                }
+            }
+        }
+    }
+    return res;
+}
 
+extern "C" double _ZNK8Kirigami8Platform5Units12cornerRadiusEv(void *self) {
+    return 16.0;
+}
+
+extern "C" void _ZN11QQuickStyle8setStyleERK7QString(const QString &style) {
+    static void (*real_setStyle)(const QString&) = nullptr;
+    if (!real_setStyle) {
+        real_setStyle = (void (*)(const QString&))dlsym(RTLD_NEXT, "_ZN11QQuickStyle8setStyleERK7QString");
+    }
+    static const QString breezeStyle = QStringLiteral("org.kde.breeze");
+    if (real_setStyle) {
+        real_setStyle(breezeStyle);
+    }
+}
 
 __attribute__((constructor))
 static void ro_kde_systemsettings_init() {
@@ -296,6 +358,8 @@ static void ro_kde_systemsettings_init() {
     fmt.setAlphaBufferSize(0);
     QSurfaceFormat::setDefaultFormat(fmt);
     QQuickWindow::setDefaultAlphaBuffer(false);
+
+    QQuickStyle::setStyle(QStringLiteral("org.kde.breeze"));
 
     register_user_overrides();
 }

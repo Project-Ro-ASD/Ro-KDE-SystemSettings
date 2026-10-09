@@ -58,6 +58,126 @@ QWidget[singleCard="true"] {
     border-radius: 12px;
 }
 
+/* Modern Oval / Pill Buttons for QWidgets and Footer Bar */
+QPushButton {
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.16);
+    border-radius: 16px;
+    padding: 6px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #1e293b;
+    min-height: 20px;
+    outline: none;
+}
 
+QPushButton:hover {
+    background-color: #f1f5f9;
+    border-color: rgba(0, 0, 0, 0.28);
+    color: #0f172a;
+}
 
+QPushButton:pressed {
+    background-color: #e2e8f0;
+    border-color: rgba(0, 0, 0, 0.38);
+}
 
+QPushButton:disabled {
+    background-color: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.08);
+    color: #94a3b8;
+}
+
+/* Primary / Highlight button (e.g. Uygula / default) */
+QPushButton:default, QPushButton[default="true"] {
+    background-color: #3b82f6;
+    border: 1px solid #2563eb;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+QPushButton:default:hover, QPushButton[default="true"]:hover {
+    background-color: #2563eb;
+    border-color: #1d4ed8;
+    color: #ffffff;
+}
+
+QPushButton:default:pressed, QPushButton[default="true"]:pressed {
+    background-color: #1d4ed8;
+}
+
+QPushButton:default:disabled, QPushButton[default="true"]:disabled {
+    background-color: rgba(59, 130, 246, 0.4);
+    border-color: transparent;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Footer dialog button box */
+QDialogButtonBox {
+    background: transparent;
+    border: none;
+    margin: 8px 16px;
+}
+
+QDialogButtonBox QPushButton {
+    border-radius: 16px;
+    padding: 6px 20px;
+    min-height: 22px;
+}
+
+/* Modern Pill QToolButton */
+QToolButton {
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.16);
+    border-radius: 16px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #1e293b;
+    outline: none;
+}
+
+QToolButton:hover {
+    background-color: #f1f5f9;
+    border-color: rgba(0, 0, 0, 0.28);
+    color: #0f172a;
+}
+
+QToolButton:pressed {
+    background-color: #e2e8f0;
+}
+
+QToolButton:disabled {
+    background-color: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.08);
+    color: #94a3b8;
+}
+
+/* Modern Pill QComboBox */
+QComboBox {
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.16);
+    border-radius: 16px;
+    padding: 5px 28px 5px 14px;
+    min-height: 22px;
+    font-size: 13px;
+    color: #1e293b;
+}
+
+QComboBox:hover {
+    background-color: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.28);
+}
+
+QComboBox:on {
+    border-color: #3b82f6;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 24px;
+    border-left: none;
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+}
