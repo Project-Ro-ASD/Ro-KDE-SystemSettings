@@ -27,3 +27,37 @@ QTabWidget::pane {
     border: none;
     background: transparent;
 }
+
+/* Modern Card Layout for QGroupBox in QWidget KCMs */
+QGroupBox {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    margin-top: 20px;
+    margin-bottom: 12px;
+    padding: 16px 18px;
+    font-weight: 600;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    left: 14px;
+    top: 4px;
+    padding: 0 6px;
+    background: transparent;
+    color: #0f172a;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* Modern Card Layout for single-form tab pages */
+QWidget[singleCard="true"] {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    margin: 14px 18px;
+    padding: 18px;
+}
+
+
+
