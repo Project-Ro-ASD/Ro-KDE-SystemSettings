@@ -63,7 +63,7 @@ extern "C" void _ZN11QFormLayout17setLabelAlignmentE6QFlagsIN2Qt13AlignmentFlagE
     }
 }
 
-// Hook QFormLayout constructor to default to left alignment
+// Hook QFormLayout constructor to default to left alignment with modern padding
 extern "C" void _ZN11QFormLayoutC1EP7QWidget(QFormLayout *self, QWidget *parent) {
     static void (*real_ctor)(QFormLayout*, QWidget*) = nullptr;
     if (!real_ctor) {
@@ -75,8 +75,12 @@ extern "C" void _ZN11QFormLayoutC1EP7QWidget(QFormLayout *self, QWidget *parent)
     if (self) {
         self->setFormAlignment(Qt::AlignLeft | Qt::AlignTop);
         self->setLabelAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        self->setContentsMargins(16, 14, 16, 14);
+        self->setHorizontalSpacing(24);
+        self->setVerticalSpacing(12);
     }
 }
+
 
 // Hook QGroupBox::setAlignment to force left alignment
 extern "C" void _ZN9QGroupBox12setAlignmentEi(QGroupBox *self, int alignment) {
@@ -149,7 +153,7 @@ extern "C" void _ZN11QGridLayout9addWidgetEP7QWidgetiiii6QFlagsIN2Qt13AlignmentF
     }
 }
 
-// Hook QTabWidget::addTab to support automated tab testing and card styling
+// Hook QTabWidget::addTab to support automated tab testing, margins, and card styling
 extern "C" int _ZN10QTabWidget6addTabEP7QWidgetRK7QString(QTabWidget *self, QWidget *page, const QString &label) {
     static int (*real_addTab)(QTabWidget*, QWidget*, const QString&) = nullptr;
     if (!real_addTab) {
@@ -160,6 +164,9 @@ extern "C" int _ZN10QTabWidget6addTabEP7QWidgetRK7QString(QTabWidget *self, QWid
         if (groupBoxes.isEmpty()) {
             page->setProperty("singleCard", true);
             page->setAttribute(Qt::WA_StyledBackground, true);
+        }
+        if (page->layout()) {
+            page->layout()->setContentsMargins(20, 16, 20, 16);
         }
     }
 
@@ -175,6 +182,7 @@ extern "C" int _ZN10QTabWidget6addTabEP7QWidgetRK7QString(QTabWidget *self, QWid
     }
     return idx;
 }
+
 
 
 __attribute__((constructor))
