@@ -8,35 +8,7 @@ echo "==> Ro-KDE-SystemSettings özelleştirmeleri sisteme uygulanıyor..."
 # Önceki çalışan systemsettings süreçlerini sonlandır
 pkill -9 systemsettings 2>/dev/null || true
 
-# Saydamlık kwin kurallarını kaldır (arka plan dümdüz opak ve beyaz olsun)
-if [ -f "$HOME/.config/kwinrulesrc" ]; then
-    sed -i '/opacity/d' "$HOME/.config/kwinrulesrc" || true
-    sed -i '/Saydamlık/d' "$HOME/.config/kwinrulesrc" || true
-    if command -v qdbus >/dev/null 2>&1; then
-        qdbus org.kde.KWin /KWin reconfigure >/dev/null 2>&1 || true
-    fi
-fi
-
-# 1. Kvantum Teması (Modern yuvarlatılmış kontroller ve opak pencereler)
-mkdir -p "$HOME/.local/share/Kvantum/KayseriTasarim" "$HOME/.config/Kvantum/KayseriTasarim"
-if [ -d "$REPO_DIR/overrides/theme/kvantum" ]; then
-    cp -r "$REPO_DIR/overrides/theme/kvantum/"* "$HOME/.local/share/Kvantum/KayseriTasarim/"
-    cp -r "$REPO_DIR/overrides/theme/kvantum/"* "$HOME/.config/Kvantum/KayseriTasarim/"
-    cat << 'EOF' > "$HOME/.config/Kvantum/kvantum.kvconfig"
-[General]
-theme=KayseriTasarim
-EOF
-    echo "  [OK] Kvantum (KayseriTasarim) teması yüklendi ve etkinleştirildi."
-fi
-
-# 2. Klassy Pencere Dekorasyon Profilleri
-mkdir -p "$HOME/.config/klassy"
-if [ -d "$REPO_DIR/overrides/theme/klassy" ]; then
-    cp -r "$REPO_DIR/overrides/theme/klassy/"* "$HOME/.config/klassy/"
-    echo "  [OK] Klassy pencere dekorasyon ayarları yüklendi."
-fi
-
-# 3. Çeviriler (.po -> .mo derleme)
+# 1. Çeviriler (.po -> .mo derleme)
 mkdir -p "$HOME/.local/share/locale/tr/LC_MESSAGES"
 for po in "$REPO_DIR/overrides/translations/"*.po; do
     if [ -f "$po" ]; then
@@ -46,7 +18,7 @@ for po in "$REPO_DIR/overrides/translations/"*.po; do
     fi
 done
 
-# 4. Kategori Meta Verileri (Tek seviyeli temiz kenar çubuğu ve yandan açılan alt kategoriler)
+# 2. Kategori Meta Verileri (Tek seviyeli temiz kenar çubuğu ve yandan açılan alt kategoriler)
 mkdir -p "$HOME/.local/share/systemsettings/categories"
 if [ -d "$REPO_DIR/overrides/metadata/categories" ]; then
     cp "$REPO_DIR/overrides/metadata/categories/"*.desktop "$HOME/.local/share/systemsettings/categories/"
@@ -60,7 +32,7 @@ else
     echo "  [INFO] Sistem genelinde (/usr/share/systemsettings/categories/) geçerli kılmak için bu scripti sudo ile de çalıştırabilirsiniz."
 fi
 
-# 5. Modern Kart QML ve Runtime Override Katmanı (Deepin 23 benzeri kart arayüzü)
+# 3. Modern Kart QML ve Runtime Override Katmanı (Deepin 23 benzeri kart arayüzü)
 mkdir -p "$HOME/.local/lib" "$HOME/.local/bin" "$HOME/.local/share/systemsettings" "$HOME/.local/share/applications"
 
 # RCC Resource derleme / kopyalama
@@ -85,7 +57,7 @@ fi
 # QML Sidebar ve Sistem Ayarları Katmanı
 mkdir -p "$HOME/.local/share/systemsettings/qml"
 if [ -d "$REPO_DIR/overrides/qml/systemsettings" ]; then
-    cp -r "$REPO_DIR/overrides/qml/systemsettings/"* "$HOME/.local/share/systemsettings/qml/"
+    cp -r "$REPO_DIR/overrides/systemsettings/"* "$HOME/.local/share/systemsettings/qml/" 2>/dev/null || cp -r "$REPO_DIR/overrides/qml/systemsettings/"* "$HOME/.local/share/systemsettings/qml/"
     echo "  [OK] Modern tek sütunlu hiyerarşik kenar çubuğu QML bileşenleri kuruldu."
 fi
 
@@ -96,7 +68,7 @@ if [ -d "$REPO_DIR/overrides/qml/imports" ]; then
     echo "  [OK] Modern Kirigami FormLayout ve QML bileşenleri kuruldu (~/.local/lib/qt6/qml/)."
 fi
 
-# 5.1 Tab pill butonları QSS kopyalama
+# 3.1 Tab pill butonları QSS kopyalama
 if [ -f "$REPO_DIR/overrides/theme/tabs.qss" ]; then
     cp "$REPO_DIR/overrides/theme/tabs.qss" "$HOME/.local/share/systemsettings/tabs.qss"
     echo "  [OK] Modern hap sekme butonları stilleri kuruldu (~/.local/share/systemsettings/tabs.qss)."
@@ -134,7 +106,7 @@ mkdir -p "$HOME/.config/environment.d"
 echo 'PATH="$HOME/.local/bin:$PATH"' > "$HOME/.config/environment.d/10-local-bin.conf"
 echo "  [OK] Sistem Ayarları modern başlatıcısı ve ortam değişkenleri yapılandırıldı."
 
-# 6. KDE Sistem Arayüz Önbelleğini Yenile
+# 4. KDE Sistem Arayüz Önbelleğini Yenile
 if command -v kbuildsycoca6 >/dev/null 2>&1; then
     kbuildsycoca6 --noincremental >/dev/null 2>&1 || true
     echo "  [OK] KDE sycoca6 önbelleği temizlendi ve yenilendi."
