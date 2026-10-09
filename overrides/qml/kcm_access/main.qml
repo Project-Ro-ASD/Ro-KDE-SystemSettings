@@ -13,6 +13,7 @@ import org.kde.kirigami as Kirigami
 import org.kde.kirigami.delegates as KD
 import org.kde.kcmutils as KCMUtils
 import org.kde.kwindowsystem
+import org.kde.systemsettings.nav 1.0
 
 KCMUtils.AbstractKCM {
     id: root
@@ -83,8 +84,10 @@ KCMUtils.AbstractKCM {
 
         QQC2.ScrollView {
             id: leftSidePaneBackground
+            visible: !SettingsNav.inDrillDownMode
             Layout.fillHeight: true
-            Layout.minimumWidth: Kirigami.Units.gridUnit * 13
+            Layout.preferredWidth: SettingsNav.inDrillDownMode ? 0 : Kirigami.Units.gridUnit * 13
+            Layout.maximumWidth: SettingsNav.inDrillDownMode ? 0 : -1
 
             Kirigami.Theme.colorSet: Kirigami.Theme.View
             Kirigami.Theme.inherit: false
@@ -139,6 +142,7 @@ KCMUtils.AbstractKCM {
         }
 
         Kirigami.Separator {
+            visible: !SettingsNav.inDrillDownMode
             Layout.fillHeight: true
         }
 
@@ -170,7 +174,7 @@ KCMUtils.AbstractKCM {
                             margins: containerItem.margins
                         }
 
-                        currentIndex: listView.currentIndex
+                        currentIndex: SettingsNav.inDrillDownMode ? SettingsNav.accessIndex : listView.currentIndex
                         implicitHeight: (children.length > 0 && children[currentIndex]) ? children[currentIndex].implicitHeight : 500
 
                         ZoomMagnifier { Layout.fillWidth: true }

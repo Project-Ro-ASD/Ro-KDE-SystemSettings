@@ -75,11 +75,18 @@ fi
 
 # Loader paylaşımlı kütüphane derleme / kopyalama
 if command -v g++ >/dev/null 2>&1 && [ -f "$REPO_DIR/overrides/qml/systemsettings_loader.cpp" ]; then
-    g++ -O2 -shared -fPIC "$REPO_DIR/overrides/qml/systemsettings_loader.cpp" "$REPO_DIR/overrides/qml/qrc_overrides.cpp" $(pkg-config --cflags --libs Qt6Core Qt6Gui Qt6Quick Qt6Widgets) -ldl -o "$REPO_DIR/overrides/qml/libsystemsettings_override.so"
+    g++ -O2 -shared -fPIC "$REPO_DIR/overrides/qml/systemsettings_loader.cpp" "$REPO_DIR/overrides/qml/qrc_overrides.cpp" $(pkg-config --cflags --libs Qt6Core Qt6Gui Qt6Quick Qt6Qml Qt6QuickWidgets Qt6Widgets) -ldl -o "$REPO_DIR/overrides/qml/libsystemsettings_override.so"
 fi
 if [ -f "$REPO_DIR/overrides/qml/libsystemsettings_override.so" ]; then
     cp "$REPO_DIR/overrides/qml/libsystemsettings_override.so" "$HOME/.local/lib/libsystemsettings_override.so"
     echo "  [OK] Sistem ayarları QML override kütüphanesi kuruldu (~/.local/lib/)."
+fi
+
+# QML Sidebar ve Sistem Ayarları Katmanı
+mkdir -p "$HOME/.local/share/systemsettings/qml"
+if [ -d "$REPO_DIR/overrides/qml/systemsettings" ]; then
+    cp -r "$REPO_DIR/overrides/qml/systemsettings/"* "$HOME/.local/share/systemsettings/qml/"
+    echo "  [OK] Modern tek sütunlu hiyerarşik kenar çubuğu QML bileşenleri kuruldu."
 fi
 
 # QML Imports Katmanı (Kirigami FormLayout ve Kart arayüzü)

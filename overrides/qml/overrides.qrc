@@ -84,4 +84,18 @@
         <file alias="ModernRadioButton.qml">components/ModernRadioButton.qml</file>
         <file alias="ModernSlider.qml">components/ModernSlider.qml</file>
     </qresource>
+    <qresource prefix="/qt/qml/org/kde/systemsettings">
+        <file alias="Main.qml">systemsettings/Main.qml</file>
+        <file alias="SideBarItem.qml">systemsettings/SideBarItem.qml</file>
+        <file alias="CategoriesPage.qml">systemsettings/CategoriesPage.qml</file>
+        <file alias="SubCategoryPage.qml">systemsettings/SubCategoryPage.qml</file>
+        <file alias="SubSubCategoryPage.qml">systemsettings/SubSubCategoryPage.qml</file>
+        <file alias="CategoryItem.qml">systemsettings/CategoryItem.qml</file>
+        <file alias="HamburgerMenuButton.qml">systemsettings/HamburgerMenuButton.qml</file>
+        <file alias="NavButton.qml">systemsettings/NavButton.qml</file>
+    </qresource>
+    <qresource prefix="/qt/qml/org/kde/systemsettings/nav">
+        <file alias="qmldir">imports/org/kde/systemsettings/nav/qmldir</file>
+        <file alias="SettingsNav.qml">imports/org/kde/systemsettings/nav/SettingsNav.qml</file>
+    </qresource>
 </RCC>

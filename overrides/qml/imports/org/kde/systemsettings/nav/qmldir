@@ -1,0 +1,2 @@
+module org.kde.systemsettings.nav
+singleton SettingsNav 1.0 SettingsNav.qml
