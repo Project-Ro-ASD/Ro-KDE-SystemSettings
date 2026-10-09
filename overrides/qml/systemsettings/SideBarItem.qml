@@ -28,10 +28,12 @@ Kirigami.ApplicationItem {
 
     SubCategoryPage {
         id: subCategoryColumn
+        enabled: pageStack.visibleItems.includes(subCategoryColumn)
     }
 
     SubSubCategoryPage {
         id: subSubCategoryColumn
+        enabled: pageStack.visibleItems.includes(subSubCategoryColumn)
     }
 
     Component.onCompleted: {
@@ -42,40 +44,22 @@ Kirigami.ApplicationItem {
     Connections {
         target: SettingsNav
 
-        function onRequestGoBack() {
-            if (pageStack.depth > 1) {
-                pageStack.pop();
-            }
-        }
-
-        function onRequestGoForward() {
-            if (SettingsNav.navLevel === 1) {
-                if (pageStack.depth === 1) {
-                    pageStack.push(subCategoryColumn);
-                }
-            } else if (SettingsNav.navLevel === 2) {
-                if (pageStack.depth === 2) {
-                    pageStack.push(subSubCategoryColumn);
-                }
-            }
-        }
-
         function onRequestGoToLevel(lvl) {
             if (lvl === 0) {
-                pageStack.pop(mainColumn);
+                pageStack.currentIndex = 0;
             } else if (lvl === 1) {
-                if (pageStack.depth === 1) {
+                if (pageStack.depth < 2) {
                     pageStack.push(subCategoryColumn);
-                } else if (pageStack.depth > 2) {
-                    pageStack.pop(subCategoryColumn);
                 }
+                pageStack.currentIndex = 1;
             } else if (lvl === 2) {
-                if (pageStack.depth === 1) {
+                if (pageStack.depth < 2) {
                     pageStack.push(subCategoryColumn);
-                    pageStack.push(subSubCategoryColumn);
-                } else if (pageStack.depth === 2) {
+                }
+                if (pageStack.depth < 3) {
                     pageStack.push(subSubCategoryColumn);
                 }
+                pageStack.currentIndex = 2;
             }
         }
     }

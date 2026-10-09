@@ -14,7 +14,7 @@ import org.kde.systemsettings.nav 1.0
 
 Kirigami.ScrollablePage {
     id: subCategoryColumn
-    title: systemsettings.subCategoryModel.title
+    title: SettingsNav.level1Title !== "" ? SettingsNav.level1Title : (systemsettings.subCategoryModel.title !== "" ? systemsettings.subCategoryModel.title : i18n("Ayarlar"))
 
     Kirigami.Theme.colorSet: Kirigami.Theme.View
     Kirigami.Theme.inherit: false
@@ -57,7 +57,7 @@ Kirigami.ScrollablePage {
                 id: headerTitle
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                text: systemsettings.subCategoryModel.title !== "" ? systemsettings.subCategoryModel.title : SettingsNav.level1Title
+                text: subCategoryColumn.title
                 font.bold: true
                 font.pixelSize: 14
                 verticalAlignment: Text.AlignVCenter
@@ -68,7 +68,7 @@ Kirigami.ScrollablePage {
             HamburgerMenuButton {
                 id: hamburgerMenuButton
 
-                KeyNavigation.left: backNavBtn
+                KeyNavigation.left: forwardNavBtn
                 KeyNavigation.down: subCategoryView
                 KeyNavigation.tab: KeyNavigation.down
 
@@ -102,14 +102,24 @@ Kirigami.ScrollablePage {
             systemsettings.focusNext();
         }
 
+        onCountChanged: {
+            if (count > 1) {
+                if (root.pageStack.depth < 2) {
+                    root.pageStack.push(subCategoryColumn);
+                }
+            }
+        }
+
         Connections {
             target: systemsettings
             function onActiveSubCategoryRowChanged() {
                 subCategoryView.currentIndex = systemsettings.activeSubCategoryRow;
                 if (systemsettings.activeSubCategoryRow >= 0 && subCategoryView.count > 1) {
                     subCategoryView.forceActiveFocus();
-                    SettingsNav.level1Title = systemsettings.subCategoryModel.title;
-                    if (SettingsNav.navLevel === 0) {
+                    if (systemsettings.subCategoryModel.title !== "") {
+                        SettingsNav.level1Title = systemsettings.subCategoryModel.title;
+                    }
+                    if (!mainColumn.searchMode && SettingsNav.navLevel === 0) {
                         SettingsNav.goToLevel(1);
                     }
                 }
@@ -142,6 +152,7 @@ Kirigami.ScrollablePage {
                 if (showArrow) {
                     SettingsNav.level2Title = model.display;
                     SettingsNav.activeSubCategoryIndex = index;
+                    SettingsNav.maxReachedLevel = 2;
                     SettingsNav.goToLevel(2);
                 } else {
                     SettingsNav.maxReachedLevel = 1;
@@ -151,7 +162,7 @@ Kirigami.ScrollablePage {
             }
             onFocusChanged: {
                 if (focus) {
-                    onCurrentIndexChanged: subCategoryView.positionViewAtIndex(index, ListView.Contain);
+                    subCategoryView.positionViewAtIndex(index, ListView.Contain);
                 }
             }
             Keys.onEnterPressed: clicked();

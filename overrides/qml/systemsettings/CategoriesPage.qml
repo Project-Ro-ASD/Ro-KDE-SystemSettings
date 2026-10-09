@@ -183,9 +183,10 @@ Kirigami.ScrollablePage {
                 if (isKCM || mainColumn.searchMode || systemsettings.activeCategoryRow !== index) {
                     systemsettings.loadModule(categoryView.model.index(index, 0));
                 }
-                if (!mainColumn.searchMode && showArrow) {
+                if (!mainColumn.searchMode && (showArrow || isCategory)) {
                     SettingsNav.level1Title = model.display;
                     SettingsNav.activeCategoryIndex = index;
+                    SettingsNav.maxReachedLevel = 1;
                     SettingsNav.goToLevel(1);
                 }
             }

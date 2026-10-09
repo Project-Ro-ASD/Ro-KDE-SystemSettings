@@ -23,15 +23,13 @@ QtObject {
 
     function goBack() {
         if (navLevel > 0) {
-            navLevel = navLevel - 1;
-            requestGoBack();
+            goToLevel(navLevel - 1);
         }
     }
 
     function goForward() {
         if (navLevel < maxReachedLevel) {
-            navLevel = navLevel + 1;
-            requestGoForward();
+            goToLevel(navLevel + 1);
         }
     }
 
