@@ -106,8 +106,54 @@ KCM.SimpleKCM {
                                         from: 0
                                         to: valueMapping.length - 1
                                         stepSize: 1
-                                        Kirigami.StyleHints.tickMarkStepSize: stepSize
                                         snapMode: QQC2.Slider.SnapAlways
+
+                                        background: Rectangle {
+                                            x: animationSpeedSlider.leftPadding
+                                            y: Math.round(animationSpeedSlider.topPadding + (animationSpeedSlider.availableHeight - height) / 2)
+                                            implicitWidth: 160
+                                            implicitHeight: 6
+                                            width: animationSpeedSlider.availableWidth
+                                            height: 6
+                                            radius: 3
+                                            color: "#e2e8f0"
+
+                                            Rectangle {
+                                                width: Math.max(0, Math.min(parent.width, animationSpeedSlider.visualPosition * parent.width))
+                                                height: parent.height
+                                                radius: 3
+                                                color: animationSpeedSlider.enabled ? "#007aff" : "#94a3b8"
+
+                                                Behavior on color { ColorAnimation { duration: 150 } }
+                                            }
+                                        }
+
+                                        handle: Rectangle {
+                                            x: Math.round(animationSpeedSlider.leftPadding + animationSpeedSlider.visualPosition * (animationSpeedSlider.availableWidth - width))
+                                            y: Math.round(animationSpeedSlider.topPadding + (animationSpeedSlider.availableHeight - height) / 2)
+                                            implicitWidth: 18
+                                            implicitHeight: 18
+                                            radius: 9
+                                            color: "#ffffff"
+                                            border.color: animationSpeedSlider.pressed ? "#007aff" : (animationSpeedSlider.hovered ? "#007aff" : Qt.rgba(0, 0, 0, 0.2))
+                                            border.width: animationSpeedSlider.pressed || animationSpeedSlider.hovered ? 2 : 1
+
+                                            Rectangle {
+                                                anchors.centerIn: parent
+                                                width: parent.width + 6
+                                                height: parent.height + 6
+                                                radius: width / 2
+                                                color: "#007aff"
+                                                opacity: animationSpeedSlider.pressed ? 0.25 : (animationSpeedSlider.hovered ? 0.12 : 0)
+                                                z: -1
+                                                Behavior on opacity { NumberAnimation { duration: 150 } }
+                                            }
+
+                                            scale: animationSpeedSlider.pressed ? 1.08 : (animationSpeedSlider.hovered ? 1.04 : 1.0)
+                                            Behavior on scale { NumberAnimation { duration: 150 } }
+                                            Behavior on border.color { ColorAnimation { duration: 150 } }
+                                        }
+
                                         onMoved: kcm.globalsSettings.animationDurationFactor = valueMapping[value]
                                         value: {
                                             let factor = kcm.globalsSettings.animationDurationFactor

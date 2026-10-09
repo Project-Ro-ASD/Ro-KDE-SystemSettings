@@ -40,12 +40,37 @@ ColumnLayout {
             id: defaultButton
             Layout.fillWidth: true
             font.weight: Font.DemiBold
-            Layout.leftMargin: LayoutMirroring.enabled ? 0 : Math.round((muteButton.width - defaultButton.indicator.width) / 2)
-            Layout.rightMargin: LayoutMirroring.enabled ? Math.round((muteButton.width - defaultButton.indicator.width) / 2) : 0
-            spacing: Kirigami.Units.smallSpacing + Math.round((muteButton.width - defaultButton.indicator.width) / 2)
+            Layout.leftMargin: LayoutMirroring.enabled ? 0 : Math.round((muteButton.width - 20) / 2)
+            Layout.rightMargin: LayoutMirroring.enabled ? Math.round((muteButton.width - 20) / 2) : 0
+            spacing: Kirigami.Units.smallSpacing + Math.round((muteButton.width - 20) / 2)
             checked: Default
             visible: delegate.ListView.view.count > 1
             onClicked: Default = true
+
+            indicator: Rectangle {
+                implicitWidth: 20
+                implicitHeight: 20
+                radius: 10
+                color: defaultButton.checked ? "#007aff" : "#ffffff"
+                border.color: defaultButton.checked ? "#007aff" : (defaultButton.hovered ? "#007aff" : "#cbd5e1")
+                border.width: defaultButton.checked ? 0 : 1.5
+
+                Behavior on color { ColorAnimation { duration: 150 } }
+                Behavior on border.color { ColorAnimation { duration: 150 } }
+
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: 8
+                    height: 8
+                    radius: 4
+                    color: "#ffffff"
+                    opacity: defaultButton.checked ? 1.0 : 0.0
+                    scale: defaultButton.checked ? 1.0 : 0.3
+
+                    Behavior on opacity { NumberAnimation { duration: 150 } }
+                    Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
+                }
+            }
             text: {
                 if (pulseObject.description) {
                     return pulseObject.description

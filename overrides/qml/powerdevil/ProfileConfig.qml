@@ -443,6 +443,52 @@ ColumnLayout {
                     stepSize: 1
                     enabled: displayBrightnessCheck.checked
 
+                    background: Rectangle {
+                        x: displayBrightnessSlider.leftPadding
+                        y: Math.round(displayBrightnessSlider.topPadding + (displayBrightnessSlider.availableHeight - height) / 2)
+                        implicitWidth: 200
+                        implicitHeight: 6
+                        width: displayBrightnessSlider.availableWidth
+                        height: 6
+                        radius: 3
+                        color: "#e2e8f0"
+
+                        Rectangle {
+                            width: Math.max(0, Math.min(parent.width, displayBrightnessSlider.visualPosition * parent.width))
+                            height: parent.height
+                            radius: 3
+                            color: displayBrightnessSlider.enabled ? "#007aff" : "#94a3b8"
+
+                            Behavior on color { ColorAnimation { duration: 150 } }
+                        }
+                    }
+
+                    handle: Rectangle {
+                        x: Math.round(displayBrightnessSlider.leftPadding + displayBrightnessSlider.visualPosition * (displayBrightnessSlider.availableWidth - width))
+                        y: Math.round(displayBrightnessSlider.topPadding + (displayBrightnessSlider.availableHeight - height) / 2)
+                        implicitWidth: 18
+                        implicitHeight: 18
+                        radius: 9
+                        color: "#ffffff"
+                        border.color: displayBrightnessSlider.pressed ? "#007aff" : (displayBrightnessSlider.hovered ? "#007aff" : Qt.rgba(0, 0, 0, 0.2))
+                        border.width: displayBrightnessSlider.pressed || displayBrightnessSlider.hovered ? 2 : 1
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: parent.width + 6
+                            height: parent.height + 6
+                            radius: width / 2
+                            color: "#007aff"
+                            opacity: displayBrightnessSlider.pressed ? 0.25 : (displayBrightnessSlider.hovered ? 0.12 : 0)
+                            z: -1
+                            Behavior on opacity { NumberAnimation { duration: 150 } }
+                        }
+
+                        scale: displayBrightnessSlider.pressed ? 1.08 : (displayBrightnessSlider.hovered ? 1.04 : 1.0)
+                        Behavior on scale { NumberAnimation { duration: 150 } }
+                        Behavior on border.color { ColorAnimation { duration: 150 } }
+                    }
+
                     KCM.SettingStateBinding {
                         configObject: profileSettings
                         settingName: "DisplayBrightness"
@@ -716,6 +762,52 @@ ColumnLayout {
                     to: 100
                     stepSize: 1
                     enabled: keyboardBrightnessCheck.checked
+
+                    background: Rectangle {
+                        x: keyboardBrightnessSlider.leftPadding
+                        y: Math.round(keyboardBrightnessSlider.topPadding + (keyboardBrightnessSlider.availableHeight - height) / 2)
+                        implicitWidth: 200
+                        implicitHeight: 6
+                        width: keyboardBrightnessSlider.availableWidth
+                        height: 6
+                        radius: 3
+                        color: "#e2e8f0"
+
+                        Rectangle {
+                            width: Math.max(0, Math.min(parent.width, keyboardBrightnessSlider.visualPosition * parent.width))
+                            height: parent.height
+                            radius: 3
+                            color: keyboardBrightnessSlider.enabled ? "#007aff" : "#94a3b8"
+
+                            Behavior on color { ColorAnimation { duration: 150 } }
+                        }
+                    }
+
+                    handle: Rectangle {
+                        x: Math.round(keyboardBrightnessSlider.leftPadding + keyboardBrightnessSlider.visualPosition * (keyboardBrightnessSlider.availableWidth - width))
+                        y: Math.round(keyboardBrightnessSlider.topPadding + (keyboardBrightnessSlider.availableHeight - height) / 2)
+                        implicitWidth: 18
+                        implicitHeight: 18
+                        radius: 9
+                        color: "#ffffff"
+                        border.color: keyboardBrightnessSlider.pressed ? "#007aff" : (keyboardBrightnessSlider.hovered ? "#007aff" : Qt.rgba(0, 0, 0, 0.2))
+                        border.width: keyboardBrightnessSlider.pressed || keyboardBrightnessSlider.hovered ? 2 : 1
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: parent.width + 6
+                            height: parent.height + 6
+                            radius: width / 2
+                            color: "#007aff"
+                            opacity: keyboardBrightnessSlider.pressed ? 0.25 : (keyboardBrightnessSlider.hovered ? 0.12 : 0)
+                            z: -1
+                            Behavior on opacity { NumberAnimation { duration: 150 } }
+                        }
+
+                        scale: keyboardBrightnessSlider.pressed ? 1.08 : (keyboardBrightnessSlider.hovered ? 1.04 : 1.0)
+                        Behavior on scale { NumberAnimation { duration: 150 } }
+                        Behavior on border.color { ColorAnimation { duration: 150 } }
+                    }
 
                     KCM.SettingStateBinding {
                         configObject: profileSettings

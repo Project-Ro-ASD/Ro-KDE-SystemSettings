@@ -349,17 +349,73 @@ KCMUtils.SimpleKCM {
                                                 accelSpeed.onAccelSpeedChanged(accelSpeedValue)
                                             }
                                         }
+
+                                        background: Rectangle {
+                                            x: accelSpeedSlider.leftPadding
+                                            y: Math.round(accelSpeedSlider.topPadding + (accelSpeedSlider.availableHeight - height) / 2)
+                                            implicitWidth: 200
+                                            implicitHeight: 6
+                                            width: accelSpeedSlider.availableWidth
+                                            height: 6
+                                            radius: 3
+                                            color: "#e2e8f0"
+
+                                            Rectangle {
+                                                width: Math.max(0, Math.min(parent.width, accelSpeedSlider.visualPosition * parent.width))
+                                                height: parent.height
+                                                radius: 3
+                                                color: accelSpeedSlider.enabled ? "#007aff" : "#94a3b8"
+
+                                                Behavior on color { ColorAnimation { duration: 150 } }
+                                            }
+                                        }
+
+                                        handle: Rectangle {
+                                            x: Math.round(accelSpeedSlider.leftPadding + accelSpeedSlider.visualPosition * (accelSpeedSlider.availableWidth - width))
+                                            y: Math.round(accelSpeedSlider.topPadding + (accelSpeedSlider.availableHeight - height) / 2)
+                                            implicitWidth: 18
+                                            implicitHeight: 18
+                                            radius: 9
+                                            color: "#ffffff"
+                                            border.color: accelSpeedSlider.pressed ? "#007aff" : (accelSpeedSlider.hovered ? "#007aff" : Qt.rgba(0, 0, 0, 0.2))
+                                            border.width: accelSpeedSlider.pressed || accelSpeedSlider.hovered ? 2 : 1
+
+                                            Rectangle {
+                                                anchors.centerIn: parent
+                                                width: parent.width + 6
+                                                height: parent.height + 6
+                                                radius: width / 2
+                                                color: "#007aff"
+                                                opacity: accelSpeedSlider.pressed ? 0.25 : (accelSpeedSlider.hovered ? 0.12 : 0)
+                                                z: -1
+                                                Behavior on opacity { NumberAnimation { duration: 150 } }
+                                            }
+
+                                            scale: accelSpeedSlider.pressed ? 1.08 : (accelSpeedSlider.hovered ? 1.04 : 1.0)
+                                            Behavior on scale { NumberAnimation { duration: 150 } }
+                                            Behavior on border.color { ColorAnimation { duration: 150 } }
+                                        }
                                     }
 
                                     QQC2.SpinBox {
                                         id: accelSpeedSpinbox
-                                        Layout.preferredWidth: 70
+                                        Layout.preferredWidth: 68
+                                        implicitHeight: 28
                                         from: -100
                                         to: 100
                                         stepSize: 1
                                         editable: true
                                         enabled: root.device?.supportsPointerAcceleration ?? false
                                         value: enabled && root.device ? Math.round(root.device.pointerAcceleration * 100) : 0
+
+                                        background: Rectangle {
+                                            implicitWidth: 68
+                                            implicitHeight: 28
+                                            radius: 6
+                                            color: "#f8fafc"
+                                            border.color: accelSpeedSpinbox.activeFocus ? "#007aff" : Qt.rgba(0, 0, 0, 0.12)
+                                            border.width: 1
+                                        }
 
                                         validator: DoubleValidator {
                                             bottom: accelSpeedSpinbox.from
@@ -522,7 +578,6 @@ KCMUtils.SimpleKCM {
                                         from: 0
                                         to: 14
                                         stepSize: 1
-                                        Kirigami.StyleHints.tickMarkStepSize: 1
                                         enabled: root.device !== null
 
                                         readonly property list<real> values: [
@@ -539,6 +594,52 @@ KCMUtils.SimpleKCM {
                                             if (root.device) {
                                                 root.device.scrollFactor = values[value]
                                             }
+                                        }
+
+                                        background: Rectangle {
+                                            x: scrollFactor.leftPadding
+                                            y: Math.round(scrollFactor.topPadding + (scrollFactor.availableHeight - height) / 2)
+                                            implicitWidth: 200
+                                            implicitHeight: 6
+                                            width: scrollFactor.availableWidth
+                                            height: 6
+                                            radius: 3
+                                            color: "#e2e8f0"
+
+                                            Rectangle {
+                                                width: Math.max(0, Math.min(parent.width, scrollFactor.visualPosition * parent.width))
+                                                height: parent.height
+                                                radius: 3
+                                                color: scrollFactor.enabled ? "#007aff" : "#94a3b8"
+
+                                                Behavior on color { ColorAnimation { duration: 150 } }
+                                            }
+                                        }
+
+                                        handle: Rectangle {
+                                            x: Math.round(scrollFactor.leftPadding + scrollFactor.visualPosition * (scrollFactor.availableWidth - width))
+                                            y: Math.round(scrollFactor.topPadding + (scrollFactor.availableHeight - height) / 2)
+                                            implicitWidth: 18
+                                            implicitHeight: 18
+                                            radius: 9
+                                            color: "#ffffff"
+                                            border.color: scrollFactor.pressed ? "#007aff" : (scrollFactor.hovered ? "#007aff" : Qt.rgba(0, 0, 0, 0.2))
+                                            border.width: scrollFactor.pressed || scrollFactor.hovered ? 2 : 1
+
+                                            Rectangle {
+                                                anchors.centerIn: parent
+                                                width: parent.width + 6
+                                                height: parent.height + 6
+                                                radius: width / 2
+                                                color: "#007aff"
+                                                opacity: scrollFactor.pressed ? 0.25 : (scrollFactor.hovered ? 0.12 : 0)
+                                                z: -1
+                                                Behavior on opacity { NumberAnimation { duration: 150 } }
+                                            }
+
+                                            scale: scrollFactor.pressed ? 1.08 : (scrollFactor.hovered ? 1.04 : 1.0)
+                                            Behavior on scale { NumberAnimation { duration: 150 } }
+                                            Behavior on border.color { ColorAnimation { duration: 150 } }
                                         }
                                     }
 

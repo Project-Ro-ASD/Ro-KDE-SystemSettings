@@ -106,6 +106,52 @@ ColumnLayout {
                     value: kcm.shakeCursorSettings.shakeCursorMagnification
                     onMoved: kcm.shakeCursorSettings.shakeCursorMagnification = value
 
+                    background: Rectangle {
+                        x: magnificationSlider.leftPadding
+                        y: Math.round(magnificationSlider.topPadding + (magnificationSlider.availableHeight - height) / 2)
+                        implicitWidth: 200
+                        implicitHeight: 6
+                        width: magnificationSlider.availableWidth
+                        height: 6
+                        radius: 3
+                        color: "#e2e8f0"
+
+                        Rectangle {
+                            width: Math.max(0, Math.min(parent.width, magnificationSlider.visualPosition * parent.width))
+                            height: parent.height
+                            radius: 3
+                            color: magnificationSlider.enabled ? "#007aff" : "#94a3b8"
+
+                            Behavior on color { ColorAnimation { duration: 150 } }
+                        }
+                    }
+
+                    handle: Rectangle {
+                        x: Math.round(magnificationSlider.leftPadding + magnificationSlider.visualPosition * (magnificationSlider.availableWidth - width))
+                        y: Math.round(magnificationSlider.topPadding + (magnificationSlider.availableHeight - height) / 2)
+                        implicitWidth: 18
+                        implicitHeight: 18
+                        radius: 9
+                        color: "#ffffff"
+                        border.color: magnificationSlider.pressed ? "#007aff" : (magnificationSlider.hovered ? "#007aff" : Qt.rgba(0, 0, 0, 0.2))
+                        border.width: magnificationSlider.pressed || magnificationSlider.hovered ? 2 : 1
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: parent.width + 6
+                            height: parent.height + 6
+                            radius: width / 2
+                            color: "#007aff"
+                            opacity: magnificationSlider.pressed ? 0.25 : (magnificationSlider.hovered ? 0.12 : 0)
+                            z: -1
+                            Behavior on opacity { NumberAnimation { duration: 150 } }
+                        }
+
+                        scale: magnificationSlider.pressed ? 1.08 : (magnificationSlider.hovered ? 1.04 : 1.0)
+                        Behavior on scale { NumberAnimation { duration: 150 } }
+                        Behavior on border.color { ColorAnimation { duration: 150 } }
+                    }
+
                     KCMUtils.SettingStateBinding {
                         configObject: kcm.shakeCursorSettings
                         settingName: "ShakeCursorMagnification"

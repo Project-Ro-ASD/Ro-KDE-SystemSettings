@@ -20,6 +20,34 @@ KCM.SimpleKCM {
 
     implicitWidth: Kirigami.Units.gridUnit * 42
 
+    component ModernRadio: QQC2.RadioButton {
+        id: radioCtrl
+        indicator: Rectangle {
+            implicitWidth: 20
+            implicitHeight: 20
+            radius: 10
+            color: radioCtrl.checked ? "#007aff" : "#ffffff"
+            border.color: radioCtrl.checked ? "#007aff" : (radioCtrl.hovered ? "#007aff" : "#cbd5e1")
+            border.width: radioCtrl.checked ? 0 : 1.5
+
+            Behavior on color { ColorAnimation { duration: 150 } }
+            Behavior on border.color { ColorAnimation { duration: 150 } }
+
+            Rectangle {
+                anchors.centerIn: parent
+                width: 8
+                height: 8
+                radius: 4
+                color: "#ffffff"
+                opacity: radioCtrl.checked ? 1.0 : 0.0
+                scale: radioCtrl.checked ? 1.0 : 0.3
+
+                Behavior on opacity { NumberAnimation { duration: 150 } }
+                Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
+            }
+        }
+    }
+
     headerPaddingEnabled: false
     header: Kirigami.InlineMessage {
         id: primarySelectionRebootMessage
@@ -202,7 +230,7 @@ KCM.SimpleKCM {
                         }
                     }
 
-                    QQC2.RadioButton {
+                    ModernRadio {
                         checked: !kcm.globalsSettings.scrollbarLeftClickNavigatesByPage
                         onToggled: kcm.globalsSettings.scrollbarLeftClickNavigatesByPage = false
                         QQC2.ButtonGroup.group: scrollHandleBehaviorGroup
@@ -240,7 +268,7 @@ KCM.SimpleKCM {
                         }
                     }
 
-                    QQC2.RadioButton {
+                    ModernRadio {
                         id: scrollbarLeftClickNavigatesByPage
                         checked: kcm.globalsSettings.scrollbarLeftClickNavigatesByPage
                         onToggled: kcm.globalsSettings.scrollbarLeftClickNavigatesByPage = true
@@ -340,7 +368,7 @@ KCM.SimpleKCM {
                         }
                     }
 
-                    QQC2.RadioButton {
+                    ModernRadio {
                         id: doubleClick
                         checked: !kcm.globalsSettings.singleClick
                         onToggled: kcm.globalsSettings.singleClick = false
@@ -379,7 +407,7 @@ KCM.SimpleKCM {
                         }
                     }
 
-                    QQC2.RadioButton {
+                    ModernRadio {
                         id: singleClick
                         checked: kcm.globalsSettings.singleClick
                         onToggled: kcm.globalsSettings.singleClick = true
@@ -568,7 +596,7 @@ KCM.SimpleKCM {
                         }
                     }
 
-                    QQC2.RadioButton {
+                    ModernRadio {
                         id: dndBehaviorAsk
                         enabled: !kcm.globalsSettings.isImmutable("dndBehavior")
                         checked: kcm.globalsSettings.dndBehavior === WorkspaceOptionsGlobalsSettings.AlwaysAsk
@@ -602,7 +630,7 @@ KCM.SimpleKCM {
                         }
                     }
 
-                    QQC2.RadioButton {
+                    ModernRadio {
                         id: dndBehaviorMove
                         enabled: !kcm.globalsSettings.isImmutable("dndBehavior")
                         checked: kcm.globalsSettings.dndBehavior === WorkspaceOptionsGlobalsSettings.MoveIfSameDevice
@@ -661,7 +689,7 @@ KCM.SimpleKCM {
                         }
                     }
 
-                    QQC2.RadioButton {
+                    ModernRadio {
                         id: touchEnabledRadio
                         checked: kcm.kwinSettings.tabletMode === "auto"
                         onToggled: { if (checked) kcm.kwinSettings.tabletMode = "auto" }
@@ -694,7 +722,7 @@ KCM.SimpleKCM {
                         }
                     }
 
-                    QQC2.RadioButton {
+                    ModernRadio {
                         checked: kcm.kwinSettings.tabletMode === "on"
                         onToggled: { if (checked) kcm.kwinSettings.tabletMode = "on" }
                         QQC2.ButtonGroup.group: tabletModeBehaviorGroup
@@ -728,7 +756,7 @@ KCM.SimpleKCM {
                         }
                     }
 
-                    QQC2.RadioButton {
+                    ModernRadio {
                         id: touchModeAlwaysOffRadioButton
                         checked: kcm.kwinSettings.tabletMode === "off"
                         onToggled: { if (checked) kcm.kwinSettings.tabletMode = "off" }

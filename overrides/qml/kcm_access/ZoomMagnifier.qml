@@ -75,6 +75,30 @@ ColumnLayout {
                         kcm.zoomMagnifierSettings.zoom = true;
                         kcm.zoomMagnifierSettings.magnifier = false;
                     }
+                    indicator: Rectangle {
+                        implicitWidth: 20
+                        implicitHeight: 20
+                        radius: 10
+                        color: zoomRadio.checked ? "#007aff" : "#ffffff"
+                        border.color: zoomRadio.checked ? "#007aff" : (zoomRadio.hovered ? "#007aff" : "#cbd5e1")
+                        border.width: zoomRadio.checked ? 0 : 1.5
+
+                        Behavior on color { ColorAnimation { duration: 150 } }
+                        Behavior on border.color { ColorAnimation { duration: 150 } }
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: 8
+                            height: 8
+                            radius: 4
+                            color: "#ffffff"
+                            opacity: zoomRadio.checked ? 1.0 : 0.0
+                            scale: zoomRadio.checked ? 1.0 : 0.3
+
+                            Behavior on opacity { NumberAnimation { duration: 150 } }
+                            Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
+                        }
+                    }
                 }
             }
 
@@ -111,6 +135,30 @@ ColumnLayout {
                         kcm.zoomMagnifierSettings.zoom = false;
                         kcm.zoomMagnifierSettings.magnifier = true;
                     }
+                    indicator: Rectangle {
+                        implicitWidth: 20
+                        implicitHeight: 20
+                        radius: 10
+                        color: magnifierRadio.checked ? "#007aff" : "#ffffff"
+                        border.color: magnifierRadio.checked ? "#007aff" : (magnifierRadio.hovered ? "#007aff" : "#cbd5e1")
+                        border.width: magnifierRadio.checked ? 0 : 1.5
+
+                        Behavior on color { ColorAnimation { duration: 150 } }
+                        Behavior on border.color { ColorAnimation { duration: 150 } }
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: 8
+                            height: 8
+                            radius: 4
+                            color: "#ffffff"
+                            opacity: magnifierRadio.checked ? 1.0 : 0.0
+                            scale: magnifierRadio.checked ? 1.0 : 0.3
+
+                            Behavior on opacity { NumberAnimation { duration: 150 } }
+                            Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
+                        }
+                    }
                 }
             }
 
@@ -146,6 +194,30 @@ ColumnLayout {
                     onToggled: {
                         kcm.zoomMagnifierSettings.zoom = false;
                         kcm.zoomMagnifierSettings.magnifier = false;
+                    }
+                    indicator: Rectangle {
+                        implicitWidth: 20
+                        implicitHeight: 20
+                        radius: 10
+                        color: disabledRadio.checked ? "#007aff" : "#ffffff"
+                        border.color: disabledRadio.checked ? "#007aff" : (disabledRadio.hovered ? "#007aff" : "#cbd5e1")
+                        border.width: disabledRadio.checked ? 0 : 1.5
+
+                        Behavior on color { ColorAnimation { duration: 150 } }
+                        Behavior on border.color { ColorAnimation { duration: 150 } }
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: 8
+                            height: 8
+                            radius: 4
+                            color: "#ffffff"
+                            opacity: disabledRadio.checked ? 1.0 : 0.0
+                            scale: disabledRadio.checked ? 1.0 : 0.3
+
+                            Behavior on opacity { NumberAnimation { duration: 150 } }
+                            Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
+                        }
                     }
                 }
             }

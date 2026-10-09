@@ -104,10 +104,36 @@ ColumnLayout {
                 }
 
                 QQC2.RadioButton {
+                    id: primaryRadio
                     visible: root.enabledOutputs.count === 2
                     text: i18n("Birincil Olarak Kullan")
                     checked: element.priority === 1
                     onToggled: element.priority = 1
+
+                    indicator: Rectangle {
+                        implicitWidth: 20
+                        implicitHeight: 20
+                        radius: 10
+                        color: primaryRadio.checked ? "#007aff" : "#ffffff"
+                        border.color: primaryRadio.checked ? "#007aff" : (primaryRadio.hovered ? "#007aff" : "#cbd5e1")
+                        border.width: primaryRadio.checked ? 0 : 1.5
+
+                        Behavior on color { ColorAnimation { duration: 150 } }
+                        Behavior on border.color { ColorAnimation { duration: 150 } }
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: 8
+                            height: 8
+                            radius: 4
+                            color: "#ffffff"
+                            opacity: primaryRadio.checked ? 1.0 : 0.0
+                            scale: primaryRadio.checked ? 1.0 : 0.3
+
+                            Behavior on opacity { NumberAnimation { duration: 150 } }
+                            Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
+                        }
+                    }
                 }
             }
         }
@@ -207,7 +233,6 @@ ColumnLayout {
                 QQC2.Slider {
                     id: scaleSlider
                     Accessible.description: i18nc("@info accessible description of slider value", "in percent of regular scale")
-                    Kirigami.StyleHints.tickMarkStepSize: stepSize
                     implicitWidth: root.sliderWidth
                     from: 50
                     to: 300
@@ -215,6 +240,52 @@ ColumnLayout {
                     live: true
                     value: element.scale * 100
                     onMoved: element.scale = value / 100
+
+                    background: Rectangle {
+                        x: scaleSlider.leftPadding
+                        y: Math.round(scaleSlider.topPadding + (scaleSlider.availableHeight - height) / 2)
+                        implicitWidth: 200
+                        implicitHeight: 6
+                        width: scaleSlider.availableWidth
+                        height: 6
+                        radius: 3
+                        color: "#e2e8f0"
+
+                        Rectangle {
+                            width: Math.max(0, Math.min(parent.width, scaleSlider.visualPosition * parent.width))
+                            height: parent.height
+                            radius: 3
+                            color: scaleSlider.enabled ? "#007aff" : "#94a3b8"
+
+                            Behavior on color { ColorAnimation { duration: 150 } }
+                        }
+                    }
+
+                    handle: Rectangle {
+                        x: Math.round(scaleSlider.leftPadding + scaleSlider.visualPosition * (scaleSlider.availableWidth - width))
+                        y: Math.round(scaleSlider.topPadding + (scaleSlider.availableHeight - height) / 2)
+                        implicitWidth: 18
+                        implicitHeight: 18
+                        radius: 9
+                        color: "#ffffff"
+                        border.color: scaleSlider.pressed ? "#007aff" : (scaleSlider.hovered ? "#007aff" : Qt.rgba(0, 0, 0, 0.2))
+                        border.width: scaleSlider.pressed || scaleSlider.hovered ? 2 : 1
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: parent.width + 6
+                            height: parent.height + 6
+                            radius: width / 2
+                            color: "#007aff"
+                            opacity: scaleSlider.pressed ? 0.25 : (scaleSlider.hovered ? 0.12 : 0)
+                            z: -1
+                            Behavior on opacity { NumberAnimation { duration: 150 } }
+                        }
+
+                        scale: scaleSlider.pressed ? 1.08 : (scaleSlider.hovered ? 1.04 : 1.0)
+                        Behavior on scale { NumberAnimation { duration: 150 } }
+                        Behavior on border.color { ColorAnimation { duration: 150 } }
+                    }
                 }
 
                 QQC2.SpinBox {
@@ -573,7 +644,6 @@ ColumnLayout {
 
                 QQC2.Slider {
                     id: brightnessSlider
-                    Kirigami.StyleHints.tickMarkStepSize: stepSize
                     implicitWidth: root.sliderWidth
                     from: 0
                     to: 100
@@ -581,6 +651,52 @@ ColumnLayout {
                     live: true
                     value: Math.round(element.brightness * 100.0)
                     onMoved: element.brightness = value / 100.0
+
+                    background: Rectangle {
+                        x: brightnessSlider.leftPadding
+                        y: Math.round(brightnessSlider.topPadding + (brightnessSlider.availableHeight - height) / 2)
+                        implicitWidth: 200
+                        implicitHeight: 6
+                        width: brightnessSlider.availableWidth
+                        height: 6
+                        radius: 3
+                        color: "#e2e8f0"
+
+                        Rectangle {
+                            width: Math.max(0, Math.min(parent.width, brightnessSlider.visualPosition * parent.width))
+                            height: parent.height
+                            radius: 3
+                            color: brightnessSlider.enabled ? "#007aff" : "#94a3b8"
+
+                            Behavior on color { ColorAnimation { duration: 150 } }
+                        }
+                    }
+
+                    handle: Rectangle {
+                        x: Math.round(brightnessSlider.leftPadding + brightnessSlider.visualPosition * (brightnessSlider.availableWidth - width))
+                        y: Math.round(brightnessSlider.topPadding + (brightnessSlider.availableHeight - height) / 2)
+                        implicitWidth: 18
+                        implicitHeight: 18
+                        radius: 9
+                        color: "#ffffff"
+                        border.color: brightnessSlider.pressed ? "#007aff" : (brightnessSlider.hovered ? "#007aff" : Qt.rgba(0, 0, 0, 0.2))
+                        border.width: brightnessSlider.pressed || brightnessSlider.hovered ? 2 : 1
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: parent.width + 6
+                            height: parent.height + 6
+                            radius: width / 2
+                            color: "#007aff"
+                            opacity: brightnessSlider.pressed ? 0.25 : (brightnessSlider.hovered ? 0.12 : 0)
+                            z: -1
+                            Behavior on opacity { NumberAnimation { duration: 150 } }
+                        }
+
+                        scale: brightnessSlider.pressed ? 1.08 : (brightnessSlider.hovered ? 1.04 : 1.0)
+                        Behavior on scale { NumberAnimation { duration: 150 } }
+                        Behavior on border.color { ColorAnimation { duration: 150 } }
+                    }
                 }
 
                 QQC2.Label {

@@ -24,6 +24,34 @@ KCM.SimpleKCM {
     implicitHeight: Kirigami.Units.gridUnit * 45
     implicitWidth: Kirigami.Units.gridUnit * 42
 
+    component ModernRadio: QQC2.RadioButton {
+        id: radioCtrl
+        indicator: Rectangle {
+            implicitWidth: 20
+            implicitHeight: 20
+            radius: 10
+            color: radioCtrl.checked ? "#007aff" : "#ffffff"
+            border.color: radioCtrl.checked ? "#007aff" : (radioCtrl.hovered ? "#007aff" : "#cbd5e1")
+            border.width: radioCtrl.checked ? 0 : 1.5
+
+            Behavior on color { ColorAnimation { duration: 150 } }
+            Behavior on border.color { ColorAnimation { duration: 150 } }
+
+            Rectangle {
+                anchors.centerIn: parent
+                width: 8
+                height: 8
+                radius: 4
+                color: "#ffffff"
+                opacity: radioCtrl.checked ? 1.0 : 0.0
+                scale: radioCtrl.checked ? 1.0 : 0.3
+
+                Behavior on opacity { NumberAnimation { duration: 150 } }
+                Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
+            }
+        }
+    }
+
     actions: [
         Kirigami.Action {
             text: i18nc("@action:button", "Apply Plasma Settings…")
@@ -351,7 +379,7 @@ KCM.SimpleKCM {
                             id: preselectedUserGroup
                         }
 
-                        QQC2.RadioButton {
+                        ModernRadio {
                             QQC2.ButtonGroup.group: preselectedUserGroup
                             autoExclusive: false
                             text: i18nc("@option:radio", "Last logged-in user")
@@ -365,7 +393,7 @@ KCM.SimpleKCM {
                         RowLayout {
                             spacing: Kirigami.Units.smallSpacing
 
-                            QQC2.RadioButton {
+                            ModernRadio {
                                 id: customPreselectedUserRadioButton
                                 QQC2.ButtonGroup.group: preselectedUserGroup
                                 autoExclusive: false
@@ -447,7 +475,7 @@ KCM.SimpleKCM {
                             id: preselectedSessionGroup
                         }
 
-                        QQC2.RadioButton {
+                        ModernRadio {
                             QQC2.ButtonGroup.group: preselectedSessionGroup
                             autoExclusive: false
                             text: i18nc("@option:radio", "Last logged-in session")
@@ -461,7 +489,7 @@ KCM.SimpleKCM {
                         RowLayout {
                             spacing: Kirigami.Units.smallSpacing
 
-                            QQC2.RadioButton {
+                            ModernRadio {
                                 id: customPreselectedSessionRadioButton
                                 QQC2.ButtonGroup.group: preselectedSessionGroup
                                 autoExclusive: false

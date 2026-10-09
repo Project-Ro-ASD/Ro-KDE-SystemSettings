@@ -722,6 +722,52 @@ KCM.ScrollViewKCM {
                         enabled: microphoneTestOverlay.sourceObject && microphoneTestOverlay.sourceObject.volumeWritable && !micTester.playing && !micTester.recording
                         value: microphoneTestOverlay.sourceObject ? microphoneTestOverlay.sourceObject.volume : PulseAudio.NormalVolume
 
+                        background: Rectangle {
+                            x: inputLevelSlider.leftPadding
+                            y: Math.round(inputLevelSlider.topPadding + (inputLevelSlider.availableHeight - height) / 2)
+                            implicitWidth: 200
+                            implicitHeight: 6
+                            width: inputLevelSlider.availableWidth
+                            height: 6
+                            radius: 3
+                            color: "#e2e8f0"
+
+                            Rectangle {
+                                width: Math.max(0, Math.min(parent.width, inputLevelSlider.visualPosition * parent.width))
+                                height: parent.height
+                                radius: 3
+                                color: inputLevelSlider.enabled ? "#007aff" : "#94a3b8"
+
+                                Behavior on color { ColorAnimation { duration: 150 } }
+                            }
+                        }
+
+                        handle: Rectangle {
+                            x: Math.round(inputLevelSlider.leftPadding + inputLevelSlider.visualPosition * (inputLevelSlider.availableWidth - width))
+                            y: Math.round(inputLevelSlider.topPadding + (inputLevelSlider.availableHeight - height) / 2)
+                            implicitWidth: 18
+                            implicitHeight: 18
+                            radius: 9
+                            color: "#ffffff"
+                            border.color: inputLevelSlider.pressed ? "#007aff" : (inputLevelSlider.hovered ? "#007aff" : Qt.rgba(0, 0, 0, 0.2))
+                            border.width: inputLevelSlider.pressed || inputLevelSlider.hovered ? 2 : 1
+
+                            Rectangle {
+                                anchors.centerIn: parent
+                                width: parent.width + 6
+                                height: parent.height + 6
+                                radius: width / 2
+                                color: "#007aff"
+                                opacity: inputLevelSlider.pressed ? 0.25 : (inputLevelSlider.hovered ? 0.12 : 0)
+                                z: -1
+                                Behavior on opacity { NumberAnimation { duration: 150 } }
+                            }
+
+                            scale: inputLevelSlider.pressed ? 1.08 : (inputLevelSlider.hovered ? 1.04 : 1.0)
+                            Behavior on scale { NumberAnimation { duration: 150 } }
+                            Behavior on border.color { ColorAnimation { duration: 150 } }
+                        }
+
                         onMoved: {
                             if (!microphoneTestOverlay.sourceObject) return;
                             const volume = Math.round(value * 100 / PulseAudio.NormalVolume) * PulseAudio.NormalVolume / 100;

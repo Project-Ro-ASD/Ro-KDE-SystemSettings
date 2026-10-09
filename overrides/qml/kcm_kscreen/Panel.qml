@@ -131,7 +131,6 @@ ColumnLayout {
                             QQC2.Slider {
                                 id: globalScaleSlider
                                 Accessible.description: i18nc("@info accessible description of slider value", "in percent of regular scale")
-                                Kirigami.StyleHints.tickMarkStepSize: stepSize
                                 implicitWidth: 160
                                 from: 100
                                 to: 300
@@ -139,6 +138,52 @@ ColumnLayout {
                                 live: true
                                 value: kcm.globalScale * 100
                                 onMoved: kcm.globalScale = value / 100
+
+                                background: Rectangle {
+                                    x: globalScaleSlider.leftPadding
+                                    y: Math.round(globalScaleSlider.topPadding + (globalScaleSlider.availableHeight - height) / 2)
+                                    implicitWidth: 160
+                                    implicitHeight: 6
+                                    width: globalScaleSlider.availableWidth
+                                    height: 6
+                                    radius: 3
+                                    color: "#e2e8f0"
+
+                                    Rectangle {
+                                        width: Math.max(0, Math.min(parent.width, globalScaleSlider.visualPosition * parent.width))
+                                        height: parent.height
+                                        radius: 3
+                                        color: globalScaleSlider.enabled ? "#007aff" : "#94a3b8"
+
+                                        Behavior on color { ColorAnimation { duration: 150 } }
+                                    }
+                                }
+
+                                handle: Rectangle {
+                                    x: Math.round(globalScaleSlider.leftPadding + globalScaleSlider.visualPosition * (globalScaleSlider.availableWidth - width))
+                                    y: Math.round(globalScaleSlider.topPadding + (globalScaleSlider.availableHeight - height) / 2)
+                                    implicitWidth: 18
+                                    implicitHeight: 18
+                                    radius: 9
+                                    color: "#ffffff"
+                                    border.color: globalScaleSlider.pressed ? "#007aff" : (globalScaleSlider.hovered ? "#007aff" : Qt.rgba(0, 0, 0, 0.2))
+                                    border.width: globalScaleSlider.pressed || globalScaleSlider.hovered ? 2 : 1
+
+                                    Rectangle {
+                                        anchors.centerIn: parent
+                                        width: parent.width + 6
+                                        height: parent.height + 6
+                                        radius: width / 2
+                                        color: "#007aff"
+                                        opacity: globalScaleSlider.pressed ? 0.25 : (globalScaleSlider.hovered ? 0.12 : 0)
+                                        z: -1
+                                        Behavior on opacity { NumberAnimation { duration: 150 } }
+                                    }
+
+                                    scale: globalScaleSlider.pressed ? 1.08 : (globalScaleSlider.hovered ? 1.04 : 1.0)
+                                    Behavior on scale { NumberAnimation { duration: 150 } }
+                                    Behavior on border.color { ColorAnimation { duration: 150 } }
+                                }
                             }
 
                             QQC2.Label {

@@ -451,6 +451,31 @@ KCM.SimpleKCM {
                             checked: kcm.notificationSettings.popupPosition === NotificationManager.Settings.CloseToWidget + kcm.currentIndex * 0
                             onClicked: kcm.notificationSettings.popupPosition = NotificationManager.Settings.CloseToWidget
 
+                            indicator: Rectangle {
+                                implicitWidth: 20
+                                implicitHeight: 20
+                                radius: 10
+                                color: positionCloseToWidget.checked ? "#007aff" : "#ffffff"
+                                border.color: positionCloseToWidget.checked ? "#007aff" : (positionCloseToWidget.hovered ? "#007aff" : "#cbd5e1")
+                                border.width: positionCloseToWidget.checked ? 0 : 1.5
+
+                                Behavior on color { ColorAnimation { duration: 150 } }
+                                Behavior on border.color { ColorAnimation { duration: 150 } }
+
+                                Rectangle {
+                                    anchors.centerIn: parent
+                                    width: 8
+                                    height: 8
+                                    radius: 4
+                                    color: "#ffffff"
+                                    opacity: positionCloseToWidget.checked ? 1.0 : 0.0
+                                    scale: positionCloseToWidget.checked ? 1.0 : 0.3
+
+                                    Behavior on opacity { NumberAnimation { duration: 150 } }
+                                    Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
+                                }
+                            }
+
                             KCM.SettingStateBinding {
                                 configObject: kcm.notificationSettings
                                 settingName: "PopupPosition"
@@ -463,6 +488,31 @@ KCM.SimpleKCM {
                             checked: kcm.notificationSettings.popupPosition !== NotificationManager.Settings.CloseToWidget + kcm.currentIndex * 0
                             text: i18nc("@action:button choose custom notification position", "Custom…")
                             onClicked: popupPositionDialog.open()
+
+                            indicator: Rectangle {
+                                implicitWidth: 20
+                                implicitHeight: 20
+                                radius: 10
+                                color: positionCustomPosition.checked ? "#007aff" : "#ffffff"
+                                border.color: positionCustomPosition.checked ? "#007aff" : (positionCustomPosition.hovered ? "#007aff" : "#cbd5e1")
+                                border.width: positionCustomPosition.checked ? 0 : 1.5
+
+                                Behavior on color { ColorAnimation { duration: 150 } }
+                                Behavior on border.color { ColorAnimation { duration: 150 } }
+
+                                Rectangle {
+                                    anchors.centerIn: parent
+                                    width: 8
+                                    height: 8
+                                    radius: 4
+                                    color: "#ffffff"
+                                    opacity: positionCustomPosition.checked ? 1.0 : 0.0
+                                    scale: positionCustomPosition.checked ? 1.0 : 0.3
+
+                                    Behavior on opacity { NumberAnimation { duration: 150 } }
+                                    Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
+                                }
+                            }
 
                             KCM.SettingStateBinding {
                                 configObject: kcm.notificationSettings

@@ -235,6 +235,7 @@ ColumnLayout {
                 }
 
                 QQC2.RadioButton {
+                    id: invertRadio
                     QQC2.ButtonGroup.group: visualBellGroup
                     checked: kcm.bellSettings.invertScreen
                     onToggled: kcm.bellSettings.invertScreen = checked
@@ -243,6 +244,31 @@ ColumnLayout {
                         configObject: kcm.bellSettings
                         settingName: "InvertScreen"
                         extraEnabledConditions: kcm.bellSettings.visibleBell
+                    }
+
+                    indicator: Rectangle {
+                        implicitWidth: 20
+                        implicitHeight: 20
+                        radius: 10
+                        color: invertRadio.checked ? "#007aff" : "#ffffff"
+                        border.color: invertRadio.checked ? "#007aff" : (invertRadio.hovered ? "#007aff" : "#cbd5e1")
+                        border.width: invertRadio.checked ? 0 : 1.5
+
+                        Behavior on color { ColorAnimation { duration: 150 } }
+                        Behavior on border.color { ColorAnimation { duration: 150 } }
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: 8
+                            height: 8
+                            radius: 4
+                            color: "#ffffff"
+                            opacity: invertRadio.checked ? 1.0 : 0.0
+                            scale: invertRadio.checked ? 1.0 : 0.3
+
+                            Behavior on opacity { NumberAnimation { duration: 150 } }
+                            Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
+                        }
                     }
                 }
             }
@@ -285,6 +311,7 @@ ColumnLayout {
                 }
 
                 QQC2.RadioButton {
+                    id: flashRadio
                     QQC2.ButtonGroup.group: visualBellGroup
                     checked: !kcm.bellSettings.invertScreen
                     onToggled: kcm.bellSettings.invertScreen = !checked
@@ -292,6 +319,31 @@ ColumnLayout {
                     KCMUtils.SettingStateBinding {
                         configObject: kcm.bellSettings
                         settingName: "InvertScreen"
+                    }
+
+                    indicator: Rectangle {
+                        implicitWidth: 20
+                        implicitHeight: 20
+                        radius: 10
+                        color: flashRadio.checked ? "#007aff" : "#ffffff"
+                        border.color: flashRadio.checked ? "#007aff" : (flashRadio.hovered ? "#007aff" : "#cbd5e1")
+                        border.width: flashRadio.checked ? 0 : 1.5
+
+                        Behavior on color { ColorAnimation { duration: 150 } }
+                        Behavior on border.color { ColorAnimation { duration: 150 } }
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: 8
+                            height: 8
+                            radius: 4
+                            color: "#ffffff"
+                            opacity: flashRadio.checked ? 1.0 : 0.0
+                            scale: flashRadio.checked ? 1.0 : 0.3
+
+                            Behavior on opacity { NumberAnimation { duration: 150 } }
+                            Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
+                        }
                     }
                 }
             }

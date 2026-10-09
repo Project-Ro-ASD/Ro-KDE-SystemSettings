@@ -75,4 +75,13 @@
         <file alias="qmldir">layouts/qmldir</file>
         <file alias="FormLayout.qml">layouts/FormLayout.qml</file>
     </qresource>
+    <qresource prefix="/qt/qml/org/kde/desktop">
+        <file alias="RadioButton.qml">desktop/RadioButton.qml</file>
+        <file alias="RadioDelegate.qml">desktop/RadioDelegate.qml</file>
+        <file alias="Slider.qml">desktop/Slider.qml</file>
+    </qresource>
+    <qresource prefix="/kcm/components">
+        <file alias="ModernRadioButton.qml">components/ModernRadioButton.qml</file>
+        <file alias="ModernSlider.qml">components/ModernSlider.qml</file>
+    </qresource>
 </RCC>
