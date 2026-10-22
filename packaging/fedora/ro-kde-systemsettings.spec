@@ -1,3 +1,4 @@
+%global debug_package %{nil}
 Name:           ro-kde-systemsettings
 Version:        0.1.0
 Release:        1.roasd1%{?dist}
