@@ -11,12 +11,10 @@ name: Release
   workflow_dispatch:
 
 permissions:
-  contents: write
-  id-token: write
-  attestations: write
-  artifact-metadata: write
+  contents: read
 
 env:
+  LANG: C.UTF-8
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 concurrency:
@@ -63,14 +61,14 @@ jobs:
       image: fedora:44
     timeout-minutes: 60
     steps:
-      - name: Checkout
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-
       - name: Install build tools and dependencies
         run: |
           dnf install -y git python3 gettext rpm-build rpmdevtools rpmlint cmake gcc-c++ \
             kf6-rpm-macros qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtquickcontrols2-devel \
-            desktop-file-utils plasma-systemsettings kf6-kirigami
+            desktop-file-utils plasma-systemsettings kf6-kirigami dbus-daemon
+
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
       - name: Mark git directory safe
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
@@ -78,40 +76,14 @@ jobs:
       - name: Build RPM and SRPM
         run: bash tests/test-build-rpm.sh
 
-      - name: Collect and validate the exact package set
-        env:
-          RPM_VERSION: ${{ needs.metadata.outputs.rpm_version }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          TOPDIR="$HOME/rpmbuild"
-          mkdir -p release-rpms
-          f="$(find "$TOPDIR/RPMS/x86_64" -maxdepth 1 -name "ro-kde-systemsettings-${RPM_VERSION}-*.x86_64.rpm" -print -quit)"
-          test -n "$f"
-          [[ "$(rpm -qp --qf '%{NAME}' "$f")" == "ro-kde-systemsettings" ]]
-          cp "$f" release-rpms/
-          cp "$TOPDIR"/SRPMS/ro-kde-systemsettings-"${RPM_VERSION}"-*.src.rpm release-rpms/
+      - name: Collect exact RPM set, lint and validate manifests
+        run: bash tests/test-bundle.sh
 
-          for f in release-rpms/*.rpm; do
-            if [[ "$f" == *.src.rpm ]]; then
-              [[ "$(basename "$f")" == "$(rpm -qp --qf '%{NAME}-%{VERSION}-%{RELEASE}.src.rpm' "$f")" ]]
-            else
-              [[ "$(basename "$f")" == "$(rpm -qp --qf '%{NVRA}.rpm' "$f")" ]]
-            fi
-            [[ "$(rpm -qp --qf '%{VERSION}' "$f")" == "${RPM_VERSION}" ]]
-            [[ "$(rpm -qp --qf '%{RELEASE}' "$f")" =~ ^[0-9]+\.roasd[0-9]+\.fc44$ ]]
-          done
-          ls -l release-rpms
+      - name: Download pinned previous release for actual upgrade test
+        run: bash tests/fetch-previous-rpm.sh
 
-      - name: rpmlint (advisory, same as Ro-Repo acceptance)
-        shell: bash
-        run: |
-          rpmlint release-rpms/*.rpm || echo "::warning::rpmlint reported issues (advisory)"
-
-      - name: Smoke test built package
-        shell: bash
-        run: |
-          bash tests/test-smoke.sh release-rpms/ro-kde-systemsettings-*.x86_64.rpm
+      - name: Install, launch, upgrade, remove and verify Fedora integrity
+        run: bash tests/run-fedora44.sh "" .work/previous.rpm
 
       - name: Upload RPM bundle
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -121,8 +93,58 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+  attest-dry-run:
+    name: Verify provenance without publishing
+    needs: [metadata, rpm]
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: dry-run
+      RELEASE_ID: '0'
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: release-rpms-x86_64
+          path: bundle
+      - name: Generate dry-run manifest
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm
+          python3 scripts/generate-manifest.py bundle
+          (cd bundle && sha256sum -c SHA256SUMS)
+      - name: Attest dry-run bundle
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
+        with:
+          subject-path: |
+            bundle/*.rpm
+            bundle/SHA256SUMS
+            bundle/component-artifact-manifest-v1.json
+      - name: Verify workflow identity and subjects
+        run: |
+          for file in bundle/*; do
+            gh attestation verify "$file" --repo "$GITHUB_REPOSITORY" \
+              --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml"
+          done
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: dry-run-attested-bundle
+          path: bundle/*
+          if-no-files-found: error
+          retention-days: 7
+
   release:
     name: Publish V2 Contract Release
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+      artifact-metadata: write
     needs: [metadata, rpm]
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-24.04
@@ -156,23 +178,18 @@ jobs:
           [[ "${#RPMS[@]}" -eq 2 ]]
           [[ "$(printf '%s\n' "${RPMS[@]}" | grep -c '\.x86_64\.rpm$')" -eq 1 ]]
           [[ "$(printf '%s\n' "${RPMS[@]}" | grep -c '\.src\.rpm$')" -eq 1 ]]
-          ! printf '%s\n' "${RPMS[@]}" | grep -qE 'debuginfo|debugsource'
-          ! find bundle -maxdepth 1 -type f -name '*.rpm' | grep -qE '/.*(fc4[0-3]|fc45).*\.rpm$'
+          if printf '%s\n' "${RPMS[@]}" | grep -qE 'debuginfo|debugsource'; then exit 1; fi
+          if find bundle -maxdepth 1 -type f -name '*.rpm' | grep -qE '/.*(fc4[0-3]|fc45).*\.rpm$'; then exit 1; fi
 
-      - name: Create or recover draft release
+      - name: Create new draft release
         id: draft
         shell: bash
         run: |
           set -euo pipefail
-          EXISTING="$(gh api "repos/${GITHUB_REPOSITORY}/releases" --paginate --jq ".[] | select(.tag_name == \"${TAG}\") | [.id,.draft,.target_commitish] | @tsv" | head -n1 || true)"
-          if [[ -n "$EXISTING" ]]; then
-            IFS=$'\t' read -r EXISTING_ID IS_DRAFT TARGET <<< "$EXISTING"
-            if [[ "$IS_DRAFT" != "true" ]]; then
-              echo "A published release already exists for ${TAG}; refusing reuse." >&2
-              exit 1
-            fi
-            gh api -X DELETE "repos/${GITHUB_REPOSITORY}/releases/${EXISTING_ID}"
-          fi
+          # Never delete/reuse an existing draft or published release.
+          EXISTING_COUNT="$(gh api "repos/${GITHUB_REPOSITORY}/releases" --paginate --slurp \
+            --jq '[.[][] | select(.tag_name == env.TAG)] | length')"
+          [[ "$EXISTING_COUNT" == 0 ]] || { echo 'Release already exists; refusing reuse.' >&2; exit 1; }
 
           RELEASE_JSON="$(gh api --method POST "repos/${GITHUB_REPOSITORY}/releases" \
             -f tag_name="${TAG}" \
@@ -190,55 +207,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cd bundle
-          mapfile -t RPMS < <(find . -maxdepth 1 -type f -name '*.rpm' -printf '%f\n' | sort)
-          sha256sum "${RPMS[@]}" > SHA256SUMS
-
-          python3 - <<'PY'
-          import hashlib, json, os, pathlib, subprocess
-
-          root = pathlib.Path('.')
-          artifacts = []
-          query = '%{NAME}\t%{EPOCHNUM}\t%{VERSION}\t%{RELEASE}\t%{ARCH}\t%{SOURCERPM}\t%|SOURCEPACKAGE?{true}:{false}|'
-          for path in sorted(root.glob('*.rpm')):
-              values = subprocess.check_output(['rpm','-qp','--qf',query,str(path)], text=True).split('\t')
-              if len(values) != 7:
-                  raise SystemExit(f'Unexpected RPM header for {path}')
-              name, epoch, version, release, arch, source_rpm, is_source = values
-              if is_source == 'true':
-                  arch = 'src'
-                  source_rpm = None
-              digest = hashlib.sha256(path.read_bytes()).hexdigest()
-              artifacts.append({
-                  'filename': path.name,
-                  'name': name,
-                  'epoch': int(epoch or 0),
-                  'version': version,
-                  'release': release,
-                  'architecture': arch,
-                  'source_rpm': source_rpm,
-                  'producer_artifact_sha256': digest,
-              })
-
-          manifest = {
-              'schema_version': 1,
-              'component': 'ro-kde-systemsettings',
-              'source_repository': os.environ['GITHUB_REPOSITORY'],
-              'source_commit': os.environ['GITHUB_SHA'],
-              'release_tag': os.environ['TAG'],
-              'release_id': int(os.environ['RELEASE_ID']),
-              'workflow_run': int(os.environ['GITHUB_RUN_ID']),
-              'fedora_release': 44,
-              'artifacts': artifacts,
-              'provenance': {'provider': 'github', 'subject_digest': 'sha256'},
-              'attestation': {'provider': 'github', 'verification': 'gh attestation verify'},
-          }
-          pathlib.Path('component-artifact-manifest-v1.json').write_text(
-              json.dumps(manifest, indent=2, sort_keys=True) + '\n', encoding='utf-8'
-          )
-          PY
-
-          sha256sum -c SHA256SUMS
+          python3 scripts/generate-manifest.py bundle
+          (cd bundle && sha256sum -c SHA256SUMS)
 
       - name: Attest exact release bundle
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
@@ -270,4 +240,12 @@ jobs:
           [[ "${#EXPECTED[@]}" -eq 4 ]]
           diff -u <(printf '%s\n' "${EXPECTED[@]}") <(printf '%s\n' "${ACTUAL[@]}")
 
+          mkdir /tmp/verify-release
+          gh release download "$TAG" --dir /tmp/verify-release
+          for file in bundle/*; do
+            cmp "$file" "/tmp/verify-release/$(basename "$file")"
+            gh attestation verify "$file" --repo "$GITHUB_REPOSITORY" \
+              --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml"
+          done
           gh release edit "$TAG" --draft=false
+          [[ "$(gh api "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" --jq '.immutable')" == true ]]

@@ -1,26 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
-RPM_FILE="${1:-}"
-if [ -z "$RPM_FILE" ]; then
-    RPM_FILE="$(find "${RPMBUILD_TOPDIR:-$HOME/rpmbuild}/RPMS/x86_64" -name "ro-kde-systemsettings-*.x86_64.rpm" | head -n1)"
-fi
-
-echo "==> Testing clean installation of $RPM_FILE..."
-
+source "$(dirname "$0")/lib.sh"
+require_disposable
+resolve_rpm "${1:-}"
+if rpm -q ro-kde-systemsettings; then echo 'Package already installed' >&2; exit 1; fi
+verify_fedora
+bash "$REPO_DIR/tests/test-file-conflicts.sh" "$RPM_FILE"
 dnf install -y "$RPM_FILE"
-
-# Verify installed files exist on disk
-test -x /usr/bin/ro-systemsettings
-test -f /usr/lib64/ro-kde-systemsettings/libsystemsettings_override.so
-test -f /usr/share/ro-kde-systemsettings/overrides.rcc
-test -f /usr/share/ro-kde-systemsettings/tabs.qss
-test -f /usr/share/ro-kde-systemsettings/applications/systemsettings.desktop
-test -f /usr/share/applications/ro-systemsettings.desktop
-test -f /usr/lib/environment.d/50-ro-kde-systemsettings.conf
-test -f /etc/profile.d/ro-kde-systemsettings.sh
-
-# Verify permissions and dynamic linking
-ldd /usr/lib64/ro-kde-systemsettings/libsystemsettings_override.so >/dev/null
-
-echo "==> Clean install test PASSED!"
+[[ "$(rpm -q --qf '%{VERSION}' ro-kde-systemsettings)" == "$VERSION" ]]
+[[ -z "$(rpm -V ro-kde-systemsettings)" ]]
+linking="$(ldd -r /usr/lib64/ro-kde-systemsettings/libsystemsettings_override.so 2>&1)"
+if grep -E 'not found|undefined symbol' <<< "$linking"; then exit 1; fi
+QT_QPA_PLATFORM=offscreen /usr/bin/ro-systemsettings --help >/dev/null
+verify_fedora

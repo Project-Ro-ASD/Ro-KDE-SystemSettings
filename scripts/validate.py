@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import re
 from pathlib import Path
 import sys
 
@@ -20,6 +21,7 @@ for path in required:
     if not path.exists():
         errors.append(f"missing required file: {path.relative_to(ROOT)}")
 
+meta = {}
 try:
     meta = json.loads((ROOT / ".roasd" / "component.json").read_text())
     if meta.get("component_type") != "component":
@@ -30,8 +32,18 @@ except Exception as exc:
     errors.append(f"invalid component metadata: {exc}")
 
 version = (ROOT / "VERSION").read_text().strip() if (ROOT / "VERSION").exists() else ""
-if not version or version.count(".") != 2:
+if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version):
     errors.append("VERSION must contain an initial semantic version such as 0.1.0")
+
+spec = (ROOT / "packaging/fedora/ro-kde-systemsettings.spec").read_text()
+if not re.search(r"^Version:\s+" + re.escape(version) + r"$", spec, re.M):
+    errors.append("RPM spec version must match VERSION")
+if f"VERSION {version} LANGUAGES" not in (ROOT / "CMakeLists.txt").read_text():
+    errors.append("CMake version must match VERSION")
+if meta.get("fedora_release") != 44 or meta.get("architectures") != ["x86_64"]:
+    errors.append("component must target Fedora 44 x86_64")
+if meta.get("package_names") != ["ro-kde-systemsettings"] or meta.get("source_rpm") is not True:
+    errors.append("component must declare exactly its package and SRPM")
 
 if errors:
     print("validation failed:")

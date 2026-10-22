@@ -1,13 +1,13 @@
-# Fedora packaging
+# Fedora 44 packaging and V2 producer
 
-This directory will contain the RPM spec and source preparation required to ship Ro-KDE-SystemSettings on the Ro-ASD Fedora base.
+The concrete CMake payload builds `ro-kde-systemsettings-0.1.1-1.roasd1.fc44.x86_64.rpm` and its matching `.src.rpm`. `ExclusiveArch: x86_64` matches `.roasd/component.json`; no replacement, Obsoletes, Conflicts or Provides for Fedora System Settings is intended. Runtime requires `plasma-systemsettings >= 6.0`, Qt Quick Controls and Kirigami.
 
-The package should carry only the downstream System Settings integration owned by this repository. It must not silently replace unrelated KDE files.
+Owned paths are `/usr/bin/ro-systemsettings`, `/usr/lib64/ro-kde-systemsettings/`, `/usr/share/ro-kde-systemsettings/`, `/usr/share/applications/ro-systemsettings.desktop` and RPM's package-specific license/doc directories. Private categories, translations and desktop metadata use process-local XDG lookup. The package no longer installs global `/usr/lib/environment.d/50-ro-kde-systemsettings.conf` or `/etc/profile.d/ro-kde-systemsettings.sh`. RPM removes these old owned paths during upgrade; existing sessions must restart to discard inherited old XDG settings.
 
-Before the first RPM release, define:
+`tests/test-build-rpm.sh` archives tracked files only, rejects stale output directories and produces RPM plus SRPM. Add new source files to Git before local builds. Output defaults to `.work/rpmbuild/`; override with `RPMBUILD_TOPDIR`. CI copies exactly one binary and SRPM into `release-rpms/` and runs blocking rpmlint. See `tests/README.md` for container validation. No host DNF transactions.
 
-1. exact installed file ownership
-2. required KDE/Plasma package versions
-3. patch application order
-4. upgrade/rollback behavior
-5. Ro-Repo producer/release integration
+`release.yml` builds/tests on `workflow_dispatch` without creating a release. A separate dispatch-only job generates and verifies real GitHub attestations for the dry-run bundle. Its local manifest uses `dry-run` and release ID 0; it is not a published producer identity. A future exact `vVERSION` tag triggers the publishing job. That job refuses every existing release, creates a new draft, queries headers into `component-artifact-manifest-v1.json`, hashes exactly the two RPMs in `SHA256SUMS`, attests both RPMs and both metadata files, verifies attestations against this repository/workflow, uploads exactly four assets and publishes. The final API assertion requires `immutable: true`. Attestation records are GitHub records, not a fifth uploaded asset.
+
+The previously published `v0.1.0` is mutable and must not be rewritten. The upgrade fixture pins its binary SHA256 from the GitHub release asset digest, rather than trusting a mutable tag. Existing drafts are deliberately not deleted or reused; failed future publication requires maintainer investigation.
+
+Before authorizing a new release: resolve `docs/PRODUCER-READINESS.md` blockers, merge the reviewed PR, run the release workflow manually on the merged commit, inspect tests/artifacts, confirm repository immutable releases remains enabled, and separately authorize creation of `v0.1.1` at that commit. After publication verify immutable status, asset digests and `gh attestation verify` for all four assets. This preparation creates no tag or release.
