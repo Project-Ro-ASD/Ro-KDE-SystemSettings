@@ -12,3 +12,5 @@ git -C "$REPO_DIR" ls-files -z | tar -C "$REPO_DIR" --null -T - --transform "s,^
 cp "$REPO_DIR/packaging/fedora/ro-kde-systemsettings.spec" "$TOPDIR/SPECS/"
 rpmbuild -ba --define "_topdir $TOPDIR" --define 'dist .fc44' "$TOPDIR/SPECS/ro-kde-systemsettings.spec"
 bash "$REPO_DIR/tests/test-smoke.sh"
+
+python3 "$REPO_DIR/tests/test-rcc-rebuild.py"

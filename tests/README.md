@@ -22,3 +22,13 @@ Use a fresh `RPMBUILD_TOPDIR` and fresh `release-rpms` directory for each build.
 Clean install requires an absent Ro package and present Fedora System Settings. Conflict tests inspect all installed owners for every non-directory payload path, not just one KDE package. Install checks RPM verification, dynamic linking, wrapper help and Fedora integrity. Runtime smoke starts both stock and wrapped applications through D-Bus with software/offscreen rendering, requires the event loop to survive 12 seconds and rejects common QML/import errors. It cannot prove visual correctness or privileged KCM behavior.
 
 The suite removes the clean-installed candidate, installs the pinned published 0.1.0 RPM, performs an actual DNF upgrade, checks the resulting version, removal of old global environment hooks and integrity of both packages, then removes the candidate and checks every owned path is absent and stock System Settings still works. Fedora files are checked with `rpm -V plasma-systemsettings` throughout. A real interactive Plasma session must still validate navigation, changed KCMs, authentication and session environment after logout/login before production.
+
+Additional source tests: `python3 tests/test-launcher.py` checks argument quoting,
+optional QSS, XDG defaults/deduplication, inherited QML paths and no preload using
+a fake executable. `python3 tests/test-license-audit.py` rejects modified, added
+and removed files against the inventory; both run in the workflow contract test.
+`python3 tests/test-rcc-rebuild.py` runs during Fedora build validation and proves
+a QML-only edit changes the binary RCC without touching the QRC file. It operates
+on a temporary source copy. G14 human acceptance is in
+[PLASMA-ACCEPTANCE.md](../docs/PLASMA-ACCEPTANCE.md); actual activation boundaries
+are in [INTEGRATION-STATUS.md](../docs/INTEGRATION-STATUS.md).

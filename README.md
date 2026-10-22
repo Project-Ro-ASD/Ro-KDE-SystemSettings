@@ -73,7 +73,7 @@ Fedora 44 x86_64 için somut RPM/SRPM, CMake derlemesi ve Ro-Repo V2 üretici ya
 
 `ro-systemsettings` Fedora'nın `/usr/bin/systemsettings` programını yalnızca kendi sürecine özel XDG/QML yolları ve QSS ile başlatır. Fedora paketi değiştirilmez; global oturum ortamı kurulmaz. Eski `0.1.0` paketinden yükseltme global environment/profile dosyalarını kaldırır. Menüde Ro girdisi `ro-systemsettings.desktop` olarak ayrıdır.
 
-Preload kararlılık nedeniyle kapalıdır. Derlenen override kitaplığı ve RCC'nin varlığı bütün özel QML sayfalarının etkin olduğunu kanıtlamaz. Fedora sürümüyle görsel/KCM kabul testi ve eksik upstream kaynak/lisans kayıtları üretim öncesi tamamlanmalıdır. [Paketleme ve yayın adımları](packaging/fedora/README.md), [testler](tests/README.md), [hazırlık kanıtları](docs/PRODUCER-READINESS.md).
+Preload kararlılık nedeniyle kapalıdır. Özel QML kabuğu ve KCM kaynak değişimleri mevcut başlatıcıyla etkinleşmez; derlenen override kitaplığı ve RCC kullanılmıyor. [Etkinlik denetimi](docs/INTEGRATION-STATUS.md) ve [G14 kabul prosedürü](docs/PLASMA-ACCEPTANCE.md) bu sınırı açıklar. Fedora sürümüyle görsel/KCM kabul testi ve eksik upstream kaynak/lisans kayıtları üretim öncesi tamamlanmalıdır. [Paketleme ve yayın adımları](packaging/fedora/README.md), [testler](tests/README.md), [hazırlık kanıtları](docs/PRODUCER-READINESS.md).
 
 ## Lisans
 

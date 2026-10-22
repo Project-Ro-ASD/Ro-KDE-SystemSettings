@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "note": "Compatibility/source evidence, not a claim of exact original import base or a new license grant.",
+  "files": [
+    {
+      "path": "overrides/translations/systemsettings.po",
+      "upstream_project": "systemsettings",
+      "reference_tag": "v6.7.5",
+      "reference_commit": "d126c08d14a2a0f44a1758fd25e945ae099e34bb",
+      "upstream_path": "po/tr/systemsettings.po",
+      "upstream_sha256": "10ed89d6a7eb2b6cfe8776ba918d7c8b28a9f90a79f0e593226c4f398fc753f3",
+      "source_url": "https://invent.kde.org/plasma/systemsettings/-/blob/d126c08d14a2a0f44a1758fd25e945ae099e34bb/po/tr/systemsettings.po",
+      "status": "copyright-notices-restored; exact-original-import-base-and-license-selection-blocked"
+    },
+    {
+      "path": "overrides/translations/kcm_landingpage.po",
+      "upstream_project": "plasma-desktop",
+      "reference_tag": "v6.7.5",
+      "reference_commit": "43f55fff3480c6eb5f60133f045bfc74b9c67d84",
+      "upstream_path": "po/tr/kcm_landingpage.po",
+      "upstream_sha256": "f8b742f99374b628cae921bcf3da1518cd380460b4e7088d6b25f48d3c0748d6",
+      "source_url": "https://invent.kde.org/plasma/plasma-desktop/-/blob/43f55fff3480c6eb5f60133f045bfc74b9c67d84/po/tr/kcm_landingpage.po",
+      "status": "copyright-notices-restored; exact-original-import-base-and-license-selection-blocked"
+    },
+    {
+      "path": "overrides/translations/kcmqtquicksettings.po",
+      "upstream_project": "plasma-desktop",
+      "reference_tag": "v6.7.5",
+      "reference_commit": "43f55fff3480c6eb5f60133f045bfc74b9c67d84",
+      "upstream_path": "po/tr/kcmqtquicksettings.po",
+      "upstream_sha256": "6ac97b111f7ba4b1a48efebdeb50e429c630b75b3b49b11959eb9dcbc9c71b9d",
+      "source_url": "https://invent.kde.org/plasma/plasma-desktop/-/blob/43f55fff3480c6eb5f60133f045bfc74b9c67d84/po/tr/kcmqtquicksettings.po",
+      "status": "copyright-notices-restored; exact-original-import-base-and-license-selection-blocked"
+    },
+    {
+      "path": "overrides/translations/kcm_nighttime.po",
+      "upstream_project": "plasma-workspace",
+      "reference_tag": "v6.7.5",
+      "reference_commit": "cc1ab7963f94a9b76836412855caed6b94066188",
+      "upstream_path": "po/tr/kcm_nighttime.po",
+      "upstream_sha256": "0ab34495b15c6048b987a2805e89f5c575f1ef4ebf46dd47a67142cf6f8e9d0c",
+      "source_url": "https://invent.kde.org/plasma/plasma-workspace/-/blob/cc1ab7963f94a9b76836412855caed6b94066188/po/tr/kcm_nighttime.po",
+      "status": "copyright-notices-restored; exact-original-import-base-and-license-selection-blocked"
+    }
+  ]
+}
