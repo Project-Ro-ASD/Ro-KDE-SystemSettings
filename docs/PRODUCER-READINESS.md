@@ -21,7 +21,7 @@ Existing QML spans systemsettings, plasma-desktop, powerdevil, kscreen, plasma-w
 1. Headerless imported sources and PO catalogs lack authoritative license/source records. See LICENSING.md and the per-file audit. The SPDX correction covers declared licenses and preserves every existing notice; absent grants cannot be inferred.
 2. Existing overrides have no recorded exact original upstream bases. The inspected Fedora tag is a compatibility reference only. Version-sensitive QML/private ABI must not be advertised as verified by a package build.
 3. Interactive Plasma acceptance must verify stock and wrapped navigation, changed KCM discovery, visual behavior, authentication and logout/login environment. Offscreen tests do not prove these properties.
-4. Live GitHub OIDC signing and immutable publication can only be verified in a trusted workflow/release context. No tag or release is created by this work. A future failure after draft creation leaves that draft for investigation; automatic deletion/reuse is forbidden.
+4. Live GitHub OIDC signing and verification succeeded in the dispatch-only dry-run documented below. Actual immutable publication is intentionally untested because this task creates no tag or release. A future failure after draft creation leaves that draft for investigation; automatic deletion/reuse is forbidden.
 
 The preparation PR must remain reviewable with these limitations. Do not call the component production-ready solely because RPM tests pass. Ro-Repo and its PR #86 are outside this change.
 
@@ -43,4 +43,17 @@ Local disposable Podman validation on Fedora 44 x86_64 passed:
 - Stock and wrapped shell event loops survived 12 seconds each under D-Bus/offscreen/software rendering without the checked QML/import/linker failures. Headless GTK portal warnings are expected and do not prove a graphical session works.
 - Pinned original 0.1.0 RPM SHA256 verified, actual DNF upgrade to 0.1.1 passed, old global hooks disappeared, candidate removal left no owned paths, stock Fedora package remained installed, unmodified and runnable.
 
-No DNF operation ran on the host. Live signing/immutable publication and interactive KCM acceptance are still unverified; they are not represented as local successes. Future `v0.1.1` release steps are in packaging/fedora/README.md.
+No DNF operation ran on the host. These local checks do not establish immutable publication or interactive KCM acceptance. Live signing was subsequently verified separately below. Future `v0.1.1` release steps are in packaging/fedora/README.md.
+
+
+## Live GitHub evidence
+
+Functional revision: `1629b36686b32d7e41a425a7119d9884387efc9f` (later evidence-only documentation commits do not change the tested code).
+
+- [PR CI RPM job](https://github.com/Project-Ro-ASD/Ro-KDE-SystemSettings/actions/runs/39795008635/job/119880107445) completed successfully, including the full test suite, 0-error/5-warning rpmlint and four-file artifact upload. Repository contract/actionlint job logs also completed without errors.
+- [Release dry-run](https://github.com/Project-Ro-ASD/Ro-KDE-SystemSettings/actions/runs/39795008409) completed its RPM suite and dispatch-only attestation job, producing [attestation 58673564](https://github.com/Project-Ro-ASD/Ro-KDE-SystemSettings/attestations/58673564) and [the four-file attested bundle](https://github.com/Project-Ro-ASD/Ro-KDE-SystemSettings/actions/runs/39795008409/artifacts/12433023052).
+- The downloaded manifest records that exact commit, workflow run `39795008409`, tag `dry-run` and release ID 0. Both RPM hashes matched the manifest and SHA256SUMS.
+- An independent `gh attestation verify` succeeded for **each of all four files**, enforcing the repository, `.github/workflows/release.yml` signer and `--source-digest 1629b36686b32d7e41a425a7119d9884387efc9f`. JSON verification results contained all four subjects and SLSA provenance v1 with that resolved Git source digest.
+- GitHub list/job collection responses temporarily lagged behind completed logs. Success was checked through actual job logs, a direct RPM job result and independent signature verification rather than assuming queued/list states were authoritative.
+
+No release asset was published. `v0.1.0` and its mutable historical release remain unchanged. Production blockers 1–3 and the untested real immutable-publication path still apply.
