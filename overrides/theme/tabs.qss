@@ -5,23 +5,23 @@ QTabBar {
     margin: 6px 12px;
 }
 QTabBar::tab {
-    background: rgba(0, 0, 0, 0.06);
-    color: #1e293b;
+    background: rgba(128, 128, 128, 0.12);
+    color: palette(text);
     border-radius: 16px;
     padding: 7px 20px;
     margin: 4px 6px;
     font-weight: 600;
     font-size: 13px;
-    border: 1px solid rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(128, 128, 128, 0.15);
 }
 QTabBar::tab:selected {
-    background: #3b82f6;
-    color: #ffffff;
-    border: 1px solid #2563eb;
+    background: palette(highlight);
+    color: palette(highlighted-text);
+    border: 1px solid palette(highlight);
 }
 QTabBar::tab:hover:!selected {
-    background: rgba(0, 0, 0, 0.12);
-    color: #0f172a;
+    background: rgba(128, 128, 128, 0.22);
+    color: palette(text);
 }
 QTabWidget::pane {
     border: none;
@@ -31,13 +31,14 @@ QTabWidget::pane {
 
 /* Modern Card Layout for QGroupBox in QWidget KCMs */
 QGroupBox {
-    background: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: palette(base);
+    border: 1px solid rgba(128, 128, 128, 0.2);
     border-radius: 12px;
     margin-top: 16px;
     margin-bottom: 12px;
     padding: 16px 18px;
     font-weight: 600;
+    color: palette(text);
 }
 QGroupBox::title {
     subcontrol-origin: margin;
@@ -46,70 +47,70 @@ QGroupBox::title {
     top: 4px;
     padding: 0 6px;
     background: transparent;
-    color: #0f172a;
+    color: palette(text);
     font-size: 13px;
     font-weight: 700;
 }
 
 /* Modern Card Layout for single-form tab pages */
 QWidget[singleCard="true"] {
-    background: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: palette(base);
+    border: 1px solid rgba(128, 128, 128, 0.2);
     border-radius: 12px;
 }
 
 /* Modern Oval / Pill Buttons for QWidgets and Footer Bar */
 QPushButton {
-    background-color: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.16);
+    background-color: palette(button);
+    border: 1px solid rgba(128, 128, 128, 0.25);
     border-radius: 16px;
     padding: 6px 18px;
     font-size: 13px;
     font-weight: 500;
-    color: #1e293b;
+    color: palette(button-text);
     min-height: 20px;
     outline: none;
 }
 
 QPushButton:hover {
-    background-color: #f1f5f9;
-    border-color: rgba(0, 0, 0, 0.28);
-    color: #0f172a;
+    background-color: palette(midlight);
+    border-color: rgba(128, 128, 128, 0.4);
+    color: palette(button-text);
 }
 
 QPushButton:pressed {
-    background-color: #e2e8f0;
-    border-color: rgba(0, 0, 0, 0.38);
+    background-color: palette(mid);
+    border-color: rgba(128, 128, 128, 0.5);
 }
 
 QPushButton:disabled {
-    background-color: rgba(0, 0, 0, 0.03);
-    border-color: rgba(0, 0, 0, 0.08);
-    color: #94a3b8;
+    background-color: rgba(128, 128, 128, 0.08);
+    border-color: rgba(128, 128, 128, 0.15);
+    color: rgba(128, 128, 128, 0.6);
 }
 
 /* Primary / Highlight button (e.g. Uygula / default) */
 QPushButton:default, QPushButton[default="true"] {
-    background-color: #3b82f6;
-    border: 1px solid #2563eb;
-    color: #ffffff;
+    background-color: palette(highlight);
+    border: 1px solid palette(highlight);
+    color: palette(highlighted-text);
     font-weight: 600;
 }
 
 QPushButton:default:hover, QPushButton[default="true"]:hover {
-    background-color: #2563eb;
-    border-color: #1d4ed8;
-    color: #ffffff;
+    background-color: palette(highlight);
+    border-color: palette(highlight);
+    color: palette(highlighted-text);
 }
 
 QPushButton:default:pressed, QPushButton[default="true"]:pressed {
-    background-color: #1d4ed8;
+    background-color: palette(highlight);
 }
 
 QPushButton:default:disabled, QPushButton[default="true"]:disabled {
-    background-color: rgba(59, 130, 246, 0.4);
+    background-color: rgba(128, 128, 128, 0.3);
     border-color: transparent;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(128, 128, 128, 0.7);
 }
 
 /* Footer dialog button box */
@@ -127,50 +128,50 @@ QDialogButtonBox QPushButton {
 
 /* Modern Pill QToolButton */
 QToolButton {
-    background-color: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.16);
+    background-color: palette(button);
+    border: 1px solid rgba(128, 128, 128, 0.25);
     border-radius: 16px;
     padding: 6px 16px;
     font-size: 13px;
     font-weight: 500;
-    color: #1e293b;
+    color: palette(button-text);
     outline: none;
 }
 
 QToolButton:hover {
-    background-color: #f1f5f9;
-    border-color: rgba(0, 0, 0, 0.28);
-    color: #0f172a;
+    background-color: palette(midlight);
+    border-color: rgba(128, 128, 128, 0.4);
+    color: palette(button-text);
 }
 
 QToolButton:pressed {
-    background-color: #e2e8f0;
+    background-color: palette(mid);
 }
 
 QToolButton:disabled {
-    background-color: rgba(0, 0, 0, 0.03);
-    border-color: rgba(0, 0, 0, 0.08);
-    color: #94a3b8;
+    background-color: rgba(128, 128, 128, 0.08);
+    border-color: rgba(128, 128, 128, 0.15);
+    color: rgba(128, 128, 128, 0.6);
 }
 
 /* Modern Pill QComboBox */
 QComboBox {
-    background-color: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.16);
+    background-color: palette(base);
+    border: 1px solid rgba(128, 128, 128, 0.25);
     border-radius: 16px;
     padding: 5px 28px 5px 14px;
     min-height: 22px;
     font-size: 13px;
-    color: #1e293b;
+    color: palette(text);
 }
 
 QComboBox:hover {
-    background-color: #f8fafc;
-    border-color: rgba(0, 0, 0, 0.28);
+    background-color: palette(midlight);
+    border-color: rgba(128, 128, 128, 0.4);
 }
 
 QComboBox:on {
-    border-color: #3b82f6;
+    border-color: palette(highlight);
 }
 
 QComboBox::drop-down {

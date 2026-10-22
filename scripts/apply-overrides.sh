@@ -3,113 +3,71 @@ set -e
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-echo "==> Ro-KDE-SystemSettings özelleştirmeleri sisteme uygulanıyor..."
+usage() {
+    cat << 'EOF'
+Kullanım: apply-overrides.sh [SEÇENEK]
 
-# Önceki çalışan systemsettings süreçlerini sonlandır
-pkill -9 systemsettings 2>/dev/null || true
+Seçenekler:
+  --system       Tüm özelleştirmeleri sistem geneline (/usr) kurar (root yetkisi gerektirir).
+  --local        Geliştirici ortamı için ~/.local dizinine kurar.
+  --build-only   Sadece build/ dizininde derleme yapar, kurulum yapmaz.
+  --help         Bu yardım mesajını gösterir.
 
-# 1. Çeviriler (.po -> .mo derleme)
-mkdir -p "$HOME/.local/share/locale/tr/LC_MESSAGES"
-for po in "$REPO_DIR/overrides/translations/"*.po; do
-    if [ -f "$po" ]; then
-        name="$(basename "$po" .po)"
-        msgfmt "$po" -o "$HOME/.local/share/locale/tr/LC_MESSAGES/${name}.mo"
-        echo "  [OK] Çeviri derlendi: ${name}.mo -> ~/.local/share/locale/tr/LC_MESSAGES/"
+Varsayılan: --local
+EOF
+    exit 0
+}
+
+MODE="local"
+case "${1:-}" in
+    --system)
+        MODE="system"
+        ;;
+    --local|"")
+        MODE="local"
+        ;;
+    --build-only)
+        MODE="build-only"
+        ;;
+    --help|-h)
+        usage
+        ;;
+    *)
+        echo "Bilinmeyen seçenek: $1" >&2
+        usage
+        ;;
+esac
+
+echo "==> Ro-KDE-SystemSettings derleme başlatılıyor (Mod: $MODE)..."
+
+BUILD_DIR="$REPO_DIR/build"
+mkdir -p "$BUILD_DIR"
+cd "$BUILD_DIR"
+
+if [ "$MODE" = "system" ]; then
+    if [ "$EUID" -ne 0 ]; then
+        echo "Hata: --system kurulumu için root yetkisi gereklidir (sudo kullanın)." >&2
+        exit 1
     fi
-done
-
-# 2. Kategori Meta Verileri (Tek seviyeli temiz kenar çubuğu ve yandan açılan alt kategoriler)
-mkdir -p "$HOME/.local/share/systemsettings/categories"
-if [ -d "$REPO_DIR/overrides/metadata/categories" ]; then
-    cp "$REPO_DIR/overrides/metadata/categories/"*.desktop "$HOME/.local/share/systemsettings/categories/"
-    echo "  [OK] Kullanıcı kategorileri güncellendi (~/.local/share/systemsettings/categories/)."
+    cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release "$REPO_DIR"
+    make -j"$(nproc)"
+    make install
+    echo "  [OK] Ro-KDE-SystemSettings sistem geneline (/usr) kuruldu."
+elif [ "$MODE" = "local" ]; then
+    cmake -DCMAKE_INSTALL_PREFIX="$HOME/.local" -DCMAKE_BUILD_TYPE=Release "$REPO_DIR"
+    make -j"$(nproc)"
+    make install
+    echo "  [OK] Ro-KDE-SystemSettings geliştirici dizinine ($HOME/.local) kuruldu."
+elif [ "$MODE" = "build-only" ]; then
+    cmake -DCMAKE_BUILD_TYPE=Release "$REPO_DIR"
+    make -j"$(nproc)"
+    echo "  [OK] Ro-KDE-SystemSettings build/ altında derlendi."
 fi
 
-if [ "$EUID" -eq 0 ] && [ -d "/usr/share/systemsettings/categories" ]; then
-    cp "$REPO_DIR/overrides/metadata/categories/"*.desktop /usr/share/systemsettings/categories/
-    echo "  [OK] Sistem kategorileri güncellendi (/usr/share/systemsettings/categories/)."
-else
-    echo "  [INFO] Sistem genelinde (/usr/share/systemsettings/categories/) geçerli kılmak için bu scripti sudo ile de çalıştırabilirsiniz."
-fi
-
-# 3. Modern Kart QML ve Runtime Override Katmanı (Deepin 23 benzeri kart arayüzü)
-mkdir -p "$HOME/.local/lib" "$HOME/.local/bin" "$HOME/.local/share/systemsettings" "$HOME/.local/share/applications"
-
-# RCC Resource derleme / kopyalama
-if command -v /usr/lib64/qt6/libexec/rcc >/dev/null 2>&1 && [ -f "$REPO_DIR/overrides/qml/overrides.qrc" ]; then
-    /usr/lib64/qt6/libexec/rcc -binary "$REPO_DIR/overrides/qml/overrides.qrc" -o "$REPO_DIR/overrides/qml/overrides.rcc"
-    /usr/lib64/qt6/libexec/rcc "$REPO_DIR/overrides/qml/overrides.qrc" -o "$REPO_DIR/overrides/qml/qrc_overrides.cpp"
-fi
-if [ -f "$REPO_DIR/overrides/qml/overrides.rcc" ]; then
-    cp "$REPO_DIR/overrides/qml/overrides.rcc" "$HOME/.local/share/systemsettings/overrides.rcc"
-    echo "  [OK] Modern QML kart arayüz paketi (overrides.rcc) kuruldu."
-fi
-
-# Loader paylaşımlı kütüphane derleme / kopyalama
-if command -v g++ >/dev/null 2>&1 && [ -f "$REPO_DIR/overrides/qml/systemsettings_loader.cpp" ]; then
-    g++ -O2 -shared -fPIC "$REPO_DIR/overrides/qml/systemsettings_loader.cpp" "$REPO_DIR/overrides/qml/qrc_overrides.cpp" $(pkg-config --cflags --libs Qt6Core Qt6Gui Qt6Quick Qt6Qml Qt6QuickWidgets Qt6Widgets Qt6QuickControls2) -ldl -o "$REPO_DIR/overrides/qml/libsystemsettings_override.so"
-fi
-if [ -f "$REPO_DIR/overrides/qml/libsystemsettings_override.so" ]; then
-    cp "$REPO_DIR/overrides/qml/libsystemsettings_override.so" "$HOME/.local/lib/libsystemsettings_override.so"
-    echo "  [OK] Sistem ayarları QML override kütüphanesi kuruldu (~/.local/lib/)."
-fi
-
-# QML Sidebar ve Sistem Ayarları Katmanı
-mkdir -p "$HOME/.local/share/systemsettings/qml"
-if [ -d "$REPO_DIR/overrides/qml/systemsettings" ]; then
-    cp -r "$REPO_DIR/overrides/systemsettings/"* "$HOME/.local/share/systemsettings/qml/" 2>/dev/null || cp -r "$REPO_DIR/overrides/qml/systemsettings/"* "$HOME/.local/share/systemsettings/qml/"
-    echo "  [OK] Modern tek sütunlu hiyerarşik kenar çubuğu QML bileşenleri kuruldu."
-fi
-
-# QML Imports Katmanı (Kirigami FormLayout ve Kart arayüzü)
-if [ -d "$REPO_DIR/overrides/qml/imports" ]; then
-    mkdir -p "$HOME/.local/lib/qt6/qml"
-    cp -r "$REPO_DIR/overrides/qml/imports/"* "$HOME/.local/lib/qt6/qml/"
-    echo "  [OK] Modern Kirigami FormLayout ve QML bileşenleri kuruldu (~/.local/lib/qt6/qml/)."
-fi
-
-# 3.1 Tab pill butonları QSS kopyalama
-if [ -f "$REPO_DIR/overrides/theme/tabs.qss" ]; then
-    cp "$REPO_DIR/overrides/theme/tabs.qss" "$HOME/.local/share/systemsettings/tabs.qss"
-    echo "  [OK] Modern hap sekme butonları stilleri kuruldu (~/.local/share/systemsettings/tabs.qss)."
-fi
-
-# Sistem Ayarları Wrapper ve Desktop Başlatıcısı
-cat << 'EOF' > "$HOME/.local/bin/systemsettings"
-#!/usr/bin/env bash
-export LD_PRELOAD="$HOME/.local/lib/libsystemsettings_override.so${LD_PRELOAD:+:$LD_PRELOAD}"
-export QML2_IMPORT_PATH="$HOME/.local/lib/qt6/qml:${QML2_IMPORT_PATH:+:$QML2_IMPORT_PATH}"
-export QML_IMPORT_PATH="$HOME/.local/lib/qt6/qml:${QML_IMPORT_PATH:+:$QML_IMPORT_PATH}"
-QSS_ARG=()
-if [ -f "$HOME/.local/share/systemsettings/tabs.qss" ]; then
-    QSS_ARG=(-stylesheet "$HOME/.local/share/systemsettings/tabs.qss")
-fi
-exec /usr/bin/systemsettings "${QSS_ARG[@]}" "$@"
-EOF
-chmod +x "$HOME/.local/bin/systemsettings"
-
-cat << 'EOF' > "$HOME/.local/share/applications/systemsettings.desktop"
-[Desktop Entry]
-Exec=/home/tugba/.local/bin/systemsettings %U
-TryExec=/home/tugba/.local/bin/systemsettings
-Icon=preferences-system
-Type=Application
-Terminal=false
-Categories=Qt;KDE;Settings;
-Name=System Settings
-Name[tr]=Sistem Ayarları
-EOF
-chmod +x "$HOME/.local/share/applications/systemsettings.desktop"
-cp "$HOME/.local/share/applications/systemsettings.desktop" "$HOME/.local/share/applications/kdesystemsettings.desktop"
-
-mkdir -p "$HOME/.config/environment.d"
-echo 'PATH="$HOME/.local/bin:$PATH"' > "$HOME/.config/environment.d/10-local-bin.conf"
-echo "  [OK] Sistem Ayarları modern başlatıcısı ve ortam değişkenleri yapılandırıldı."
-
-# 4. KDE Sistem Arayüz Önbelleğini Yenile
+# KDE sycoca önbelleğini yenile (isteğe bağlı)
 if command -v kbuildsycoca6 >/dev/null 2>&1; then
     kbuildsycoca6 --noincremental >/dev/null 2>&1 || true
-    echo "  [OK] KDE sycoca6 önbelleği temizlendi ve yenilendi."
+    echo "  [OK] KDE sycoca6 önbelleği güncellendi."
 fi
 
-echo "==> Tüm özelleştirmeler başarıyla uygulandı!"
+echo "==> İşlem tamamlandı!"

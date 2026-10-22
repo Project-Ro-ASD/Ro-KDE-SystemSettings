@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -e
+
+# Ro-KDE-SystemSettings wrapper for Ro-ASD (Fedora 44)
+# Applies modern layout overrides, QSS tab styles, and custom categories
+
+# Preload the Qt/Kirigami override library
+if [ -f "/usr/lib64/ro-kde-systemsettings/libsystemsettings_override.so" ]; then
+    export LD_PRELOAD="/usr/lib64/ro-kde-systemsettings/libsystemsettings_override.so${LD_PRELOAD:+:$LD_PRELOAD}"
+elif [ -f "$HOME/.local/lib/libsystemsettings_override.so" ]; then
+    export LD_PRELOAD="$HOME/.local/lib/libsystemsettings_override.so${LD_PRELOAD:+:$LD_PRELOAD}"
+fi
+
+# Prepend Ro-ASD data and QML search paths
+case ":${XDG_DATA_DIRS:-/usr/local/share:/usr/share}:" in
+    *:/usr/share/ro-kde-systemsettings:*) ;;
+    *) export XDG_DATA_DIRS="/usr/share/ro-kde-systemsettings:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}" ;;
+esac
+
+if [ -d "/usr/lib64/ro-kde-systemsettings/qml" ]; then
+    export QML2_IMPORT_PATH="/usr/lib64/ro-kde-systemsettings/qml:${QML2_IMPORT_PATH:+:$QML2_IMPORT_PATH}"
+    export QML_IMPORT_PATH="/usr/lib64/ro-kde-systemsettings/qml:${QML_IMPORT_PATH:+:$QML_IMPORT_PATH}"
+fi
+
+QSS_ARG=()
+if [ -f "/usr/share/ro-kde-systemsettings/tabs.qss" ]; then
+    QSS_ARG=(-stylesheet "/usr/share/ro-kde-systemsettings/tabs.qss")
+elif [ -f "$HOME/.local/share/systemsettings/tabs.qss" ]; then
+    QSS_ARG=(-stylesheet "$HOME/.local/share/systemsettings/tabs.qss")
+fi
+
+exec /usr/bin/systemsettings "${QSS_ARG[@]}" "$@"
