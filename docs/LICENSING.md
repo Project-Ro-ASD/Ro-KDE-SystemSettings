@@ -45,3 +45,14 @@ have CI-enforced path coverage, SHA256 and declaration freshness via
 `python3 scripts/check-license-audit.py`. A PASS means inventory consistency;
 production clearance remains BLOCKED. Use `--update` only after reviewing changed
 files; it never assigns licenses or resolves blockers automatically.
+
+Category evidence: `.roasd/metadata-provenance.json` compares every one of the
+25 category files with the same pinned systemsettings source: eight are byte
+identical and 17 are modified. The upstream category desktop files themselves
+have no SPDX identifier; none is inferred from neighboring code or translations.
+The six corresponding original shell QML filenames exist at that reference
+but all differ downstream. `NavButton.qml` and `SubSubCategoryPage.qml` have no
+same-name upstream file there; original authorship/grants remain BLOCKED.
+Git history traces the custom loader through local UI commits (including
+`8dc1086` and `e675642`), but those commits supply no explicit file-level grant
+or authoritative provenance for any borrowed portions.

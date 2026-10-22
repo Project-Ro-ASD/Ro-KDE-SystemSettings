@@ -46,6 +46,9 @@ jobs:
           fi
           [[ "$(git rev-parse HEAD)" == "${GITHUB_SHA}" ]]
           python3 scripts/validate.py
+          python3 scripts/check-license-audit.py
+          python3 tests/test-launcher.py
+          python3 tests/test-license-audit.py
 
           RPM_VERSION="$(awk '/^Version:/ { print $2; exit }' packaging/fedora/ro-kde-systemsettings.spec)"
           [[ "${RPM_VERSION}" == "${COMPONENT_VERSION}" ]]
