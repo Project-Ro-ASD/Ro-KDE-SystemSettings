@@ -16,7 +16,12 @@ for file in sorted((root / '.github/workflows').glob('*.yml')):
     assert 'on' in workflow, file
     assert workflow['jobs'], file
     for job in workflow['jobs'].values():
-        for step in job.get('steps', []):
+        steps = job.get('steps', [])
+        if job.get('container'):
+            checkout = next(i for i, step in enumerate(steps) if step.get('uses', '').startswith('actions/checkout@'))
+            git_install = next(i for i, step in enumerate(steps) if 'dnf install -y git' in step.get('run', ''))
+            assert git_install < checkout, 'Install Git before checkout; archive fallback has no .git'
+        for step in steps:
             assert not step.get('continue-on-error'), step
             if 'run' in step:
                 result = subprocess.run(['bash', '-n'], input=step['run'], text=True)

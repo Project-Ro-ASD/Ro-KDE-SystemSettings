@@ -25,6 +25,10 @@ Existing QML spans systemsettings, plasma-desktop, powerdevil, kscreen, plasma-w
 
 The preparation PR must remain reviewable with these limitations. Do not call the component production-ready solely because RPM tests pass. Ro-Repo and its PR #86 are outside this change.
 
+## GitHub container bootstrap correction
+
+The first feature-branch CI run reached the RPM job but failed with `fatal: not a git repository`. Minimal `fedora:44` lacks Git at checkout time, so actions/checkout fell back to a source archive. Local tests already had Git and did not exercise this order. Both Fedora workflow jobs now install dependencies **before checkout**; the workflow contract checks this order so the tracked-file source archive has actual Git metadata. The original failure remains visible; no check is skipped or softened.
+
 ## Validation evidence
 
 Local disposable Podman validation on Fedora 44 x86_64 passed:

@@ -39,14 +39,14 @@ jobs:
       image: fedora:44
     timeout-minutes: 60
     steps:
-      - name: Checkout
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-
       - name: Install build tools and dependencies
         run: |
           dnf install -y git python3 gettext rpm-build rpmdevtools rpmlint cmake gcc-c++ \
             kf6-rpm-macros qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtquickcontrols2-devel \
             desktop-file-utils plasma-systemsettings kf6-kirigami dbus-daemon
+
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
       - name: Mark git directory safe
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
