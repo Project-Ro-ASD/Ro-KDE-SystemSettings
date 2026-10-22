@@ -1,16 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-RPM_FILE="${1:-}"
-if [ -z "$RPM_FILE" ]; then
-    RPM_FILE="$(find "${RPMBUILD_TOPDIR:-$HOME/rpmbuild}/RPMS/x86_64" -name "ro-kde-systemsettings-*.x86_64.rpm" | head -n1)"
-fi
-
+source "$(dirname "$0")/lib.sh"
+resolve_rpm "${1:-}"
 echo "==> Running smoke tests for ro-kde-systemsettings..."
 
 # 1. Inspect package metadata
 NAME="$(rpm -qp --qf '%{NAME}' "$RPM_FILE")"
-VERSION="$(rpm -qp --qf '%{VERSION}' "$RPM_FILE")"
+RPM_VERSION="$(rpm -qp --qf '%{VERSION}' "$RPM_FILE")"
 ARCH="$(rpm -qp --qf '%{ARCH}' "$RPM_FILE")"
 
 if [ "$NAME" != "ro-kde-systemsettings" ]; then
@@ -22,6 +19,10 @@ if [ "$ARCH" != "x86_64" ]; then
     exit 1
 fi
 
+[[ "$RPM_VERSION" == "$VERSION" ]]
+[[ "$(rpm -qp --qf '%{RELEASE}' "$RPM_FILE")" == 1.roasd1.fc44 ]]
+[[ "$(rpm -qp --qf '%{LICENSE}' "$RPM_FILE")" == "$(sed -n 's/^License: *//p' "$REPO_DIR/packaging/fedora/ro-kde-systemsettings.spec")" ]]
+
 # 2. Check essential files in payload
 REQUIRED_FILES=(
     "/usr/bin/ro-systemsettings"
@@ -30,8 +31,6 @@ REQUIRED_FILES=(
     "/usr/share/ro-kde-systemsettings/tabs.qss"
     "/usr/share/ro-kde-systemsettings/applications/systemsettings.desktop"
     "/usr/share/applications/ro-systemsettings.desktop"
-    "/usr/lib/environment.d/50-ro-kde-systemsettings.conf"
-    "/etc/profile.d/ro-kde-systemsettings.sh"
 )
 
 PAYLOAD="$(rpm -qlp "$RPM_FILE")"
@@ -60,3 +59,7 @@ fi
 echo "  [OK] Payload contains $MO_COUNT Turkish translation files"
 
 echo "==> Smoke test PASSED for $RPM_FILE!"
+
+for path in /usr/bin/systemsettings /usr/share/applications/systemsettings.desktop /usr/lib/environment.d/50-ro-kde-systemsettings.conf /etc/profile.d/ro-kde-systemsettings.sh; do
+    if grep -Fxq "$path" <<< "$PAYLOAD"; then echo "Forbidden global payload: $path" >&2; exit 1; fi
+done

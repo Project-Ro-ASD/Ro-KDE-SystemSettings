@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(ro-kde-systemsettings VERSION 0.1.0 LANGUAGES CXX)
+project(ro-kde-systemsettings VERSION 0.1.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -29,6 +29,8 @@ set_target_properties(systemsettings_override PROPERTIES
 target_include_directories(systemsettings_override PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/overrides/qml
 )
+
+target_link_options(systemsettings_override PRIVATE "LINKER:--no-undefined")
 
 target_link_libraries(systemsettings_override PRIVATE
     Qt6::Core
@@ -137,12 +139,4 @@ install(FILES packaging/fedora/ro-systemsettings.desktop
 )
 install(FILES packaging/fedora/systemsettings.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/ro-kde-systemsettings/applications
-)
-
-# 10. Environment integration
-install(FILES packaging/fedora/50-ro-kde-systemsettings.conf
-    DESTINATION /usr/lib/environment.d
-)
-install(FILES packaging/fedora/ro-kde-systemsettings.sh
-    DESTINATION /etc/profile.d
 )

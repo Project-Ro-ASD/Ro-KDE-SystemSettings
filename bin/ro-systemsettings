@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 # Ro-KDE-SystemSettings wrapper for Ro-ASD (Fedora 44)
 # Applies modern layout overrides, QSS tab styles, and custom categories
@@ -12,8 +12,8 @@ case ":${XDG_DATA_DIRS:-/usr/local/share:/usr/share}:" in
 esac
 
 if [ -d "/usr/lib64/ro-kde-systemsettings/qml" ]; then
-    export QML2_IMPORT_PATH="/usr/lib64/ro-kde-systemsettings/qml:${QML2_IMPORT_PATH:+:$QML2_IMPORT_PATH}"
-    export QML_IMPORT_PATH="/usr/lib64/ro-kde-systemsettings/qml:${QML_IMPORT_PATH:+:$QML_IMPORT_PATH}"
+    export QML2_IMPORT_PATH="/usr/lib64/ro-kde-systemsettings/qml${QML2_IMPORT_PATH:+:$QML2_IMPORT_PATH}"
+    export QML_IMPORT_PATH="/usr/lib64/ro-kde-systemsettings/qml${QML_IMPORT_PATH:+:$QML_IMPORT_PATH}"
 fi
 
 QSS_ARG=()

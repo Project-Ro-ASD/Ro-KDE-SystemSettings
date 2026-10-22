@@ -1,14 +1,15 @@
 %global debug_package %{nil}
 Name:           ro-kde-systemsettings
-Version:        0.1.0
+Version:        0.1.1
 Release:        1.roasd1%{?dist}
 Summary:        Ro-ASD downstream customization layer for KDE Plasma System Settings
-License:        GPL-2.0-or-later
+License:        GPL-3.0-only AND GPL-3.0-or-later AND GPL-2.0-or-later AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-3.0-only
 URL:            https://github.com/Project-Ro-ASD/Ro-KDE-SystemSettings
-Source0:        %{name}-%{version}.tar.gz
+Source0:        https://github.com/Project-Ro-ASD/Ro-KDE-SystemSettings/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
 ExclusiveArch:  x86_64
 
+BuildRequires:  desktop-file-utils
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
@@ -29,7 +30,7 @@ and integrated Turkish translations without replacing or breaking standard
 Fedora KDE Plasma System Settings modules.
 
 %prep
-%autosetup -p1
+%autosetup -n Ro-KDE-SystemSettings-%{version} -p1
 
 %build
 %cmake -DCMAKE_BUILD_TYPE=Release
@@ -38,8 +39,15 @@ Fedora KDE Plasma System Settings modules.
 %install
 %cmake_install
 
+%check
+desktop-file-validate packaging/fedora/ro-systemsettings.desktop
+for catalog in overrides/translations/*.po; do
+    msgfmt --check-format -o /dev/null "$catalog"
+done
+
 %files
-%license LICENSE
+%license LICENSE LICENSES/
+%doc docs/LICENSING.md
 %doc README.md
 %{_bindir}/ro-systemsettings
 %dir %{_libdir}/ro-kde-systemsettings
@@ -50,12 +58,13 @@ Fedora KDE Plasma System Settings modules.
 %{_datadir}/ro-kde-systemsettings/tabs.qss
 %{_datadir}/ro-kde-systemsettings/qml/
 %{_datadir}/ro-kde-systemsettings/systemsettings/
-%{_datadir}/ro-kde-systemsettings/locale/
+%lang(tr) %{_datadir}/ro-kde-systemsettings/locale/
 %{_datadir}/ro-kde-systemsettings/applications/
 %{_datadir}/applications/ro-systemsettings.desktop
-/usr/lib/environment.d/50-ro-kde-systemsettings.conf
-/etc/profile.d/ro-kde-systemsettings.sh
 
 %changelog
+* Thu Oct 22 2026 Ro-ASD Maintainers <maintainers@project-ro-asd.org> - 0.1.1-1.roasd1
+- Prepare V2 producer checks and isolate integration to the Ro launcher.
+
 * Thu Oct 22 2026 Ro-ASD Maintainers <maintainers@project-ro-asd.org> - 0.1.0-1.roasd1
 - Initial release candidate v0.1.0 for Fedora 44 Ro-ASD.

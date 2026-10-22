@@ -55,4 +55,6 @@ The current Ro-ASD component contract targets Fedora 44. Do not assume the newes
 
 ## Release work
 
-RPM spec, producer manifest and trusted release workflow are intentionally deferred until the repository has a concrete installable payload. Do not invent empty release artifacts.
+The installable payload is built with CMake and packaged by `packaging/fedora/ro-kde-systemsettings.spec`. CI and release builds share the RPM, manifest/checksum, install, runtime, actual upgrade/removal and Fedora integrity gates. See `tests/README.md` and `packaging/fedora/README.md`.
+
+Do not run transaction tests on the host. Use a disposable Fedora 44 x86_64 container. Do not publish `v0.1.1` until the release blockers in `docs/PRODUCER-READINESS.md` are resolved.

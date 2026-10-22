@@ -53,7 +53,7 @@ Bir patch eklenirken hangi KDE projesine ait olduğu, hangi upstream sürüm/com
 Ro-ASD type:       component
 class:             desktop-integration
 component id:      ro-kde-systemsettings
-initial version:   0.1.0
+next version:      0.1.1
 Fedora baseline:   44
 ```
 
@@ -69,10 +69,12 @@ GitHub Actions aynı component sözleşmesini pull request ve `main` değişikli
 
 ## Durum
 
-**Bootstrap / architecture phase**
+Fedora 44 x86_64 için somut RPM/SRPM, CMake derlemesi ve Ro-Repo V2 üretici yayın akışı mevcuttur. Sonraki sürüm hazırlığı `0.1.1`'dir; henüz yayımlanmamıştır.
 
-Henüz production KDE patch'i veya RPM paketi yoktur. İlk gerçek iş, Ro-ASD için değiştirmek istediğimiz System Settings öğelerini tek tek upstream sahibine eşleyip ilk küçük customization setini oluşturmaktır.
+`ro-systemsettings` Fedora'nın `/usr/bin/systemsettings` programını yalnızca kendi sürecine özel XDG/QML yolları ve QSS ile başlatır. Fedora paketi değiştirilmez; global oturum ortamı kurulmaz. Eski `0.1.0` paketinden yükseltme global environment/profile dosyalarını kaldırır. Menüde Ro girdisi `ro-systemsettings.desktop` olarak ayrıdır.
+
+Preload kararlılık nedeniyle kapalıdır. Derlenen override kitaplığı ve RCC'nin varlığı bütün özel QML sayfalarının etkin olduğunu kanıtlamaz. Fedora sürümüyle görsel/KCM kabul testi ve eksik upstream kaynak/lisans kayıtları üretim öncesi tamamlanmalıdır. [Paketleme ve yayın adımları](packaging/fedora/README.md), [testler](tests/README.md), [hazırlık kanıtları](docs/PRODUCER-READINESS.md).
 
 ## Lisans
 
-GPL-3.0.
+Depo kökündeki `LICENSE` GPLv3 metnidir; paket farklı GPL/LGPL lisanslı KDE dosyaları da içerir. Dosya başlıkları korunur. RPM SPDX birleşimi, lisans seçimleri ve eksik köken kayıtları [docs/LICENSING.md](docs/LICENSING.md) içindedir; tüm paketi GPLv3 olarak yeniden lisanslamaz.

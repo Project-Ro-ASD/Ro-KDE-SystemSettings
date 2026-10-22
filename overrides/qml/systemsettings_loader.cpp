@@ -32,8 +32,8 @@
 #define RO_SYSTEMSETTINGS_LIB_DIR "/usr/lib64/ro-kde-systemsettings"
 #endif
 
-extern int qInitResources();
-extern int qCleanupResources();
+extern int qInitResources_overrides();
+extern int qCleanupResources_overrides();
 extern char *program_invocation_short_name;
 
 static bool is_target_process() {
@@ -75,8 +75,8 @@ static QString getQmlImportDir() {
 
 static void register_user_overrides() {
     if (!is_target_process()) return;
-    qCleanupResources();
-    qInitResources();
+    qCleanupResources_overrides();
+    qInitResources_overrides();
     QString rccPath = getDataDir() + QStringLiteral("/overrides.rcc");
     if (QFile::exists(rccPath)) {
         bool ok = QResource::registerResource(rccPath);
