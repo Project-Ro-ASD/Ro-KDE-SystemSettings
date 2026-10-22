@@ -1,0 +1,273 @@
+name: Release
+
+# Ro-Repo V2 producer release for Ro-KDE-SystemSettings.
+# Tag vX.Y.Z = component version (VERSION).
+
+"on":
+  push:
+    tags:
+      - "v*"
+  # Dry run: builds and tests the RPMs without creating a release.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+  artifact-metadata: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  metadata:
+    name: Resolve Release Metadata
+    runs-on: ubuntu-24.04
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+      rpm_version: ${{ steps.meta.outputs.rpm_version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Validate exact tag, component version and repository contract
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          COMPONENT_VERSION="$(tr -d '[:space:]' < VERSION)"
+          if [[ "${GITHUB_EVENT_NAME}" == "push" ]]; then
+            TAG="${GITHUB_REF_NAME}"
+            [[ "${TAG}" == "v${COMPONENT_VERSION}" ]]
+          else
+            TAG="dry-run"
+          fi
+          [[ "$(git rev-parse HEAD)" == "${GITHUB_SHA}" ]]
+          python3 scripts/validate.py
+
+          RPM_VERSION="$(awk '/^Version:/ { print $2; exit }' packaging/fedora/ro-kde-systemsettings.spec)"
+          [[ "${RPM_VERSION}" == "${COMPONENT_VERSION}" ]]
+
+          echo "tag=${TAG}" >> "${GITHUB_OUTPUT}"
+          echo "rpm_version=${RPM_VERSION}" >> "${GITHUB_OUTPUT}"
+
+  rpm:
+    name: Build Fedora 44 Ro-KDE-SystemSettings RPMs (x86_64)
+    needs: metadata
+    runs-on: ubuntu-24.04
+    container:
+      image: fedora:44
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Install build tools and dependencies
+        run: |
+          dnf install -y git python3 gettext rpm-build rpmdevtools rpmlint cmake gcc-c++ \
+            kf6-rpm-macros qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtquickcontrols2-devel \
+            desktop-file-utils plasma-systemsettings kf6-kirigami
+
+      - name: Mark git directory safe
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Build RPM and SRPM
+        run: bash tests/test-build-rpm.sh
+
+      - name: Collect and validate the exact package set
+        env:
+          RPM_VERSION: ${{ needs.metadata.outputs.rpm_version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TOPDIR="$HOME/rpmbuild"
+          mkdir -p release-rpms
+          f="$(find "$TOPDIR/RPMS/x86_64" -maxdepth 1 -name "ro-kde-systemsettings-${RPM_VERSION}-*.x86_64.rpm" -print -quit)"
+          test -n "$f"
+          [[ "$(rpm -qp --qf '%{NAME}' "$f")" == "ro-kde-systemsettings" ]]
+          cp "$f" release-rpms/
+          cp "$TOPDIR"/SRPMS/ro-kde-systemsettings-"${RPM_VERSION}"-*.src.rpm release-rpms/
+
+          for f in release-rpms/*.rpm; do
+            if [[ "$f" == *.src.rpm ]]; then
+              [[ "$(basename "$f")" == "$(rpm -qp --qf '%{NAME}-%{VERSION}-%{RELEASE}.src.rpm' "$f")" ]]
+            else
+              [[ "$(basename "$f")" == "$(rpm -qp --qf '%{NVRA}.rpm' "$f")" ]]
+            fi
+            [[ "$(rpm -qp --qf '%{VERSION}' "$f")" == "${RPM_VERSION}" ]]
+            [[ "$(rpm -qp --qf '%{RELEASE}' "$f")" =~ ^[0-9]+\.roasd[0-9]+\.fc44$ ]]
+          done
+          ls -l release-rpms
+
+      - name: rpmlint (advisory, same as Ro-Repo acceptance)
+        shell: bash
+        run: |
+          rpmlint release-rpms/*.rpm || echo "::warning::rpmlint reported issues (advisory)"
+
+      - name: Smoke test built package
+        shell: bash
+        run: |
+          bash tests/test-smoke.sh release-rpms/ro-kde-systemsettings-*.x86_64.rpm
+
+      - name: Upload RPM bundle
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: release-rpms-x86_64
+          path: release-rpms/*.rpm
+          if-no-files-found: error
+          retention-days: 7
+
+  release:
+    name: Publish V2 Contract Release
+    needs: [metadata, rpm]
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ needs.metadata.outputs.tag }}
+
+    steps:
+      - name: Checkout trusted workflow source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Download RPM bundle
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          pattern: release-rpms-*
+          path: bundle
+          merge-multiple: true
+
+      - name: Install RPM query tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm jq
+
+      - name: Validate exact RPM set
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t RPMS < <(find bundle -maxdepth 1 -type f -name '*.rpm' -printf '%f\n' | sort)
+          printf '%s\n' "${RPMS[@]}"
+          [[ "${#RPMS[@]}" -eq 2 ]]
+          [[ "$(printf '%s\n' "${RPMS[@]}" | grep -c '\.x86_64\.rpm$')" -eq 1 ]]
+          [[ "$(printf '%s\n' "${RPMS[@]}" | grep -c '\.src\.rpm$')" -eq 1 ]]
+          ! printf '%s\n' "${RPMS[@]}" | grep -qE 'debuginfo|debugsource'
+          ! find bundle -maxdepth 1 -type f -name '*.rpm' | grep -qE '/.*(fc4[0-3]|fc45).*\.rpm$'
+
+      - name: Create or recover draft release
+        id: draft
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXISTING="$(gh api "repos/${GITHUB_REPOSITORY}/releases" --paginate --jq ".[] | select(.tag_name == \"${TAG}\") | [.id,.draft,.target_commitish] | @tsv" | head -n1 || true)"
+          if [[ -n "$EXISTING" ]]; then
+            IFS=$'\t' read -r EXISTING_ID IS_DRAFT TARGET <<< "$EXISTING"
+            if [[ "$IS_DRAFT" != "true" ]]; then
+              echo "A published release already exists for ${TAG}; refusing reuse." >&2
+              exit 1
+            fi
+            gh api -X DELETE "repos/${GITHUB_REPOSITORY}/releases/${EXISTING_ID}"
+          fi
+
+          RELEASE_JSON="$(gh api --method POST "repos/${GITHUB_REPOSITORY}/releases" \
+            -f tag_name="${TAG}" \
+            -f target_commitish="${GITHUB_SHA}" \
+            -f name="${TAG}" \
+            -F draft=true \
+            -F generate_release_notes=true)"
+          RELEASE_ID="$(jq -r '.id' <<<"${RELEASE_JSON}")"
+          [[ "${RELEASE_ID}" =~ ^[0-9]+$ ]]
+          echo "release_id=${RELEASE_ID}" >> "$GITHUB_OUTPUT"
+
+      - name: Generate strict checksums and component manifest
+        env:
+          RELEASE_ID: ${{ steps.draft.outputs.release_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd bundle
+          mapfile -t RPMS < <(find . -maxdepth 1 -type f -name '*.rpm' -printf '%f\n' | sort)
+          sha256sum "${RPMS[@]}" > SHA256SUMS
+
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+
+          root = pathlib.Path('.')
+          artifacts = []
+          query = '%{NAME}\t%{EPOCHNUM}\t%{VERSION}\t%{RELEASE}\t%{ARCH}\t%{SOURCERPM}\t%|SOURCEPACKAGE?{true}:{false}|'
+          for path in sorted(root.glob('*.rpm')):
+              values = subprocess.check_output(['rpm','-qp','--qf',query,str(path)], text=True).split('\t')
+              if len(values) != 7:
+                  raise SystemExit(f'Unexpected RPM header for {path}')
+              name, epoch, version, release, arch, source_rpm, is_source = values
+              if is_source == 'true':
+                  arch = 'src'
+                  source_rpm = None
+              digest = hashlib.sha256(path.read_bytes()).hexdigest()
+              artifacts.append({
+                  'filename': path.name,
+                  'name': name,
+                  'epoch': int(epoch or 0),
+                  'version': version,
+                  'release': release,
+                  'architecture': arch,
+                  'source_rpm': source_rpm,
+                  'producer_artifact_sha256': digest,
+              })
+
+          manifest = {
+              'schema_version': 1,
+              'component': 'ro-kde-systemsettings',
+              'source_repository': os.environ['GITHUB_REPOSITORY'],
+              'source_commit': os.environ['GITHUB_SHA'],
+              'release_tag': os.environ['TAG'],
+              'release_id': int(os.environ['RELEASE_ID']),
+              'workflow_run': int(os.environ['GITHUB_RUN_ID']),
+              'fedora_release': 44,
+              'artifacts': artifacts,
+              'provenance': {'provider': 'github', 'subject_digest': 'sha256'},
+              'attestation': {'provider': 'github', 'verification': 'gh attestation verify'},
+          }
+          pathlib.Path('component-artifact-manifest-v1.json').write_text(
+              json.dumps(manifest, indent=2, sort_keys=True) + '\n', encoding='utf-8'
+          )
+          PY
+
+          sha256sum -c SHA256SUMS
+
+      - name: Attest exact release bundle
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
+        with:
+          subject-path: |
+            bundle/*.rpm
+            bundle/SHA256SUMS
+            bundle/component-artifact-manifest-v1.json
+
+      - name: Upload complete bundle to draft release
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release upload "$TAG" \
+            bundle/*.rpm \
+            bundle/SHA256SUMS \
+            bundle/component-artifact-manifest-v1.json
+
+      - name: Verify draft assets and publish
+        env:
+          RELEASE_ID: ${{ steps.draft.outputs.release_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t EXPECTED < <(
+            { find bundle -maxdepth 1 -type f -name '*.rpm' -printf '%f\n'; printf '%s\n' SHA256SUMS component-artifact-manifest-v1.json; } | sort
+          )
+          mapfile -t ACTUAL < <(gh api "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets" --paginate --jq '.[].name' | sort)
+          [[ "${#EXPECTED[@]}" -eq 4 ]]
+          diff -u <(printf '%s\n' "${EXPECTED[@]}") <(printf '%s\n' "${ACTUAL[@]}")
+
+          gh release edit "$TAG" --draft=false

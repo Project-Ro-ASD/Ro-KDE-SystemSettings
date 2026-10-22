@@ -316,7 +316,7 @@ Item {
         }
         height: lay.implicitHeight + Platform.Units.largeSpacing * 3
         radius: 12
-        color: "#ffffff"
+        color: Kirigami.ColorUtils.linearInterpolation(Platform.Theme.backgroundColor, Platform.Theme.textColor, 0.04)
         border.color: Qt.rgba(Platform.Theme.textColor.r, Platform.Theme.textColor.g, Platform.Theme.textColor.b, 0.08)
         border.width: 1
         visible: lay.knownItems.length > 0 && !findAncestor(root, item => item !== cardBg && item.radius && item.radius >= 8)
