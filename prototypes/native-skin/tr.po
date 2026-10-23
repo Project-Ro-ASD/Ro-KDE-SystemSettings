@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: 2026 Ro-ASD contributors
+# SPDX-License-Identifier: GPL-3.0-only
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: tr\n"
+
+msgid "Show menu"
+msgstr "Menüyü göster"
+
+msgid "Search settings"
+msgstr "Ayarlarda ara"
+
+msgid "No matching settings"
+msgstr "Eşleşen ayar yok"
