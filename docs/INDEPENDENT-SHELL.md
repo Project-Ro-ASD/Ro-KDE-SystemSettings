@@ -121,3 +121,100 @@ Fonts QML'de gözlenen `main.qml:33 Unable to assign [undefined] to bool`,
 `usingDisplayFont` bool ifadesinin Array.find sonucundan kaynaklanır; incelenen
 v6.7.5 upstream de aynı ifadeyi içerir. Ro context eksikliğine kanıt değildir;
 modül yükleme PASS'i bu uyarıyı kapatmaz, fiziksel kabulde izlenmelidir.
+
+## Kesin test kanıtları ve teslim
+
+Ana uygulama kaynak commit'i
+[`c0f45e2`](https://github.com/Project-Ro-ASD/Ro-KDE-SystemSettings/commit/c0f45e2000834f1ad351528f0aeb2d3c94cac069).
+Runtime test süreç temizliği
+[`21fa145`](https://github.com/Project-Ro-ASD/Ro-KDE-SystemSettings/commit/21fa145433c4ca3d2d9b00246a89adfa8bd6baab).
+Gerçek test KCM sağlayıcısını bildiren aday commit
+[`3448f7c`](https://github.com/Project-Ro-ASD/Ro-KDE-SystemSettings/commit/3448f7c60fb57e46e88d364485d04001b7cac01b).
+[Draft PR #7](https://github.com/Project-Ro-ASD/Ro-KDE-SystemSettings/pull/7),
+yazar `minitheguitarist`, draft durumu ve insan hesabı doğrulandı; merge edilmedi.
+
+| Kontrol | Sonuç ve sınır |
+| --- | --- |
+| check-env, validate.py, test-contract.py | PASS |
+| License envanteri ve negatif drift/ekleme/silme | PASS; 7 aktif uygulama kaydı, tamamında özgün GPL-3.0-or-later bildirimi |
+| actionlint | PASS; sabit checksum doğrulandı |
+| CMake/Ninja, TR/EN ctest | PASS 3/3; arama/result opening, kaydedilmemiş değişiklikte cancel, gerçek KConfig save/load/defaults, geçmiş ve eksik action için save engeli |
+| Gerçek KCM içerikleri | PASS: QtWidgets kcm_qtquicksettings (plasma-desktop); QML kcm_fonts ve kcm_colors (plasma-workspace-libs) |
+| RPM/SRPM ve %check | PASS; 0.2.0-1.roasd1.fc44, son yerel aday kaynak 3448f7c |
+| QML-only incremental rebuild | PASS; gömülü kaynak değişince ELF değişiyor, ikinci değişikliksiz build sabit |
+| rpmlint | PASS: 0 hata, 3 uyarı (unstripped ELF, man sayfası yok, konteyner locale'i); uyarı bastırılmadı |
+| Manifest/checksum ve negatif testler | PASS; kasıtlı bozuk checksum/ekstra-eksik RPM denemeleri beklenen şekilde reddedildi |
+| Temiz kurulum/file conflict/ldd/stock integrity | PASS; Fedora dosyaları rpm -V ile değişmemiş |
+| Gerçek 0.1.0 yükseltme/kaldırma | PASS; eski global dosyalar ve emekliye ayrılan payload kaldırılıyor, stock korunuyor |
+| Geniş yerel KCM imajı runtime | Ro home/metadata ve 3 gerçek KCM PASS; eşzamanlı stock/Ro FAIL: stock SIGSEGV |
+| Temiz Fedora 44 CI | [39966000600](https://github.com/Project-Ro-ASD/Ro-KDE-SystemSettings/actions/runs/39966000600) PASS, exact 3448f7c; Repository Contract ve tam RPM doğrulama işi |
+| Gerçek Plasma/Polkit, fiziksel G14, donanım/ölçek/erişilebilirlik | BLOCKED; headless başarıdan kabul türetilmedi |
+| Yeni canlı attestation dry-run | BLOCKED: otomatik onay denetimi release.yml dispatch'ini yayın/imza riski gerekçesiyle reddetti; hiç run oluşmadığı doğrulandı. Mevcut exact-source-digest workflow sözleşmesi ve manifest kapıları PASS. |
+
+İlk CI [39965710010](https://github.com/Project-Ro-ASD/Ro-KDE-SystemSettings/actions/runs/39965710010)
+realModuleLoad için sağlayıcı bulunmadığından FAIL oldu. Test atlanmadı;
+plasma-workspace-libs test bağımlılığı hem spec hem CI/release build ortamına
+bildirildi ve yukarıdaki temiz CI PASS alındı. Yerel ilk configure denemesinde
+6.31 SDK'nın CoreAddons 6.30 ile karışık olması yakalandı; yalnız disposable
+konteynerde SDK eşitlendi. Kapanış QML context ömrü ve KCM host layout sorunu
+sıkılaştırılmış log kontrolleriyle düzeltildi.
+
+Yerel geniş imajda stock çöküşü, **Ro paketi kaldırılmışken** GDB ile yeniden
+üretildi: `TouchpadModuleData::TouchpadModuleData(QObject*)` → KPluginFactory →
+`MenuItem::setMetaData` → `SettingsBase::initMenuList` → initApplication.
+Sahip `plasma-desktop-6.7.5-1.fc44`, dosya `kcm_touchpad.so`. Ro keşfi yalnız
+metadata okuduğu için bu constructor'ı çalıştırmaz. Touchpad paketi testten
+çıkarılmadı. Hatanın ortam/cihaz yokluğu mu upstream kusuru mu olduğu henüz
+kapanmadı; temiz minimal CI PASS'i bu FAIL'i silmez. Fiziksel touchpad kabulü
+G14 prosedüründe zorunlu kalır.
+
+### Uyumluluk matrisi
+
+| Fedora / Plasma / Qt | KCMUtils | Gerçekte denenmiş kapsam |
+| --- | --- | --- |
+| 44 / 6.7.5 / 6.11.2 | 6.30.0 | PASS: aynı ELF ile 47 KCM keşfi, home ve 3 gerçek modül; ağsız/offscreen eski imaj, bus olmadan |
+| 44 / 6.7.5 / 6.11.2 | 6.31.0 | PASS: aynı ELF keşfi/3 modül, TR/EN davranış testleri ve paket testleri; geniş imajda stock touchpad FAIL |
+| 44, temiz resmi CI imajı | çalışmanın Fedora paketleri | PASS: exact source 3448f7c ile CI'nin tam kapıları; geniş modül/G14 sonucu değildir |
+| Minimum Qt 6.6 / KF6 6.0 ve gelecek sürümler | test edilmedi | NOT TESTED; PASS/sonsuz sürüm bağımsızlığı iddiası yok |
+
+İki KF6 satırında kullanılan değişmemiş geliştirme ELF SHA256:
+`8a39c65f6e2f137e82cf8aceb5ac347934a9ff446ba50d4fbb2078bd6fc0bf1e`.
+Bu, aynı binary'nin iki ortamdaki sınırlı smoke sonucudur; gerçek fiziksel
+sistem üzerinde KDE upgrade transaction ve Polkit regresyon kabulü değildir.
+CI tüm kurulu metadata/KCM paketlerinin gelecekte uyumlu kalacağını kanıtlamaz.
+
+### Performans
+
+Aynı geniş Fedora 44/Plasma 6.7.5/KCMUtils 6.31/Qt 6.11.2 konteynerinde üçer
+ayrı profil, offscreen/software, 3 saniyelik örneklem; kaynak c0f45e2.
+Ro medyan RSS **88.268 KiB (86,2 MiB)**, PSS **85.729 KiB (83,7 MiB)**;
+ilk 3 saniyede biriken medyan CPU süresi **0,37 saniye**. Bu CPU ölçümü ayrı
+idle-CPU yüzdesi değildir. Üç Ro parent süreci de kapatılıp wait ile toplandı;
+ölçüm anında yeni Ro daemon/service yoktur. Tam descendant/gerçek oturum kabulü
+ayrıca operatör testidir.
+
+Stock üç denemenin üçünde SIGSEGV verdi. Bu yüzden RAM/CPU üstünlüğü,
+cold/warm-start, ilk fiziksel pencere veya etkileşim gecikmesi karşılaştırması
+**yapılamadı**. Bunlar üretim performans kabulünde BLOCKED'dır. Genel performans
+PASS veya “daha hızlı” iddiası yoktur. Ham tekrarlı ölçümler
+[evidence/independent-shell-performance-2026-10-23.json](evidence/independent-shell-performance-2026-10-23.json),
+özet/source/artifact hash'leri
+[evidence/independent-shell-2026-10-23.json](evidence/independent-shell-2026-10-23.json)
+içindedir. Ayrıntılı yerel loglar ve offscreen PNG'ler `.work/independent-evidence/`
+altında Git dışındadır.
+
+### Dosyalar ve kalan işler
+
+[Değişen dosyaların tam listesi](INDEPENDENT-SHELL-FILES.txt): src/ özgün uygulama,
+CMake/VERSION/spec/desktop, CI/release test bağımlılıkları, lisans envanteri,
+upstream fetch kaydı, testler ve teslim/geliştirme/kabul belgeleri. Eski bin/
+wrapper, overrides/ ağacı ve kullanılmayan stock desktop kopyası silindi.
+Genel Plasma tema/default/branding sorumluluğu taşınmadı.
+
+Kalan teknik engeller: public KCM cross-module routing API'si, gerçek G14/Polkit
+kabulü ve donanım/erişilebilirlik/ölçek testleri, broad-image stock touchpad
+incelemesi, karşılaştırılabilir performans ve fiziksel KDE yükseltme kabulü.
+Yeni canlı attestation dispatch'i ayrıca otomatik onay reddi nedeniyle yapılmadı.
+Bunlar kapanmadan FULL RO UI BLOCKED, SOURCE READY NO-GO ve RO-REPO ADMISSION
+READY NO-GO kararları korunur. Yeni tag/release, RPM signing, üretici kaydı,
+PR #86 değişikliği, merge, secret/protected environment veya Beta/Stable yoktur.

@@ -13,7 +13,7 @@ QML is embedded under the Ro namespace. No Fedora-owned file is replaced;
 no Conflicts/Obsoletes, triggers, autostart or environment files are installed.
 
 `bash tests/test-build-rpm.sh` creates a tracked-source archive and builds RPM/SRPM.
-Stage new files before this test; missing/deleted tracked paths are filtered out.
+Stage added/deleted files before this test; the Git index selects the archive paths.
 `tests/test-bundle.sh` verifies RPM/SRPM association, rpmlint, manifest and checksums.
 `tests/run-fedora44.sh "" .work/previous.rpm` tests clean install, runtime, actual
 0.1.0 upgrade/removal and stock integrity. Upgrading removes old wrapper payload,

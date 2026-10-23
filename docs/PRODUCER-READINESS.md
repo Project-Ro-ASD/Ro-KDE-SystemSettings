@@ -1,3 +1,5 @@
+> Historical wrapper audit at main 7f12bac. The current independent-shell implementation, evidence and open acceptance blockers are in [INDEPENDENT-SHELL.md](INDEPENDENT-SHELL.md).
+
 # Fedora 44 V2 producer preparation
 
 Current follow-up audit: [2026-10-23 report](READINESS-2026-10-23.md),

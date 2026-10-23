@@ -1,0 +1,119 @@
+{
+  "date": "2026-10-23",
+  "implementation_commit": "c0f45e2000834f1ad351528f0aeb2d3c94cac069",
+  "candidate_source_commit": "3448f7c60fb57e46e88d364485d04001b7cac01b",
+  "ci": {
+    "url": "https://github.com/Project-Ro-ASD/Ro-KDE-SystemSettings/actions/runs/39966000600",
+    "headSha": "3448f7c60fb57e46e88d364485d04001b7cac01b",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "Repository Contract",
+        "conclusion": "success"
+      },
+      {
+        "name": "Fedora 44 RPM Build & Verification (x86_64)",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "local_environment": [
+    "plasma-systemsettings-6.7.5-1.fc44.x86_64",
+    "kf6-kcmutils-6.31.0-1.fc44.x86_64",
+    "qt6-qtbase-6.11.2-3.fc44.x86_64"
+  ],
+  "tests": {
+    "repository_contract": "PASS",
+    "actionlint": "PASS",
+    "tr_en_ctest": "PASS 3/3",
+    "real_kcm_ids": [
+      "kcm_qtquicksettings",
+      "kcm_fonts",
+      "kcm_colors"
+    ],
+    "rpm_srpm": "PASS",
+    "qml_incremental_rebuild": "PASS",
+    "rpmlint": {
+      "errors": 0,
+      "warnings": [
+        "unstripped-binary-or-object",
+        "no-manual-page-for-binary",
+        "container en_US locale unavailable"
+      ]
+    },
+    "manifest_positive_negative": "PASS",
+    "clean_install_file_conflict_elf_stock_integrity": "PASS",
+    "actual_0.1.0_upgrade_remove": "PASS",
+    "broad_runtime_concurrent_stock_ro": "FAIL: stock SIGSEGV",
+    "physical_plasma_polkit_scaling_accessibility": "BLOCKED"
+  },
+  "compatibility": [
+    {
+      "fedora": 44,
+      "plasma": "6.7.5",
+      "kf6_kcmutils": "6.30.0",
+      "qt": "6.11.2",
+      "same_elf_discovery_and_three_kcms": "PASS",
+      "module_count": 47,
+      "session": "offscreen, no bus, disposable base image"
+    },
+    {
+      "fedora": 44,
+      "plasma": "6.7.5",
+      "kf6_kcmutils": "6.31.0",
+      "qt": "6.11.2",
+      "same_elf_discovery_and_three_kcms": "PASS",
+      "module_count": 47,
+      "session": "offscreen, private DBus, broad image; stock touchpad FAIL"
+    },
+    {
+      "fedora": 44,
+      "plasma": "future",
+      "kf6_kcmutils": "future",
+      "result": "NOT TESTED"
+    }
+  ],
+  "same_elf_sha256": "8a39c65f6e2f137e82cf8aceb5ac347934a9ff446ba50d4fbb2078bd6fc0bf1e",
+  "performance": {
+    "source_commit": "c0f45e2000834f1ad351528f0aeb2d3c94cac069",
+    "conditions": "offscreen/software, isolated profiles, 3s sample, no cold-cache eviction",
+    "trials": 3,
+    "ro_median_rss_kib": 88268,
+    "ro_median_pss_kib": 85729,
+    "ro_median_cpu_seconds_through_3s": 0.37,
+    "stock": "FAIL SIGSEGV all three trials; no comparable memory/startup baseline",
+    "unmeasured": [
+      "physical first window",
+      "cold-start",
+      "warm-start",
+      "KCM interactive latency",
+      "category latency"
+    ],
+    "all_sampled_parent_processes_reaped": true
+  },
+  "stock_stack": {
+    "ro_package_state": "removed during GDB reproduction",
+    "signal": "SIGSEGV",
+    "provider": "plasma-desktop-6.7.5-1.fc44",
+    "frames": [
+      "TouchpadModuleData::TouchpadModuleData(QObject*)",
+      "KPluginFactory::createInstance<TouchpadModuleData, QObject>",
+      "MenuItem::setMetaData",
+      "SettingsBase::initMenuList",
+      "SettingsBase::initApplication",
+      "main"
+    ]
+  },
+  "new_live_attestation": "BLOCKED: automatic approval review rejected release.yml dispatch; no run created",
+  "artifact_sha256": {
+    "ro-kde-systemsettings-0.2.0-1.roasd1.fc44.x86_64.rpm": "abc230060014a0ebdb7438e542181cf030a26b31fa142bef4bc76fcfc78e7d89",
+    "ro-kde-systemsettings-0.2.0-1.roasd1.fc44.src.rpm": "b1574c2c3792f9a3a39279ca51d350a87052c7fd5b586e387936997bfbc9bb5c",
+    "component-artifact-manifest-v1.json": "877ca4717fd1aca1bc56a4a196e12eba8abd4733c0a6c6a110a60ef819288e8f",
+    "SHA256SUMS": "793b671071392a3d74565bd0f8e6e2d2a9f650b8cea7446b29cd58d9fdcd999d"
+  },
+  "decisions": {
+    "FULL RO UI": "BLOCKED",
+    "SOURCE READY": "NO-GO",
+    "RO-REPO ADMISSION READY": "NO-GO"
+  }
+}

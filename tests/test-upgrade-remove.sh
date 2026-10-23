@@ -13,6 +13,10 @@ dnf upgrade -y "$RPM_FILE"
 [[ -z "$(rpm -V ro-kde-systemsettings)" ]]
 test ! -e /usr/lib/environment.d/50-ro-kde-systemsettings.conf
 test ! -e /etc/profile.d/ro-kde-systemsettings.sh
+# The independent ELF must not leave the old hook/import/resource payload behind.
+for retired in /usr/lib64/ro-kde-systemsettings /usr/share/ro-kde-systemsettings; do
+    test ! -e "$retired"
+done
 QT_QPA_PLATFORM=offscreen /usr/bin/ro-systemsettings --help >/dev/null
 verify_fedora
 rpm -ql ro-kde-systemsettings > /tmp/ro-systemsettings-installed-files
