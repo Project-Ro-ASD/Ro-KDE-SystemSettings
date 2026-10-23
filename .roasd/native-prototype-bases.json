@@ -1,0 +1,23 @@
+{
+  "scope": "isolated development only; not a production repository or signing policy",
+  "bases": [
+    {
+      "version": "6.6.4",
+      "release": "1.fc44",
+      "srpm_url": "https://kojipkgs.fedoraproject.org/packages/plasma-systemsettings/6.6.4/1.fc44/src/plasma-systemsettings-6.6.4-1.fc44.src.rpm",
+      "srpm_sha256": "14e8c845acc5d408a8b968aa9a771c20d49c01036e2ff77e3d06a0ea3ce2fd61",
+      "source_tar_sha256": "18d2aab42f3f3ce17c5e636238c2d7a1908152f2203f521d6d8441537d3edf04",
+      "upstream_tag": "v6.6.4",
+      "upstream_commit": "ea52432875ed537af49f55041fdc48aa212ad509"
+    },
+    {
+      "version": "6.7.5",
+      "release": "1.fc44",
+      "srpm_url": "https://kojipkgs.fedoraproject.org/packages/plasma-systemsettings/6.7.5/1.fc44/src/plasma-systemsettings-6.7.5-1.fc44.src.rpm",
+      "srpm_sha256": "8b1a94f00de7cd24f57b680ebf9a341c03933d7ea79107a38761b0c70be31311",
+      "source_tar_sha256": "317a21165709d61796fba19f5454397577ffd8aa96655b29dd286a1df252cddb",
+      "upstream_tag": "v6.7.5",
+      "upstream_commit": "d126c08d14a2a0f44a1758fd25e945ae099e34bb"
+    }
+  ]
+}

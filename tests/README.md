@@ -32,3 +32,25 @@ a QML-only edit changes the binary RCC without touching the QRC file. It operate
 on a temporary source copy. G14 human acceptance is in
 [PLASMA-ACCEPTANCE.md](../docs/PLASMA-ACCEPTANCE.md); actual activation boundaries
 are in [INTEGRATION-STATUS.md](../docs/INTEGRATION-STATUS.md).
+
+Native-skin architecture diagnostics (manual, no package transactions):
+
+```bash
+python3 tests/probe-native-skin.py --output .work/native-skin-evidence --seconds 3
+```
+
+Requires `dbus-run-session` (Fedora `dbus-daemon`). Runs the unmodified KDE
+executable with stock/QSS/Basic/Fusion variants in temporary HOME/XDG directories
+and an isolated D-Bus session. JSON and full logs include early exits and whether
+the stock QML URL appeared in import tracing. A surviving process alone does not
+prove QML loading, a responsive event loop, visual changes, KCM functionality or
+performance. Offscreen results are never real Plasma acceptance. Excluding a
+crashing provider for diagnosis must be explicitly recorded; it invalidates any
+claim that all KCMs were tested. See [the decision record](../docs/NATIVE-SKIN-DECISION.md).
+
+The authorized isolated prototype now has real source/RPM/UI tests, documented
+in [prototypes/native-skin/README.md](../prototypes/native-skin/README.md).
+These build the original KDE application, not a replacement host. The normal
+producer workflow does not consume the prototype spec/resources. Recorded
+manual results and full acceptance limitations are in the
+[Turkish prototype report](../docs/NATIVE-SKIN-PROTOTYPE-REPORT.md).

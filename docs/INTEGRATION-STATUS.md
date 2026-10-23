@@ -1,5 +1,10 @@
 # Runtime integration audit — 2026-10-23
 
+This audit describes the legacy production payload. The separately authorized
+native selector/skin prototype is implemented and tested only in isolation;
+see [its report](NATIVE-SKIN-PROTOTYPE-REPORT.md). It does not activate the
+legacy RCC/loader or change the production package described below.
+
 Reference: KDE systemsettings `v6.7.5`, commit
 `d126c08d14a2a0f44a1758fd25e945ae099e34bb`, matching the inspected
 Fedora `plasma-systemsettings-6.7.5-1.fc44.x86_64`. This is a compatibility
@@ -32,7 +37,9 @@ custom shell as functional, restore preload, or overwrite Fedora files.
 For a custom shell, first resolve imported file provenance and the real
 KCM model/context requirements. Then evaluate a narrow, version-pinned
 systemsettings patch adding an explicit application-controlled shell resource
-selection contract, with a separately named executable/package and stock fallback.
+selection contract in the original KDE executable, with separate skin resources
+and stock fallback. A separate executable/KCM host is excluded by the current
+architecture requirement. See [the native-skin decision](NATIVE-SKIN-DECISION.md).
 That requires a packaging/architecture decision and real Plasma acceptance;
 it is not implemented or claimed here. Existing custom QML depends on model
 and context properties and cannot safely be enabled by pointing a standalone

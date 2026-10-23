@@ -69,6 +69,18 @@ GitHub Actions aynı component sözleşmesini pull request ve `main` değişikli
 
 ## Durum
 
+2026-10-23 native-skin çalışması, bağımsız ayarlar uygulaması yaklaşımını
+terk eder. Orijinal KDE uygulamasında tam sidebar düzeni için gereken paket
+kararı ve henüz doğrulanamayanlar [mimari karar dosyasında](docs/NATIVE-SKIN-DECISION.md)
+kayıtlıdır. Aşağıdaki paket durumu mevcut `main` payload'ını anlatır;
+tam Ro görünümünün etkinleştiği anlamına gelmez.
+
+B seçeneği yalnız izole geliştirme için onaylandı: orijinal KDE'ye tek dosyalık
+QML seçimi/fallback yaması, ayrı görsel kaynak RPM'i ve iki gerçek Fedora SRPM
+rebuild'i doğrulandı. [Prototip teslim raporu](docs/NATIVE-SKIN-PROTOTYPE-REPORT.md)
+gerçek Wayland testlerini, RPM güncelleme davranışını ve kalan kabul engellerini
+ayrı ayrı kaydeder. `prototypes/` üretim CMake/spec/launcher'ına bağlanmaz.
+
 Fedora 44 x86_64 için somut RPM/SRPM, CMake derlemesi ve Ro-Repo V2 üretici yayın akışı mevcuttur. Sonraki sürüm hazırlığı `0.1.1`'dir; henüz yayımlanmamıştır.
 
 `ro-systemsettings` Fedora'nın `/usr/bin/systemsettings` programını yalnızca kendi sürecine özel XDG/QML yolları ve QSS ile başlatır. Fedora paketi değiştirilmez; global oturum ortamı kurulmaz. Eski `0.1.0` paketinden yükseltme global environment/profile dosyalarını kaldırır. Menüde Ro girdisi `ro-systemsettings.desktop` olarak ayrıdır.
