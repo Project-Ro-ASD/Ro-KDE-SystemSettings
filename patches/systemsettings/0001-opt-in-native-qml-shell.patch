@@ -1,0 +1,54 @@
+--- a/app/SidebarMode.cpp
++++ b/app/SidebarMode.cpp
+@@ -34,6 +34,8 @@
+ #include <QQuickItem>
+ #include <QQuickWidget>
+ #include <QStandardPaths>
++
++#include <cmath>
+ 
+ FocusHackWidget::FocusHackWidget(QWidget *parent)
+     : QWidget(parent)
+@@ -605,15 +607,34 @@
+ 
+     // Breaking change in Qt6: https://github.com/qt/qtdeclarative/commit/0d80dbd8c2cfc2a7d2a4d970b7acfc7fb5fb97a0
+     // Use setContent to prevent the root item from being destroyed: https://github.com/qt/qtdeclarative/commit/69d61fecf2deee7510f5f2448614174683744d82
+-    QQmlComponent component(d->quickWidget->engine(),
+-                            QUrl(QStringLiteral("qrc:/qt/qml/org/kde/systemsettings/Main.qml")),
+-                            QQmlComponent::PreferSynchronous,
+-                            this);
+-    QQuickItem *item = qobject_cast<QQuickItem *>(component.create(d->quickWidget->rootContext()));
++    const QUrl stockSource(QStringLiteral("qrc:/qt/qml/org/kde/systemsettings/Main.qml"));
++    QUrl source = stockSource;
++    if (d->applicationMode == SystemSettings && qEnvironmentVariableIntValue("RO_SYSTEMSETTINGS_SKIN") == 1) {
++        source = QUrl::fromLocalFile(QStringLiteral("/usr/share/ro-kde-systemsettings/native/Main.qml"));
++    }
++    const auto createRoot = [&](const QUrl &url) -> QQuickItem * {
++        QQmlComponent component(d->quickWidget->engine(), url, QQmlComponent::PreferSynchronous, this);
++        QObject *object = component.isReady() ? component.create(d->quickWidget->rootContext()) : nullptr;
++        auto *root = qobject_cast<QQuickItem *>(object);
++        bool validHeight = false;
++        const double height = root ? root->property("headerHeight").toDouble(&validHeight) : 0;
++        if (!root || !validHeight || !std::isfinite(height) || height < 0 || !std::isfinite(root->implicitWidth()) || root->implicitWidth() <= 0) {
++            for (const auto &error : component.errors()) {
++                qWarning() << error.toString();
++            }
++            delete object;
++            return nullptr;
++        }
++        return root;
++    };
++    QQuickItem *item = createRoot(source);
++    if (!item && source != stockSource) {
++        qWarning() << "Ro sidebar unavailable or invalid; using the stock KDE sidebar";
++        source = stockSource;
++        item = createRoot(source);
++    }
++    qInfo().noquote() << "System Settings sidebar:" << source.toString();
+     if (!item) {
+-        for (const QList<QQmlError> errors = component.errors(); const auto &err : errors) {
+-            qWarning() << err.toString();
+-        }
+         qFatal("Fatal error while loading the sidebar view qml component");
+     }
+     const int rootImplicitWidth = item->implicitWidth();
