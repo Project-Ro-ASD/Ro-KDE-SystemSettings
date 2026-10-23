@@ -1,13 +1,13 @@
+# SPDX-FileCopyrightText: 2026 Ro-ASD contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
 [Desktop Entry]
-Exec=ro-systemsettings %U
+Exec=ro-systemsettings
 Icon=preferences-system
 Type=Application
 Terminal=false
 Categories=Qt;KDE;Settings;
-Name=System Settings
-Name[tr]=Sistem Ayarları
-Comment=Configuration tools for your computer
-Comment[tr]=Bilgisayarınız için yapılandırma araçları
-X-KDE-StartupNotify=true
+Name=Ro System Settings
+Name[tr]=Ro Sistem Ayarları
+Comment=Configure KDE with the Ro settings shell
+Comment[tr]=Ro ayar kabuğu ile KDE yapılandırması
 StartupNotify=true
-SingleMainWindow=true

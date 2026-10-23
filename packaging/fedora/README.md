@@ -1,13 +1,26 @@
-# Fedora 44 packaging and V2 producer
+# Fedora 44 x86_64 packaging — 0.2.0
 
-The concrete CMake payload builds `ro-kde-systemsettings-0.1.1-1.roasd1.fc44.x86_64.rpm` and its matching `.src.rpm`. `ExclusiveArch: x86_64` matches `.roasd/component.json`; no replacement, Obsoletes, Conflicts or Provides for Fedora System Settings is intended. Runtime requires `plasma-systemsettings >= 6.0`, Qt Quick Controls and Kirigami.
+Build in a disposable Fedora 44 environment, not the development user session.
+The spec BuildRequires public KF6 KCMUtils/CoreAddons/Config/Auth/I18n development
+packages and Qt6 base/declarative/quickcontrols2. QtTest builds source-only KCM
+fixtures and behavior tests under `%check`. Runtime ELF dependencies are generated
+by RPM. Kirigami/QuickControls and stock plasma-systemsettings provide installed
+KCM dependencies/categories and the explicit fallback; no exact Plasma version pin.
 
-Owned paths are `/usr/bin/ro-systemsettings`, `/usr/lib64/ro-kde-systemsettings/`, `/usr/share/ro-kde-systemsettings/`, `/usr/share/applications/ro-systemsettings.desktop` and RPM's package-specific license/doc directories. Private categories, translations and desktop metadata use process-local XDG lookup. The package no longer installs global `/usr/lib/environment.d/50-ro-kde-systemsettings.conf` or `/etc/profile.d/ro-kde-systemsettings.sh`. RPM removes these old owned paths during upgrade; existing sessions must restart to discard inherited old XDG settings.
+Installed files: `/usr/bin/ro-systemsettings` (ELF),
+`/usr/share/applications/ro-systemsettings.desktop`, GPL LICENSE and docs.
+QML is embedded under the Ro namespace. No Fedora-owned file is replaced;
+no Conflicts/Obsoletes, triggers, autostart or environment files are installed.
 
-`tests/test-build-rpm.sh` archives tracked files only, rejects stale output directories and produces RPM plus SRPM. Add new source files to Git before local builds. Output defaults to `.work/rpmbuild/`; override with `RPMBUILD_TOPDIR`. CI copies exactly one binary and SRPM into `release-rpms/` and runs blocking rpmlint. See `tests/README.md` for container validation. No host DNF transactions.
+`bash tests/test-build-rpm.sh` creates a tracked-source archive and builds RPM/SRPM.
+Stage new files before this test; missing/deleted tracked paths are filtered out.
+`tests/test-bundle.sh` verifies RPM/SRPM association, rpmlint, manifest and checksums.
+`tests/run-fedora44.sh "" .work/previous.rpm` tests clean install, runtime, actual
+0.1.0 upgrade/removal and stock integrity. Upgrading removes old wrapper payload,
+libsystemsettings_override, QML/RCC/QSS, copied catalogs and old global files through
+normal RPM ownership. A logout/login remains necessary to clear environment values
+already inherited from the historical 0.1.0 package. Remove leaves stock installed.
 
-`release.yml` builds/tests on `workflow_dispatch` without creating a release. A separate dispatch-only job generates and verifies real GitHub attestations for the dry-run bundle. Its local manifest uses `dry-run` and release ID 0; it is not a published producer identity. A future exact `vVERSION` tag triggers the publishing job. That job refuses every existing release, creates a new draft, queries headers into `component-artifact-manifest-v1.json`, hashes exactly the two RPMs in `SHA256SUMS`, attests both RPMs and both metadata files, verifies attestations against this repository/workflow, uploads exactly four assets and publishes. The final API assertion requires `immutable: true`. Attestation records are GitHub records, not a fifth uploaded asset.
-
-The previously published `v0.1.0` is mutable and must not be rewritten. The upgrade fixture pins its binary SHA256 from the GitHub release asset digest, rather than trusting a mutable tag. Existing drafts are deliberately not deleted or reused; failed future publication requires maintainer investigation.
-
-Before authorizing a new release: resolve `docs/PRODUCER-READINESS.md` blockers, merge the reviewed PR, run the release workflow manually on the merged commit, inspect tests/artifacts, confirm repository immutable releases remains enabled, and separately authorize creation of `v0.1.1` at that commit. After publication verify immutable status, asset digests and `gh attestation verify` for all four assets. This preparation creates no tag or release.
+Source contract/attestation gates remain. No release/tag, production signing or
+Ro-Repo registration is authorized by this implementation. Physical G14 tests
+require an operator-approved disposable/recoverable installation.

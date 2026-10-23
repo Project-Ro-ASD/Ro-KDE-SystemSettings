@@ -1,55 +1,57 @@
-# G14 Fedora 44 KDE Plasma acceptance — manual, currently BLOCKED
+# G14 Fedora 44 independent-shell acceptance — operator required
 
-Use a disposable G14 test installation or a recoverable test account. Package
-transactions below belong on that test system, not the development host.
-A headless/offscreen run cannot complete this acceptance. The developer host
-exposes Wayland variables, but this audit does not manipulate its live settings,
-authentication dialogs or login session.
+Status: BLOCKED until an operator performs the physical session tests. Do not
+install or change settings in the developer's live user session. Use an approved
+disposable/recoverable G14 installation and record restoration steps first.
+Headless tests do not establish visual, Polkit or hardware acceptance.
 
-1. Record `date -Is`, `cat /etc/fedora-release`, `uname -m`, `plasmashell --version`,
-   `rpm -q plasma-systemsettings ro-kde-systemsettings`, source commit, RPM/SRPM
-   SHA256 and hardware/GPU/session type. Save `rpm -V plasma-systemsettings`
-   and the checksummed artifact manifest. Verify each release asset with
-   `gh attestation verify FILE --repo Project-Ro-ASD/Ro-KDE-SystemSettings
-   --signer-workflow Project-Ro-ASD/Ro-KDE-SystemSettings/.github/workflows/release.yml
-   --source-digest EXACT_SOURCE_COMMIT` (one shell command).
-2. Before installation, close all System Settings windows. Capture stock
-   `/usr/bin/systemsettings` navigation/search, appearance/fonts, display,
-   keyboard/mouse, sound, network and power pages. Record unavailable KCMs
-   separately. Close the application between comparisons to avoid IPC reuse.
-3. Install the exact tested RPM with `sudo dnf install ./PACKAGE.rpm`.
-   Validate `/usr/share/applications/ro-systemsettings.desktop` with
-   `desktop-file-validate`. Open its menu entry and independently run
-   `ro-systemsettings 2>&1 | tee ro-systemsettings-session.log` in a terminal.
-   Record category hierarchy, labels in Turkish and English, search results,
-   back navigation and opening each available KCM. Inspect logs for missing
-   imports/types, binding errors and resource failures.
-4. Capture screenshots of stock and Ro navigation, tabs and each changed page.
-   Custom accordion/cards/sidebar are **expected inactive in this revision**;
-   record this as BLOCKED, never PASS based on window survival. QSS success
-   does not establish QML activation. Check resizing, keyboard focus, scrolling,
-   scaling and accessibility. Record actual differences rather than expected ones.
-5. Open a KCM with legitimate privileged operations. Verify the standard KDE
-   authentication prompt and cancellation, then an authorized reversible action
-   using the operator's own credentials; restore its original value. Do not
-   disable Polkit or record passwords. Verify Apply/Reset and unsaved-change
-   handling. Display/theme changes require operator supervision and recovery.
-6. Repeat stock invocation after closing Ro. Verify pages and authentication
-   still behave normally. Run `rpm -V plasma-systemsettings` again.
-7. On a separate test snapshot, install the published 0.1.0 RPM after verifying
-   the pinned SHA256 in `tests/fetch-previous-rpm.sh`; upgrade via DNF to the
-   candidate. Confirm `/usr/lib/environment.d/50-ro-kde-systemsettings.conf`
-   and `/etc/profile.d/ro-kde-systemsettings.sh` disappear. Log out and log in.
-   Inspect the new terminal and plasmashell process environment: no obsolete
-   Ro XDG/QML/LD_PRELOAD values may survive. Repeat steps 2–6.
-8. Remove with `sudo dnf remove ro-kde-systemsettings`; compare its pre-removal
-   `rpm -ql` file list with remaining files, excluding shared directories.
-   Confirm Fedora System Settings is still installed, unmodified and launches
-   through its original desktop entry. Log out/in and repeat environment checks.
+1. Record date/time, source commit, RPM/SRPM SHA256, Fedora release, architecture,
+   Qt/KF6/Plasma versions, GPU, Wayland/X11, resolution/scaling and hardware.
+   Save `rpm -V plasma-systemsettings`, RPM file ownership and process/bus inventory.
+   For attested artifacts verify the exact source digest with the existing
+   trusted release.yml workflow identity. No unsigned local build is a release.
+2. Capture stock navigation/search and real appearance/fonts, display, input,
+   touchpad, sound, network and power KCMs. Keep touchpad in scope. If stock
+   crashes, collect coredump/GDB version/plugin stack and reproduce independently
+   before assigning ownership. Record unavailable modules rather than hiding them.
+3. Install the candidate only with operator approval. Open Ro via its own menu
+   entry and executable. Confirm actual Ro sidebar, expanding categories, paths,
+   cards, search (name/description/keyword), result opening, back/forward and
+   unsaved-change cancellation. KCM internal tabs/subpages must remain usable.
+   Capture Ro/stock screenshots, TR/EN, light/dark, 100/150/200% scaling,
+   resizing/minimum size, keyboard-only Ctrl+F/Tab/Enter/Alt+arrows and screen reader.
+4. For each real tested KCM record ID/provider/version and original state.
+   Make an operator-approved reversible change; verify Apply, Reset, Defaults
+   (does not save until required), and cancel/discard/apply on page/close changes.
+   Record instant-apply behavior separately and restore the original state.
+5. For a legitimately privileged KCM verify standard Polkit prompt, wrong/denied
+   credentials and cancellation leave pending settings unsaved. Then authorize
+   a reversible change using operator credentials and restore it. Never log
+   passwords or bypass authentication. Close/navigation must be blocked while
+   an authorization job is outstanding. Confirm restricted KCMs obey Kiosk policy.
+6. Run stock and Ro simultaneously in both startup orders. Stock must retain its
+   own UI; Ro selection must stay within Ro. A second Ro call opens another Ro
+   process by design. Explicit stock fallback may reuse the stock instance.
+   On Ro close, compare process tree/bus names with the baseline: no Ro-owned
+   daemon/service or descendant may remain. Recheck `rpm -V plasma-systemsettings`.
+7. In a separate snapshot install verified historical 0.1.0; upgrade to 0.2.0.
+   Confirm old global environment/profile files, private QML/import directories,
+   RCC/QSS/catalogs and hook library are removed. Logout/login clears inherited
+   old environment. Repeat UI/auth/stock tests. Remove candidate and verify all
+   Ro-owned files disappear, stock remains installed and unmodified, and its
+   original menu entry still works.
+8. With candidate ELF/Ro QML checksums unchanged, record discovery IDs/categories,
+   search, module navigation and Apply/Reset/Polkit before and after the approved
+   Fedora KDE/KF6 package update. Record actual versions and failures. Restore the
+   snapshot on failure and use explicit stock fallback. Do not claim future compatibility.
+9. Benchmark on the same snapshot/hardware/session, at least five trials per app:
+   genuinely cold start (document cache/reboot conditions), warm start, physical
+   first displayed window, RSS/PSS/CPU at matched idle time, first KCM opening,
+   category transition and post-close process state. Separate first-use cache
+   creation from warm runs; report median/range and raw evidence. Do not claim
+   a speed/memory advantage from the offscreen helper or unmatched environments.
 
-For each step record PASS/FAIL/BLOCKED, command/log location, screenshot,
-expected/observed behavior, date and operator. Keep a matrix with rows for
-navigation/search, each KCM, visuals, authorization/cancel, upgrade, removal,
-stock integrity and logout/login. Acceptance requires a human-reviewed result
-for every row; unavailable or inactive required features remain BLOCKED.
-Do not tag, publish, approve admission or start Beta/Stable from this procedure.
+For every row record PASS/FAIL/BLOCKED, operator, date, command/log, screenshots,
+expected/observed behavior and restore evidence. Physical install/upgrade/setting
+changes require operator approval. No tag/release/signing, Ro-Repo/PR #86 change,
+merge, secret/environment or Beta/Stable publication is part of this procedure.

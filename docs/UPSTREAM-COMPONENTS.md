@@ -22,3 +22,14 @@ For every patch, document:
 - Ro-ASD reason for the change
 - whether an upstreamable solution was considered
 - test/verification notes
+
+## Independent-shell public dependencies
+
+The new application owns its shell without a System Settings source patch.
+Frameworks **kcmutils** owns KCModuleLoader/KCModule, **kcoreaddons** owns
+KPluginMetaData, **kconfig** owns KAuthorized/KDesktopFile, and **kauth** owns
+privileged authorization. Their public installed libraries are used. The fetch
+script supports kcmutils via KDE's official GitHub mirror (canonical Invent URL
+and fetch URL are recorded in .roasd/upstreams.json). Each installed KCM remains
+owned by its provider; no KCM code is imported or patched. Exact inspected API
+and behavior revisions and the tested matrix are in INDEPENDENT-SHELL.md.

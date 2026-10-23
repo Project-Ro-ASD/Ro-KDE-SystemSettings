@@ -7,7 +7,7 @@ source "$(dirname "$0")/lib.sh"
 }
 mkdir -p "$TOPDIR"/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
 # Include tracked source only, including staged/unstaged edits for local validation.
-git -C "$REPO_DIR" ls-files -z | tar -C "$REPO_DIR" --null -T - --transform "s,^,Ro-KDE-SystemSettings-${VERSION}/," \
+git -C "$REPO_DIR" ls-files --cached -z | tar -C "$REPO_DIR" --null -T - --transform "s,^,Ro-KDE-SystemSettings-${VERSION}/," \
     -czf "$TOPDIR/SOURCES/ro-kde-systemsettings-${VERSION}.tar.gz"
 cp "$REPO_DIR/packaging/fedora/ro-kde-systemsettings.spec" "$TOPDIR/SPECS/"
 rpmbuild -ba --define "_topdir $TOPDIR" --define 'dist .fc44' "$TOPDIR/SPECS/ro-kde-systemsettings.spec"

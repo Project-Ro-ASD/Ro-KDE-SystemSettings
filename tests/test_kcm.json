@@ -1,0 +1,4 @@
+{
+    "KPlugin": { "Name": "Isolated test KCM", "Description": "Test-only persistent KCM", "License": "GPL-3.0-or-later" },
+    "X-KDE-System-Settings-Parent-Category": "other"
+}

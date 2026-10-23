@@ -1,3 +1,8 @@
+> Historical inventory at main `7f12bac` (before the independent shell).
+> All listed application imports/wrappers have been removed from the current source,
+> RPM and SRPM. Their grants remain unresolved for historical releases; none is
+> reused or relicensed. See [LICENSING.md](LICENSING.md) for the new active payload.
+
 # File-level license blockers — 2026-10-23
 
 The following files have no explicit SPDX declaration in the current payload inventory.

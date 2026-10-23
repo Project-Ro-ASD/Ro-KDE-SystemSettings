@@ -1,80 +1,36 @@
-# Ro-KDE-SystemSettings
+# Ro System Settings
 
-Ro-ASD için KDE Plasma **System Settings (Sistem Ayarları)** entegrasyon ve downstream özelleştirme bileşeni.
+Ro-ASD için bağımsız KDE ayar kabuğu. `ro-systemsettings`, kendi
+`org.ro.systemsettings` QML arayüzünden kurulu KDE KCM modüllerini public
+KDE Frameworks 6 API'leriyle açar. Fedora'nın System Settings executable,
+QML kaynakları ve RPM dosyaları değiştirilmez.
 
-Bu depo yeni bir ayarlar uygulaması yazmaz. KDE'nin mevcut System Settings kabuğunu ve ilgili KCM bileşenlerini kullanmaya devam eder; Ro-ASD'ye özel isim, açıklama, System Settings'e özgü görsel, düzen ve gerektiğinde kaynak kod değişikliklerini küçük ve izlenebilir bir downstream katmanda tutar.
+Sürüm adayı **0.2.0**; tag/release yayımlanmamıştır. Gerçek Plasma, erişilebilirlik,
+ölçeklendirme ve Polkit kabulü tamamlanmadan üretime hazır sayılmaz.
+[Uygulama ve teslim raporu](docs/INDEPENDENT-SHELL.md).
 
-## Amaç
-
-- KDE System Settings davranışını korumak
-- Ro-ASD'ye özel değişiklikleri upstream KDE kaynaklarından ayırmak
-- mümkün olduğunda patch yerine override kullanmak
-- KDE güncellemelerinde taşınması kolay küçük değişiklikler üretmek
-- Fedora/Ro-ASD paketleme ve test zinciri için tek sahiplik noktası oluşturmak
-
-## Bu depo ne değildir?
-
-- `Ro-Settings` gibi bağımsız bir ayarlar uygulaması değildir.
-- Genel Plasma tema, icon theme, cursor veya wallpaper deposu değildir. Bunlar `Ro-Theme` sorumluluğundadır.
-- Genel dağıtım kimliği deposu değildir. Bu alan `ro-asd-branding` tarafından sahiplenilir.
-- Genel sistem/masaüstü varsayılanlarının sahibi değildir. Bu alan `ro-asd-defaults` sorumluluğundadır.
-- KDE kaynak ağacının tam fork'u değildir.
-
-## Yapı
-
-```text
-.roasd/                 Ro-ASD component metadata
-assets/                 Yalnız System Settings'e özgü görseller
-docs/                   Mimari, ownership ve upstream haritası
-overrides/              Metadata / translation / QML override katmanı
-packaging/fedora/       Fedora RPM entegrasyonu
-patches/                Upstream KDE projesine göre ayrılmış patch'ler
-scripts/                Doğrulama ve bakım araçları
-tests/                  Component ve runtime smoke testleri
-VERSION                  Component sürümü
-```
-
-## Patch yaklaşımı
-
-Değişikliklerde tercih sırası:
-
-1. mevcut KDE yapılandırma/metadata mekanizması
-2. güvenli asset veya metadata override
-3. dar kapsamlı QML/runtime override
-4. yalnız gerekiyorsa upstream kaynağa patch
-
-Tam KDE kaynak kodu bu depoya vendörlenmez.
-
-Bir patch eklenirken hangi KDE projesine ait olduğu, hangi upstream sürüm/commit üzerinde hazırlandığı ve neden gerekli olduğu belgelenir. İlk upstream haritası için [docs/UPSTREAM-COMPONENTS.md](docs/UPSTREAM-COMPONENTS.md) dosyasına bak.
-
-## Component bilgisi
-
-```text
-Ro-ASD type:       component
-class:             desktop-integration
-component id:      ro-kde-systemsettings
-next version:      0.1.1
-Fedora baseline:   44
-```
-
-Makinece okunabilir tanım `.roasd/component.json` dosyasındadır.
-
-## Doğrulama
+- Ro sidebar, kategori akordeonu, kartlar ve arama: özgün QML.
+- QML ve QtWidgets KCM içerikleri: KDE'nin kurulu modülleri, lazy loading.
+- Apply/Reset/Defaults: gerçek KCM API'leri; kaydedilmemiş değişiklik uyarısı.
+- Türkçe/İngilizce kabuk; KDE modül metinleri kendi çevirilerini kullanır.
+- Stock KDE uygulamasını açan açık fallback; Ro stock IPC kimliğini kullanmaz.
 
 ```bash
+bash scripts/check-env.sh
 python3 scripts/validate.py
+python3 tests/test-contract.py
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX=/usr
+cmake --build build -j2
+ctest --test-dir build --output-on-failure
 ```
 
-GitHub Actions aynı component sözleşmesini pull request ve `main` değişikliklerinde kontrol eder.
+RPM işlemleri ve runtime testleri yalnız disposable Fedora 44 ortamındadır.
+Ana bilgisayarın gerçek kullanıcı oturumunda ayar değiştirmeyin.
+[Bağımlılıklar ve paketleme](packaging/fedora/README.md),
+[testler](tests/README.md), [G14 kabulü](docs/PLASMA-ACCEPTANCE.md).
 
-## Durum
-
-Fedora 44 x86_64 için somut RPM/SRPM, CMake derlemesi ve Ro-Repo V2 üretici yayın akışı mevcuttur. Sonraki sürüm hazırlığı `0.1.1`'dir; henüz yayımlanmamıştır.
-
-`ro-systemsettings` Fedora'nın `/usr/bin/systemsettings` programını yalnızca kendi sürecine özel XDG/QML yolları ve QSS ile başlatır. Fedora paketi değiştirilmez; global oturum ortamı kurulmaz. Eski `0.1.0` paketinden yükseltme global environment/profile dosyalarını kaldırır. Menüde Ro girdisi `ro-systemsettings.desktop` olarak ayrıdır.
-
-Preload kararlılık nedeniyle kapalıdır. Özel QML kabuğu ve KCM kaynak değişimleri mevcut başlatıcıyla etkinleşmez; derlenen override kitaplığı ve RCC kullanılmıyor. [Etkinlik denetimi](docs/INTEGRATION-STATUS.md) ve [G14 kabul prosedürü](docs/PLASMA-ACCEPTANCE.md) bu sınırı açıklar. Fedora sürümüyle görsel/KCM kabul testi ve eksik upstream kaynak/lisans kayıtları üretim öncesi tamamlanmalıdır. [Paketleme ve yayın adımları](packaging/fedora/README.md), [testler](tests/README.md), [hazırlık kanıtları](docs/PRODUCER-READINESS.md).
-
-## Lisans
-
-Depo kökündeki `LICENSE` GPLv3 metnidir; paket farklı GPL/LGPL lisanslı KDE dosyaları da içerir. Dosya başlıkları korunur. RPM SPDX birleşimi, lisans seçimleri ve eksik köken kayıtları [docs/LICENSING.md](docs/LICENSING.md) içindedir; tüm paketi GPLv3 olarak yeniden lisanslamaz.
+Genel tema Ro-Theme'e, dağıtım kimliği ro-asd-branding'e, genel varsayılanlar
+ro-asd-defaults'a aittir. Bu depo yalnız System Settings kabuğunu sahiplenir.
+KDE kaynak ağacı vendörlenmez. Önceki override uygulaması ve kaynakları
+`7f12bac7b495aa81b22091d346ad346c35e92d15` geçmişinde korunur; yeni RPM/SRPM'e
+alınmaz. [Lisans ve köken](docs/LICENSING.md).

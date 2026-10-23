@@ -38,5 +38,5 @@ for name in ('attest-dry-run', 'release'):
 subprocess.run(['python3', str(root / 'scripts/check-license-audit.py')], check=True)
 subprocess.run(['python3', str(root / 'tests/test-launcher.py')], check=True)
 subprocess.run(['python3', str(root / 'tests/test-license-audit.py')], check=True)
-assert 'LD_PRELOAD=' not in (root / 'bin/ro-systemsettings').read_text()
+subprocess.run(['python3', str(root / 'tests/test-shell-source.py')], check=True)
 print('Workflow YAML, shell syntax, producer gates and version consistency passed')
