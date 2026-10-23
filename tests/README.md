@@ -56,3 +56,26 @@ with identical Ro ELF/QML checksums. Do not compare results from different hosts
 No automatic test result constitutes real Polkit, visual, hardware, scaling,
 screen-reader or future KDE compatibility acceptance. No test publishes a tag,
 release, signature, Ro-Repo producer entry or changes PR #86.
+
+
+## Extended interaction and real persistence
+
+The separate CI interaction job installs plasma-desktop and sets
+`RO_REQUIRE_REAL_QTW_SAVE=1`. QtTest sends mouse clicks to the actual Ro card,
+accordion/category/subcategory and history tab controls, including a three-level
+private metadata fixture. It verifies the active module is valid, not an error
+widget. Real kcm_qtquicksettings Reset/Apply writes only temporary kdeglobals,
+recreates the KCM to prove persistence, and restores the original value. A real
+Polkit agent/privileged helper is still NOT VERIFIED. The old failure-path test
+continues to prove denied/unavailable authorization cannot call save.
+
+`test-independent-executable.py BUILD/ro-systemsettings OUTPUT` uses strace under
+a private session bus to prove the ELF starts without executing stock settings.
+Its scope excludes explicit stock fallback and upstream KCMLauncher links.
+The interaction job uploads screenshots by language, test output and execve
+trace. The existing clean RPM CI stays separate; a green interaction job does
+not repair or accept the known broad-image stock touchpad crash.
+
+New live attestation/release provenance is BLOCKED / NOT VERIFIED, explicitly
+skipped at the user's request. Never dispatch the release workflow or substitute
+manifest/static attestation checks for a verified new release from these tests.

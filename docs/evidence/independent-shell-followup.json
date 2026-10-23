@@ -1,0 +1,101 @@
+{
+  "base_commit": "5c7ba034f871620c180979efe2cd2255e0665ced",
+  "scope": "PR #7 follow-up; offscreen in disposable Fedora, no live user session changes",
+  "new_attestation": {
+    "status": "BLOCKED / NOT VERIFIED",
+    "action": "skipped at explicit user request",
+    "retried": false,
+    "alternative_trigger": false,
+    "new_release_provenance_verified": false,
+    "manifest_checks_replace_release_verification": false
+  },
+  "preserved_ci": {
+    "url": "https://github.com/Project-Ro-ASD/Ro-KDE-SystemSettings/actions/runs/39967138827",
+    "source_commit": "5c7ba034f871620c180979efe2cd2255e0665ced",
+    "conclusion": "success",
+    "scope": "clean Fedora 44 RPM/SRPM, runtime, install, upgrade/remove, stock integrity"
+  },
+  "local_followup": {
+    "environment": [
+      "Fedora 44 x86_64",
+      "Plasma 6.7.5",
+      "KCMUtils 6.31.0",
+      "Qt 6.11.2"
+    ],
+    "ctest": "3/3 PASS",
+    "qt_test_per_language": "6 passed, 0 failed, 0 skipped",
+    "languages": [
+      "en_US.UTF-8",
+      "tr_TR.UTF-8"
+    ],
+    "qml_mouse_input": [
+      "Ro card to real KDE KCM",
+      "accordion expand/collapse",
+      "intermediate-category selection includes leaf module",
+      "module entry",
+      "history tab"
+    ],
+    "single_loaded_module": "PASS",
+    "real_kcm_persistence": {
+      "result": "PASS",
+      "provider": "plasma-desktop",
+      "plugin": "kcm_qtquicksettings",
+      "control": "kcfg_ForceGlCoreProfile",
+      "file": "temporary XDG_CONFIG_HOME/kdeglobals",
+      "group": "QtQuickRendererSettings",
+      "key": "ForceGlCoreProfile",
+      "checks": [
+        "Reset restores initial value",
+        "Apply writes disk",
+        "destroy/recreate KCM reads persisted value",
+        "restore initial value and verify disk"
+      ],
+      "production_profile_touched": false
+    },
+    "authorization_failure_test": "PASS; missing authorization action does not save",
+    "real_privileged_polkit": "BLOCKED / NOT VERIFIED"
+  },
+  "independent_executable": {
+    "result": "PASS",
+    "elf_sha256": "fcceb69f421551d2429cbc205490664710e7d5b6da85b9cb8bf9817b9bcadb18",
+    "module_count": 47,
+    "stock_executed_during_ro_startup": false,
+    "scope": "offscreen startup/discovery, not physical Plasma/Polkit or cross-module links"
+  },
+  "same_new_elf_kf630": {
+    "result": "PASS",
+    "module_count": 47,
+    "plugins": [
+      "kcm_qtquicksettings",
+      "kcm_fonts",
+      "kcm_colors"
+    ],
+    "scope": "same ELF, stock base image, offscreen, no session bus, no settings modified"
+  },
+  "compatibility_limits": [
+    "Qt 6.6/KF6 6.0 minima not tested",
+    "future versions not tested",
+    "KCMLauncher cross-module links retain external launch behavior",
+    "physical upgrade/Plasma/Polkit/accessibility/scaling not verified"
+  ],
+  "stock_touchpad": "Preserved independent GDB SIGSEGV reproduction with Ro removed; not repaired or reclassified as Ro defect",
+  "performance": "Previous measurements preserved at their source commit; no new or estimated comparison",
+  "files_sha256": {
+    "src/main.cpp": "8766ed746a596d2b29803648ebcd6e5c6d7ffb14806aa90b848ba6eec755c89e",
+    "src/shell.cpp": "8c7af6236455257c9d189553e6bd3a9073abf8310eed7356d6905cb7188f290f",
+    "src/shell.h": "06c55fcf50aa48c43c489cec30f1092cadab636ee2198ec140a6469002ff50c9",
+    "src/qml/Main.qml": "82db952f81dc3607abd671e30237aa7369a2b2f181be882daa0afd22d4979017",
+    "src/qml/ModuleHeader.qml": "9c0beccdacf0c07a48a71cb59cf277f3f67ee19df85eb73f43f9a72332317353",
+    "tests/test_shell.cpp": "bad40f3b55638d7ed58f887d277816a62b3635538845f60a9c6c3e2171ec6ccb",
+    "tests/test-independent-executable.py": "c007ad5dbc72f0b9f1b2e12968216ead82b4c7a4b59cbd76fb14133927a16d85",
+    "tests/test_kcm.cpp": "8003cccd8deb9e4db121b9c0ac3a0a8f16c9edcd31a44a0d258a83e03909fc54",
+    "tests/test_kcm.json": "b27a992978d5bbcb5e75d54956589622fdafaa34e09bedcb8aa5ccb2026fea40",
+    "tests/run-shell-unit.sh": "dd2ec4dcefc1b0db37125aa41a739a84ed2bacb4a469d44a16f4f7647bfe47e4"
+  },
+  "decisions": {
+    "independent_core": "PASS within automated scope",
+    "FULL RO UI": "BLOCKED",
+    "SOURCE READY": "NO-GO",
+    "RO-REPO ADMISSION READY": "NO-GO"
+  }
+}

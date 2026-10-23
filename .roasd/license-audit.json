@@ -19,17 +19,17 @@
     },
     {
       "path": "src/qml/Main.qml",
-      "sha256": "cd75e8242ee38c78df1986dc4401882c92d7a4c2489c5816d2f4853ab24e9bc5",
+      "sha256": "82db952f81dc3607abd671e30237aa7369a2b2f181be882daa0afd22d4979017",
       "declared_spdx": "GPL-3.0-or-later"
     },
     {
       "path": "src/qml/ModuleHeader.qml",
-      "sha256": "bba08a097a7c4d0e5f60fa8fb0b69ee2600bb51ebb8a02cb6691a553fe659df5",
+      "sha256": "9c0beccdacf0c07a48a71cb59cf277f3f67ee19df85eb73f43f9a72332317353",
       "declared_spdx": "GPL-3.0-or-later"
     },
     {
       "path": "src/shell.cpp",
-      "sha256": "683d76dd7dacad25dec925c6347da4a7346784fea41060de09f3da4ecd08ea95",
+      "sha256": "8c7af6236455257c9d189553e6bd3a9073abf8310eed7356d6905cb7188f290f",
       "declared_spdx": "GPL-3.0-or-later"
     },
     {

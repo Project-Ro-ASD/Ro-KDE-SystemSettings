@@ -1,4 +1,4 @@
-Changes relative to main 7f12bac; generated for the independent-shell handoff.
+Changes relative to main 7f12bac; includes PR #7 independent-shell follow-up.
 M	.github/workflows/ci.yml
 M	.github/workflows/release.yml
 M	.roasd/license-audit.json
@@ -15,8 +15,11 @@ M	docs/INTEGRATION-STATUS.md
 M	docs/LICENSE-BLOCKERS.md
 M	docs/LICENSING.md
 M	docs/PLASMA-ACCEPTANCE.md
+M	docs/PRODUCER-READINESS.md
+M	docs/READINESS-2026-10-23.md
 M	docs/UPSTREAM-COMPONENTS.md
 A	docs/evidence/independent-shell-2026-10-23.json
+A	docs/evidence/independent-shell-followup.json
 A	docs/evidence/independent-shell-performance-2026-10-23.json
 D	overrides/README.md
 D	overrides/metadata/categories/settings-appearance-font.desktop
@@ -139,6 +142,7 @@ A	tests/run-shell-unit.sh
 M	tests/test-build-rpm.sh
 M	tests/test-clean-install.sh
 M	tests/test-contract.py
+A	tests/test-independent-executable.py
 M	tests/test-launcher.py
 M	tests/test-license-audit.py
 M	tests/test-rcc-rebuild.py

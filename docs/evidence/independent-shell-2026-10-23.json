@@ -104,7 +104,7 @@
       "main"
     ]
   },
-  "new_live_attestation": "BLOCKED: automatic approval review rejected release.yml dispatch; no run created",
+  "new_live_attestation": "BLOCKED / NOT VERIFIED: explicitly skipped by user after automatic approval rejection; no retry or alternative trigger; manifest/static attestation contracts do not verify a new release",
   "artifact_sha256": {
     "ro-kde-systemsettings-0.2.0-1.roasd1.fc44.x86_64.rpm": "abc230060014a0ebdb7438e542181cf030a26b31fa142bef4bc76fcfc78e7d89",
     "ro-kde-systemsettings-0.2.0-1.roasd1.fc44.src.rpm": "b1574c2c3792f9a3a39279ca51d350a87052c7fd5b586e387936997bfbc9bb5c",

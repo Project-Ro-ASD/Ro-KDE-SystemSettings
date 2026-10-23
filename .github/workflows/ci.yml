@@ -71,3 +71,41 @@ jobs:
           path: release-rpms/*
           if-no-files-found: error
           retention-days: 7
+
+  kcm-interaction:
+    name: Ro QML Interaction & Real KCM Persistence (Fedora 44)
+    needs: contract
+    runs-on: ubuntu-24.04
+    container:
+      image: fedora:44
+    timeout-minutes: 45
+    steps:
+      - name: Install isolated interaction dependencies
+        run: |
+          dnf install -y git python3 cmake gcc-c++ ninja-build strace dbus-daemon \
+            qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtquickcontrols2-devel \
+            kf6-kcmutils-devel kf6-kconfig-devel kf6-kcoreaddons-devel kf6-kauth-devel kf6-ki18n-devel \
+            plasma-systemsettings plasma-workspace-libs plasma-desktop kf6-kirigami
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Build independent shell and tests
+        run: |
+          cmake -S . -B .work/interaction-build -G Ninja -DCMAKE_INSTALL_PREFIX=/usr
+          cmake --build .work/interaction-build -j2
+      - name: Exercise QML clicks and real KCM save/reset in private profiles
+        env:
+          RO_REQUIRE_REAL_QTW_SAVE: '1'
+          RO_SCREENSHOT_DIR: ${{ github.workspace }}/.work/interaction-evidence/screenshots
+        run: ctest --test-dir .work/interaction-build --output-on-failure
+      - name: Trace actual independent executable
+        run: python3 tests/test-independent-executable.py .work/interaction-build/ro-systemsettings .work/interaction-evidence
+      - name: Upload interaction evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: independent-shell-interaction-evidence
+          path: |
+            .work/interaction-evidence/
+            .work/interaction-build/Testing/Temporary/LastTest.log
+          if-no-files-found: error
+          retention-days: 7

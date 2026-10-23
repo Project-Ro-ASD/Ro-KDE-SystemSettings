@@ -73,17 +73,18 @@ Shell::Shell(QWidget *parent) : QWidget(parent), m_metadata(discover()), m_engin
         QString category = data.value(QStringLiteral("X-KDE-System-Settings-Parent-Category-V2"));
         if (category.isEmpty()) category = data.value(QStringLiteral("X-KDE-System-Settings-Parent-Category"));
         if (category == QStringLiteral("rootcategory") || !categoryMap.contains(category)) category = QStringLiteral("other");
-        QStringList names;
+        QStringList names, ancestors;
         QSet<QString> visited;
         QString top = category;
         for (QString cursor = category; categoryMap.contains(cursor) && !visited.contains(cursor); ) {
             visited.insert(cursor);
+            ancestors.append(cursor);
             const auto node = categoryMap.value(cursor);
             if (cursor != QStringLiteral("rootcategory")) { names.prepend(node.value("name").toString()); top = cursor; }
             cursor = node.value("parent").toString();
         }
         m_modules.append(QVariantMap{{"id", data.pluginId()}, {"name", data.name()}, {"description", data.description()},
-            {"category", category}, {"topCategory", top}, {"path", names.join(QStringLiteral(" / "))},
+            {"category", category}, {"ancestorCategories", ancestors}, {"topCategory", top}, {"path", names.join(QStringLiteral(" / "))},
             {"keywords", data.value(QStringLiteral("X-KDE-Keywords"))}});
     }
     for (auto it = categoryMap.cbegin(); it != categoryMap.cend(); ++it) m_categories.append(it.value());

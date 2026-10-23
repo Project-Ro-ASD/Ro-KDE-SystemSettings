@@ -5,18 +5,21 @@ import QtQuick.Controls
 import QtQuick.Layouts
 Pane {
     id: root
+    objectName: "roModuleHeader"
     function text(en, tr) { return shell.turkish ? tr : en }
     ColumnLayout {
         anchors.fill: parent
         Label { text: shell.title; font.pixelSize: 22; font.bold: true; Layout.fillWidth: true; elide: Text.ElideRight }
         TabBar {
             id: historyTabs
+            objectName: "roHistoryTabs"
             currentIndex: shell.tabs.findIndex(t => t.id === shell.currentId)
             Layout.fillWidth: true
             Repeater {
                 model: shell.tabs
                 delegate: TabButton {
                     required property var modelData
+                    objectName: "historyTab_" + modelData.id
                     text: modelData.name
                     enabled: !shell.busy
                     onClicked: { shell.open(modelData.id); historyTabs.setCurrentIndex(shell.tabs.findIndex(t => t.id === shell.currentId)) }

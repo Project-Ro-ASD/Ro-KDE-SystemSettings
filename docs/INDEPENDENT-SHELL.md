@@ -149,7 +149,7 @@ yazar `minitheguitarist`, draft durumu ve insan hesabı doğrulandı; merge edil
 | Geniş yerel KCM imajı runtime | Ro home/metadata ve 3 gerçek KCM PASS; eşzamanlı stock/Ro FAIL: stock SIGSEGV |
 | Temiz Fedora 44 CI | [39966000600](https://github.com/Project-Ro-ASD/Ro-KDE-SystemSettings/actions/runs/39966000600) PASS, exact 3448f7c; Repository Contract ve tam RPM doğrulama işi |
 | Gerçek Plasma/Polkit, fiziksel G14, donanım/ölçek/erişilebilirlik | BLOCKED; headless başarıdan kabul türetilmedi |
-| Yeni canlı attestation dry-run | BLOCKED: otomatik onay denetimi release.yml dispatch'ini yayın/imza riski gerekçesiyle reddetti; hiç run oluşmadığı doğrulandı. Mevcut exact-source-digest workflow sözleşmesi ve manifest kapıları PASS. |
+| Yeni attestation / yeni release provenance | **BLOCKED / NOT VERIFIED**: otomatik onay reddinden sonra kullanıcı açıkça atlanmasını istedi; dispatch yeniden veya alternatif yoldan tetiklenmedi. Yeni attestation çalışmadı, yeni release doğrulanmadı. Mevcut statik attestation sözleşmesi ve manifest kontrolleri bunların yerine geçmez. |
 
 İlk CI [39965710010](https://github.com/Project-Ro-ASD/Ro-KDE-SystemSettings/actions/runs/39965710010)
 realModuleLoad için sağlayıcı bulunmadığından FAIL oldu. Test atlanmadı;
@@ -218,3 +218,83 @@ Yeni canlı attestation dispatch'i ayrıca otomatik onay reddi nedeniyle yapılm
 Bunlar kapanmadan FULL RO UI BLOCKED, SOURCE READY NO-GO ve RO-REPO ADMISSION
 READY NO-GO kararları korunur. Yeni tag/release, RPM signing, üretici kaydı,
 PR #86 değişikliği, merge, secret/protected environment veya Beta/Stable yoktur.
+
+
+## PR #7 takip teslimi — açık kullanıcı sınırları ve yeni testler
+
+Kullanıcı ek `release.yml workflow_dispatch` doğrulamasının **atlanmasını** istedi.
+Bu istek uygulandı: yeniden deneme, alternatif tetikleme, production workflow,
+tag/release, merge veya Ro-Repo kabul işlemi yapılmadı. **Yeni attestation:
+BLOCKED / NOT VERIFIED. Yeni release provenance: NOT VERIFIED.** Önceki attestation
+kayıtları, statik workflow/source-digest sözleşmesi veya yeni manifest/checksum
+kontrolleri yeni bir release'in kriptografik doğrulamasının yerine geçmez.
+
+Önceki başarılı testler ve hash'ler korunur. Özellikle kaynak `5c7ba03` için
+[son başarılı Fedora 44 CI 39967138827](https://github.com/Project-Ro-ASD/Ro-KDE-SystemSettings/actions/runs/39967138827)
+RPM/SRPM, kurulum, gerçek KCM yükleme, aynı private bus'ta stock/Ro, yükseltme/
+kaldırma ve Fedora bütünlüğü kapılarını geçmiştir. Daha önceki 3448f7c kanıtı da
+korunur; hiçbir yeni headless sonuç eski broad-image stock FAIL'ini silmez.
+
+### Tamamlanan doğrulama boşlukları
+
+- **Aktif Ro QML ve bağımsız executable:** gerçek ELF `strace execve` ile çalıştırılır;
+  başlangıçta stock executable yürütülmez. QtTest, gerçek root URL'sinin
+  `qrc:/ro/org/ro/systemsettings/Main.qml` ve root nesnesinin `roCatalog` olduğunu
+  doğrular. İzleme yalnız başlangıç içindir; explicit fallback ve upstream dış
+  bağlantıları için yeni garanti çıkarılmaz.
+- **Gerçek QML etkileşimleri:** QtTest, kartı ve kategori/alt kategori düğmelerini
+  mouse input ile tıklar; aynı Ro penceresinde KCM açılmasını doğrular. Akordeon
+  açılıp kapanır; history sekmesine gerçek tıklama sayfayı değiştirir. Her aşamada
+  hata widget'ı başarı sayılmaz ve yalnız bir KCModule nesnesi canlı kalır.
+- **Üç seviyeli hiyerarşi düzeltmesi:** daha önce ara kategori seçildiğinde yalnız
+  doğrudan çocuk modüller eşleşiyordu. Şimdi metadata zincirindeki tüm ancestor
+  ID'ler taşınır; ara kategorideki daha derin modüller de sonuçta kalır. Private
+  test metadata'sı bu sınırı gerçek okuyucu/filtre/tıklama yoluyla sınar; test
+  modülü ve kategori dosyaları ürüne kurulmaz.
+- **Gerçek KDE KCM save/load:** Fedora'nın `plasma-desktop` paketinden yüklenen
+  `kcm_qtquicksettings` içindeki `kcfg_ForceGlCoreProfile` checkbox'ı değiştirilir.
+  Reset eski değeri getirir; Apply geçici `kdeglobals` dosyasındaki
+  `[QtQuickRendererSettings] ForceGlCoreProfile` değerini kaydeder. KCM tamamen
+  kapatılıp yeniden yüklenir ve kayıtlı değer görülür; sonunda ilk değer
+  geri yazılıp diskte doğrulanır. Test container ve geçici XDG profile şartını
+  zorlar; gerçek kullanıcı profiline veya Plasma oturumuna yazmaz.
+- **Yetkilendirme:** mevcut KAuth hata yolu testi ve dirty-state koruması aynen
+  sürer. Gerçek privileged KCM/Polkit prompt, kimlik doğrulama ve iptal kabulü
+  **BLOCKED / NOT VERIFIED** olarak kalır; unprivileged gerçek KCM kaydı bu
+  ayrı kabulün yerine geçmez.
+
+Gerçek KCM testinin upstream davranış kaynağı KDE plasma-desktop v6.7.5:
+[kcmqtquicksettings.cpp](https://github.com/KDE/plasma-desktop/blob/v6.7.5/kcms/qtquicksettings/kcmqtquicksettings.cpp),
+[renderer.kcfg](https://github.com/KDE/plasma-desktop/blob/v6.7.5/kcms/qtquicksettings/renderer.kcfg).
+KCM addConfig/KConfigDialogManager ve standart KCModule save/load akışını kullanır;
+Ro provider kaynaklarını değiştirmez. Bu takipte upstream patch veya override yoktur.
+
+Mevcut temiz RPM CI işi değiştirilmeden korunur; yeni ayrı
+**Ro QML Interaction & Real KCM Persistence (Fedora 44)** işi plasma-desktop
+sağlayıcısını zorunlu kurup gerçek save testinin atlanmasını engeller. Minimal
+modül kümesinde bu tek yöntem provider yoksa açıkça SKIP'tir; ayrı geniş işte
+`RO_REQUIRE_REAL_QTW_SAVE=1` ile provider eksikliği FAIL olur. Bu iş stock
+broad-image runtime kabulü yapmaz; touchpad SIGSEGV bağımsız açık bulgu olarak kalır.
+Offscreen screenshot ve test/execve logları CI artifact olarak saklanır; bunlar
+fiziksel Plasma, gerçek scaling/screen-reader veya Polkit kabulü değildir.
+
+Yerel geniş ortamda TR/EN ctest **3/3 PASS**, her dilde **6 passed / 0 skipped**;
+gerçek KCM persist/reset/reload ve gerçek Ro UI tıklamaları dahildir. İzleme
+başlangıç/discovery testi **PASS**, 47 kurulu KCM bulundu. Ayrıntılı yerel çıktılar
+`.work/acceptance-evidence/`, kalıcı özet `docs/evidence/independent-shell-followup.json`
+içindedir. Aynı yeni ELF ile eski KF6 smoke sonucu ve CI bağlantıları da bu özette
+açık kapsamlarıyla kaydedilir; önceki performans verileri yeni binary'ye atfedilmez.
+
+### Ayrı hazır olma kararları
+
+| Karar | Sonuç | Kanıt ve açık koşul |
+| --- | --- | --- |
+| Bağımsız executable/QML/KCM temel mimarisi | Otomatik kapsamda PASS | ELF/QML root/execve, gerçek modül, gerçek config kaydı ve UI etkileşim testleri |
+| FULL RO UI | BLOCKED | Bazı upstream cross-module bağlantıları dış pencere açıyor; tam grafik/donanım/klavye/erişilebilirlik kabulü yok |
+| SOURCE READY | **NO-GO** | Derlenebilir/test edilen kaynak mevcut; tam entegrasyon kabulü ve gerçek Plasma/Polkit tamamlanmadı. Bu karar yalnız attestation engeline dayanmıyor. |
+| RO-REPO ADMISSION READY | **NO-GO** | SOURCE kabul koşullarına ek olarak yeni release/provenance/attestation doğrulaması yok; kabul başlatılmadı. |
+
+Stock touchpad SIGSEGV Ro kaldırılmışken alınan GDB kanıtıyla ayrı tutulur.
+Stock çöktüğünden ölçülemeyen cold/warm-start, ilk pencere, karşılaştırmalı RSS/PSS/
+CPU veya etkileşim gecikmeleri tahmin edilmez. G14 üzerindeki fiziksel testler
+operatör onayına bırakılır; geliştirme bilgisayarının canlı oturumuna dokunulmaz.

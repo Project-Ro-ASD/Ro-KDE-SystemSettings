@@ -6,6 +6,7 @@ import QtQuick.Layouts
 
 Pane {
     id: root
+    objectName: "roCatalog"
     padding: 0
     property string selectedCategory: ""
     property string expandedCategory: ""
@@ -14,7 +15,7 @@ Pane {
     function text(en, tr) { return shell.turkish ? tr : en }
     function matches(module) {
         const query = search.text.toLocaleLowerCase()
-        return (selectedCategory === "" || module.topCategory === selectedCategory || module.category === selectedCategory)
+        return (selectedCategory === "" || module.ancestorCategories.includes(selectedCategory))
             && (module.name + " " + module.description + " " + module.keywords + " " + module.id + " " + module.path).toLocaleLowerCase().includes(query)
     }
     function topCategories() {
@@ -26,6 +27,7 @@ Pane {
         spacing: 0
         Pane {
             id: sidebar
+            objectName: "roSidebar"
             Layout.preferredWidth: 250
             Layout.fillHeight: true
             Layout.fillWidth: !root.catalog
@@ -79,6 +81,7 @@ Pane {
                                 required property var modelData
                                 Layout.fillWidth: true
                                 Button {
+                                    objectName: "categoryToggle_" + category.modelData.id
                                     Layout.fillWidth: true
                                     text: (root.expandedCategory === category.modelData.id ? "▾  " : "▸  ") + category.modelData.name
                                     Accessible.name: category.modelData.name
@@ -97,6 +100,7 @@ Pane {
                                     delegate: ItemDelegate {
                                         required property var modelData
                                         Layout.fillWidth: true
+                                        objectName: "subcategory_" + modelData.id
                                         text: modelData.name
                                         highlighted: root.selectedCategory === modelData.id
                                         enabled: !shell.busy
@@ -108,6 +112,7 @@ Pane {
                                     delegate: ItemDelegate {
                                         required property var modelData
                                         Layout.fillWidth: true
+                                        objectName: "categoryModule_" + modelData.id
                                         text: modelData.name
                                         highlighted: shell.currentId === modelData.id
                                         enabled: !shell.busy
@@ -163,6 +168,7 @@ Pane {
                             model: shell.modules.filter(m => root.matches(m))
                             delegate: Button {
                                 id: card
+                                objectName: "moduleCard_" + modelData.id
                                 required property var modelData
                                 Layout.fillWidth: true
                                 Layout.minimumWidth: 210

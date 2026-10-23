@@ -29,5 +29,11 @@ private:
     KConfig config{QStringLiteral("ro-shell-test-kcmrc")};
     int value = 0, saved = 0;
 };
-K_PLUGIN_CLASS_WITH_JSON(TestKCM, "test_kcm.json")
+class TestKCMFactory : public KPluginFactory {
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.kde.KPluginFactory" FILE "test_kcm.json")
+    Q_INTERFACES(KPluginFactory)
+public:
+    TestKCMFactory() { registerPlugin<TestKCM>(); }
+};
 #include "test_kcm.moc"
