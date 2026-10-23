@@ -37,7 +37,7 @@ with tempfile.TemporaryDirectory(prefix='ro-launcher-') as directory:
         args = ['--help', 'argument with spaces', 'literal;$value']
         result = json.loads(subprocess.check_output([str(wrapper), *args], env=env, text=True))
         expected = ['-stylesheet', str(data / 'tabs.qss')] if present else []
-        assert result['argv'] == expected + args, result
+        assert result['argv'] == expected + args, result['argv']
         child = result['env']
         assert 'LD_PRELOAD' not in child
         assert child['XDG_DATA_DIRS'].split(':').count(str(data)) == 1
