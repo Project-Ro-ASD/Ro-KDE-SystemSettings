@@ -2,7 +2,8 @@
 set -euo pipefail
 
 # Ro-KDE-SystemSettings wrapper for Ro-ASD (Fedora 44)
-# Applies modern layout overrides, QSS tab styles, and custom categories
+# Applies process-local metadata/import paths and a Qt Widgets stylesheet.
+# These paths do not replace System Settings/KCM QML embedded in Qt resources.
 # Note: LD_PRELOAD C++ override has been intentionally removed for stability.
 
 # Prepend Ro-ASD data and QML search paths

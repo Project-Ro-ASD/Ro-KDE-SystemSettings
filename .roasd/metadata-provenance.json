@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "upstream_project": "systemsettings",
+  "reference_tag": "v6.7.5",
+  "reference_commit": "d126c08d14a2a0f44a1758fd25e945ae099e34bb",
+  "source_url": "https://invent.kde.org/plasma/systemsettings/-/tree/d126c08d14a2a0f44a1758fd25e945ae099e34bb/categories",
+  "note": "Reference comparison only; original import base and license grant remain unestablished. No SPDX invented for headerless upstream desktop files.",
+  "files": [
+    {
+      "path": "overrides/metadata/categories/settings-appearance-font.desktop",
+      "upstream_path": "categories/settings-appearance-font.desktop",
+      "upstream_sha256": "5c14001ca70a1697e365d8aad853e149d65dab08d1b7892ede0daa106edb1852",
+      "comparison": "byte-identical",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-appearance-themes.desktop",
+      "upstream_path": "categories/settings-appearance-themes.desktop",
+      "upstream_sha256": "70a66c220930794b24fd075433c61d0a7bdb7900399b3f867398368f639bea20",
+      "comparison": "byte-identical",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-appearance.desktop",
+      "upstream_path": "categories/settings-appearance.desktop",
+      "upstream_sha256": "b525b7835a80a7940b5955213f67bbd634635434d43e8eaca40ae27ed718a89a",
+      "comparison": "downstream-modified",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-applications-defaults.desktop",
+      "upstream_path": "categories/settings-applications-defaults.desktop",
+      "upstream_sha256": "c499e99957b26e0691d611a32f59ae9704892b99b27c849349530eb3cb7adc39",
+      "comparison": "downstream-modified",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-applications-permissions.desktop",
+      "upstream_path": "categories/settings-applications-permissions.desktop",
+      "upstream_sha256": "13989ede1f07eb3c749f44dfb4ec842d8551afd5d61e8008fcb1f14ed9433fe0",
+      "comparison": "downstream-modified",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-applications.desktop",
+      "upstream_path": "categories/settings-applications.desktop",
+      "upstream_sha256": "6bcd1657fbf3ddd4573e735c581b77aab8db5ee86435a44f19500d91c6ca3198",
+      "comparison": "downstream-modified",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-hardware-display.desktop",
+      "upstream_path": "categories/settings-hardware-display.desktop",
+      "upstream_sha256": "cece34f12145d4f06a4fe5b5ed094b3a31f44222ed4011ee703f0adde7f16104",
+      "comparison": "downstream-modified",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-hardware-input-pointing-devices.desktop",
+      "upstream_path": "categories/settings-hardware-input-pointing-devices.desktop",
+      "upstream_sha256": "e1e574863b48eea303f7e1604fcc41ebfae20749dbea28d44771bb9dbf91f9fd",
+      "comparison": "downstream-modified",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-hardware-input-touchscreen.desktop",
+      "upstream_path": "categories/settings-hardware-input-touchscreen.desktop",
+      "upstream_sha256": "d7f88a7c7c20756b5995186cf5b0f2e0b6bd64d973ad0614076119e27db4d550",
+      "comparison": "byte-identical",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-hardware-input.desktop",
+      "upstream_path": "categories/settings-hardware-input.desktop",
+      "upstream_sha256": "181c5d3dee04d7394fb2ccfbaf0d792efa20d4ad0ce0c4880e6c9038d144e9a4",
+      "comparison": "downstream-modified",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-hardware-keyboard.desktop",
+      "upstream_path": "categories/settings-hardware-keyboard.desktop",
+      "upstream_sha256": "cc78b8e20914e758b567d3e596ceced3e2d5873fc153509eb689c40225603625",
+      "comparison": "downstream-modified",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-hardware-multimedia.desktop",
+      "upstream_path": "categories/settings-hardware-multimedia.desktop",
+      "upstream_sha256": "e17ddd16748127f514f8fb2cd34a29a9456dd9bb12cd42161bd646393bc5c2a4",
+      "comparison": "downstream-modified",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-hardware-removable-storage.desktop",
+      "upstream_path": "categories/settings-hardware-removable-storage.desktop",
+      "upstream_sha256": "52c504c944d8250d7cbef071b589c3ea7388649279e02a8ce71c5469b44ff482",
+      "comparison": "downstream-modified",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-hardware.desktop",
+      "upstream_path": "categories/settings-hardware.desktop",
+      "upstream_sha256": "910ba685f2a9828cc8c880a3e13dfb0cb7c761fb55b7a84ca9cc906fa38d1aa1",
+      "comparison": "downstream-modified",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-network-networksettings.desktop",
+      "upstream_path": "categories/settings-network-networksettings.desktop",
+      "upstream_sha256": "d59be951e341ee65b3ade9db3fc4db694d2c2c5d2a10fad563d2f7d4b1be0dfc",
+      "comparison": "byte-identical",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-network.desktop",
+      "upstream_path": "categories/settings-network.desktop",
+      "upstream_sha256": "e83f2f826ea4458167e7b88ad675d17250290bf2952f1286bed68e9224cbe351",
+      "comparison": "downstream-modified",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-personalization.desktop",
+      "upstream_path": "categories/settings-personalization.desktop",
+      "upstream_sha256": "5903946f117ce03793d7186be29ff1c1ca227087072e754a1165e03bde79a3f6",
+      "comparison": "downstream-modified",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-regionalsettings.desktop",
+      "upstream_path": "categories/settings-regionalsettings.desktop",
+      "upstream_sha256": "5b02b469a205324865601e81f91f2c7e2a8bcea7b19525de125c38497f123c7c",
+      "comparison": "downstream-modified",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-root-category.desktop",
+      "upstream_path": "categories/settings-root-category.desktop",
+      "upstream_sha256": "8cd0e80e7eb5853572da05e297cfe9d824280c394403dd1b57d7dff899def563",
+      "comparison": "byte-identical",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-security-privacy.desktop",
+      "upstream_path": "categories/settings-security-privacy.desktop",
+      "upstream_sha256": "0eccb99df62ac98156f5defa16cb7909a749bf128f30f41dde8fa2582c891c7d",
+      "comparison": "downstream-modified",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-system-administration.desktop",
+      "upstream_path": "categories/settings-system-administration.desktop",
+      "upstream_sha256": "2e041e1c99e590a81243443b7c46c647b2ac37ad4863fbd10e3825cdd58d1fe7",
+      "comparison": "downstream-modified",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-workspace-search.desktop",
+      "upstream_path": "categories/settings-workspace-search.desktop",
+      "upstream_sha256": "e56743e1029593c435b1d328b455a0cd4f6f75d022800d10ac708f48861c1f87",
+      "comparison": "byte-identical",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-workspace-session.desktop",
+      "upstream_path": "categories/settings-workspace-session.desktop",
+      "upstream_sha256": "a6e14d5ccac673311a4cfc8bd85c67e7d4643cc05915f5621d2b2666569de419",
+      "comparison": "byte-identical",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-workspace-windowmanagement.desktop",
+      "upstream_path": "categories/settings-workspace-windowmanagement.desktop",
+      "upstream_sha256": "763eb9ca752a7b5566964e294b35aa063093f8c8f14c050c942e2a683a19961d",
+      "comparison": "byte-identical",
+      "upstream_has_spdx": false
+    },
+    {
+      "path": "overrides/metadata/categories/settings-workspace.desktop",
+      "upstream_path": "categories/settings-workspace.desktop",
+      "upstream_sha256": "7b2d5365e04bcd577ceeeccb14ebdc74d998a43d8c511b4d4cd95e0e3c0c36fd",
+      "comparison": "downstream-modified",
+      "upstream_has_spdx": false
+    }
+  ]
+}

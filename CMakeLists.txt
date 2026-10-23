@@ -43,20 +43,10 @@ target_link_libraries(systemsettings_override PRIVATE
     ${CMAKE_DL_LIBS}
 )
 
-# Also generate binary RCC file overrides.rcc
-find_program(RCC_EXECUTABLE NAMES rcc-qt6 rcc HINTS /usr/lib64/qt6/libexec)
-if(NOT RCC_EXECUTABLE)
-    message(FATAL_ERROR "rcc executable not found")
-endif()
-
-add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/overrides.rcc
-    COMMAND ${RCC_EXECUTABLE} -binary ${CMAKE_CURRENT_SOURCE_DIR}/overrides/qml/overrides.qrc -o ${CMAKE_CURRENT_BINARY_DIR}/overrides.rcc
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/overrides/qml/overrides.qrc
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/overrides/qml
-    COMMENT "Compiling binary overrides.rcc"
+# Track every QRC input so incremental builds cannot install stale QML resources.
+qt6_add_binary_resources(generate_rcc overrides/qml/overrides.qrc
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/overrides.rcc
 )
-add_custom_target(generate_rcc ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/overrides.rcc)
 
 # Translations (.po -> .mo)
 find_program(MSGFMT_EXECUTABLE msgfmt)

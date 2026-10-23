@@ -1,5 +1,10 @@
 # Fedora 44 V2 producer preparation
 
+Current follow-up audit: [2026-10-23 report](READINESS-2026-10-23.md),
+[activation evidence](INTEGRATION-STATUS.md), [file-level license blockers](LICENSE-BLOCKERS.md)
+and [G14 procedure](PLASMA-ACCEPTANCE.md). The evidence below is historical
+and is not a claim that those production blockers have been resolved.
+
 ## Baseline inspected
 
 - Repository main: `4a0f33ad2b6689307dc3bc67e0ff937f0212b809`.

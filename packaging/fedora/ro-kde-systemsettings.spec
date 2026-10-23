@@ -23,11 +23,11 @@ Requires:       qt6-qtquickcontrols2
 Requires:       kf6-kirigami
 
 %description
-Ro-KDE-SystemSettings is the downstream visual customization and layout layer
-for KDE Plasma System Settings on Ro-ASD (Fedora 44). It provides a modern
-hierarchical sidebar navigation, card layouts, pill-shaped tabs and controls,
-and integrated Turkish translations without replacing or breaking standard
-Fedora KDE Plasma System Settings modules.
+Ro-KDE-SystemSettings provides a separate launcher with process-local category
+metadata, Turkish translations and a Qt Widgets style sheet for Fedora System
+Settings. Experimental QML resources and the inactive loader are included for
+review; custom sidebar, accordion and card activation is not yet supported.
+The Fedora System Settings executable and authentication paths are preserved.
 
 %prep
 %autosetup -n Ro-KDE-SystemSettings-%{version} -p1
