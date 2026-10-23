@@ -58,3 +58,13 @@ The current Ro-ASD component contract targets Fedora 44. Do not assume the newes
 The installable payload is built with CMake and packaged by `packaging/fedora/ro-kde-systemsettings.spec`. CI and release builds share the RPM, manifest/checksum, install, runtime, actual upgrade/removal and Fedora integrity gates. See `tests/README.md` and `packaging/fedora/README.md`.
 
 Do not run transaction tests on the host. Use a disposable Fedora 44 x86_64 container. Do not publish `v0.1.1` until the release blockers in `docs/PRODUCER-READINESS.md` are resolved.
+
+## Independent shell development (0.2.0)
+
+The task explicitly replaces the former wrapper-only architecture. Application
+sources live in src/; use public KF6 headers and the Ro QML namespace. Do not
+restore archived override code. `cmake -S . -B build && cmake --build build -j2`
+followed by `ctest --test-dir build --output-on-failure` runs the real KConfig
+fixture behavior tests on a private offscreen DBus session. The fixture is never
+installed. Real installed module smoke uses tests/test-runtime.py in a disposable
+Fedora container. Physical Plasma/Polkit acceptance remains separate.

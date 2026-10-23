@@ -21,6 +21,11 @@
     "kscreen": {
       "url": "https://invent.kde.org/plasma/kscreen.git",
       "purpose": "Display configuration KCMs"
+    },
+    "kcmutils": {
+      "url": "https://invent.kde.org/frameworks/kcmutils.git",
+      "purpose": "Public KCM discovery, hosting and authorization APIs",
+      "fetch_url": "https://github.com/KDE/kcmutils.git"
     }
   }
 }

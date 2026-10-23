@@ -1,3 +1,5 @@
+> Historical wrapper audit at main 7f12bac. The current independent-shell implementation, evidence and open acceptance blockers are in [INDEPENDENT-SHELL.md](INDEPENDENT-SHELL.md).
+
 # Ro-KDE-SystemSettings — üretim hazırlığı, 23 Ekim 2026
 
 **SOURCE: NOT READY. RO-REPO ADMISSION: NOT READY.**

@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def inventory(root):
-    paths = [root / 'bin/ro-systemsettings', *sorted((root / 'overrides').rglob('*')),
+    paths = [root / 'CMakeLists.txt', *sorted((root / 'src').rglob('*')),
              *sorted((root / 'packaging/fedora').glob('*.desktop'))]
     records = []
     for path in sorted(p for p in paths if p.is_file()):
@@ -40,7 +40,7 @@ def main():
         return 1
     missing = [entry['path'] for entry in actual if entry['declared_spdx'] is None]
     print(f'License inventory PASS: {len(actual)} files; {len(missing)} without SPDX. '
-          'Production license clearance remains BLOCKED (see docs/LICENSING.md).')
+          'This checks inventory freshness, not legal clearance (see docs/LICENSING.md).')
     return 0
 
 

@@ -6,6 +6,7 @@ WORKSPACE="$ROOT/.work/upstream"
 mkdir -p "$WORKSPACE"
 
 declare -A URLS=(
+  [kcmutils]="https://github.com/KDE/kcmutils.git"
   [systemsettings]="https://invent.kde.org/plasma/systemsettings.git"
   [plasma-desktop]="https://invent.kde.org/plasma/plasma-desktop.git"
   [plasma-nm]="https://invent.kde.org/plasma/plasma-nm.git"
@@ -42,7 +43,11 @@ fetch_project() {
     exit 4
   else
     echo "Cloning $project..."
-    git clone "$url" "$dest"
+    if [[ "$project" == kcmutils ]]; then
+      git clone --depth 1 "$url" "$dest"
+    else
+      git clone "$url" "$dest"
+    fi
   fi
 
   echo

@@ -9,12 +9,12 @@ import tempfile
 root = Path(__file__).resolve().parents[1]
 with tempfile.TemporaryDirectory() as directory:
     fixture = Path(directory)
-    for name in ('scripts', '.roasd', 'bin', 'overrides', 'packaging/fedora'):
+    for name in ('scripts', '.roasd', 'src', 'src/qml', 'packaging/fedora'):
         (fixture / name).mkdir(parents=True)
     shutil.copy(root / 'scripts/check-license-audit.py', fixture / 'scripts')
     audit = fixture / '.roasd/license-audit.json'
     audit.write_text(json.dumps(dict(schema_version=1, files=[])))
-    payload = fixture / 'bin/ro-systemsettings'
+    payload = fixture / 'CMakeLists.txt'
     payload.write_text('# SPDX-License-Identifier: GPL-3.0-or-later\n')
     command = ['python3', str(fixture / 'scripts/check-license-audit.py')]
     subprocess.run([*command, '--update'], check=True, capture_output=True)
@@ -23,7 +23,7 @@ with tempfile.TemporaryDirectory() as directory:
     payload.write_text(original + '# changed\n')
     assert subprocess.run(command, capture_output=True).returncode == 1
     payload.write_text(original)
-    extra = fixture / 'overrides/added.qml'
+    extra = fixture / 'src/qml/added.qml'
     extra.write_text('import QtQuick\n')
     assert subprocess.run(command, capture_output=True).returncode == 1
     extra.unlink()

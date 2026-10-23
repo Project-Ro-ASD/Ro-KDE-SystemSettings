@@ -26,10 +26,6 @@ fi
 # 2. Check essential files in payload
 REQUIRED_FILES=(
     "/usr/bin/ro-systemsettings"
-    "/usr/lib64/ro-kde-systemsettings/libsystemsettings_override.so"
-    "/usr/share/ro-kde-systemsettings/overrides.rcc"
-    "/usr/share/ro-kde-systemsettings/tabs.qss"
-    "/usr/share/ro-kde-systemsettings/applications/systemsettings.desktop"
     "/usr/share/applications/ro-systemsettings.desktop"
 )
 
@@ -42,21 +38,12 @@ for f in "${REQUIRED_FILES[@]}"; do
     echo "  [OK] Payload contains: $f"
 done
 
-# 3. Check categories in payload
-CAT_COUNT="$(echo "$PAYLOAD" | grep -c '/usr/share/ro-kde-systemsettings/systemsettings/categories/.*\.desktop$' || true)"
-if [ "$CAT_COUNT" -lt 15 ]; then
-    echo "FAIL: Expected at least 15 category desktop files, found $CAT_COUNT" >&2
-    exit 1
+# No obsolete imports, QSS, copied KDE categories/translations, RCC or hook library.
+if grep -Eq '/ro-kde-systemsettings/(qml|locale|tabs.qss|overrides.rcc|systemsettings|applications)|libsystemsettings_override' <<< "$PAYLOAD"; then
+    echo 'Obsolete payload is still distributed' >&2; exit 1
 fi
-echo "  [OK] Payload contains $CAT_COUNT category desktop files"
-
-# 4. Check translations in payload
-MO_COUNT="$(echo "$PAYLOAD" | grep -c '/usr/share/ro-kde-systemsettings/locale/tr/LC_MESSAGES/.*\.mo$' || true)"
-if [ "$MO_COUNT" -lt 4 ]; then
-    echo "FAIL: Expected at least 4 compiled translation files, found $MO_COUNT" >&2
-    exit 1
-fi
-echo "  [OK] Payload contains $MO_COUNT Turkish translation files"
+rpm2cpio "$RPM_FILE" | cpio --quiet -i --to-stdout ./usr/bin/ro-systemsettings > /tmp/ro-elf-magic
+[[ "$(od -An -N4 -tx1 /tmp/ro-elf-magic | tr -d ' \n')" == 7f454c46 ]]
 
 echo "==> Smoke test PASSED for $RPM_FILE!"
 

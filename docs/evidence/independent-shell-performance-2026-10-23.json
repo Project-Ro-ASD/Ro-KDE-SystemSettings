@@ -1,0 +1,77 @@
+{
+  "conditions": "offscreen/software, isolated profiles, 3s sample, no cold-cache eviction",
+  "versions": [
+    "plasma-systemsettings-6.7.5-1.fc44.x86_64",
+    "kf6-kcmutils-6.31.0-1.fc44.x86_64",
+    "qt6-qtbase-6.11.2-3.fc44.x86_64"
+  ],
+  "unmeasured": [
+    "physical first window",
+    "cold-start",
+    "warm-start",
+    "KCM interactive latency",
+    "category latency"
+  ],
+  "records": [
+    {
+      "program": "/usr/bin/systemsettings",
+      "trial": 0,
+      "sample_after_ms": 3001,
+      "status": "FAIL",
+      "exit": -11,
+      "process_gone": true,
+      "log": ""
+    },
+    {
+      "program": "/usr/bin/systemsettings",
+      "trial": 1,
+      "sample_after_ms": 3001,
+      "status": "FAIL",
+      "exit": -11,
+      "process_gone": true,
+      "log": ""
+    },
+    {
+      "program": "/usr/bin/systemsettings",
+      "trial": 2,
+      "sample_after_ms": 3002,
+      "status": "FAIL",
+      "exit": -11,
+      "process_gone": true,
+      "log": ""
+    },
+    {
+      "program": "/usr/bin/ro-systemsettings",
+      "trial": 0,
+      "sample_after_ms": 3002,
+      "rss_kib": 88756,
+      "pss_kib": 86090,
+      "cpu_seconds": 0.23,
+      "status": "PASS",
+      "process_gone": true,
+      "log": ""
+    },
+    {
+      "program": "/usr/bin/ro-systemsettings",
+      "trial": 1,
+      "sample_after_ms": 3001,
+      "rss_kib": 88220,
+      "pss_kib": 85681,
+      "cpu_seconds": 0.39,
+      "status": "PASS",
+      "process_gone": true,
+      "log": ""
+    },
+    {
+      "program": "/usr/bin/ro-systemsettings",
+      "trial": 2,
+      "sample_after_ms": 3001,
+      "rss_kib": 88268,
+      "pss_kib": 85729,
+      "cpu_seconds": 0.37,
+      "status": "PASS",
+      "process_gone": true,
+      "log": ""
+    }
+  ]
+}
