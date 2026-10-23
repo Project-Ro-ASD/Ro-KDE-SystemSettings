@@ -44,7 +44,7 @@ jobs:
           dnf install -y git python3 gettext rpm-build rpmdevtools rpmlint cmake gcc-c++ \
             kf6-rpm-macros qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtquickcontrols2-devel \
             desktop-file-utils plasma-systemsettings kf6-kirigami dbus-daemon \
-            kf6-kcmutils-devel kf6-kconfig-devel kf6-kcoreaddons-devel kf6-kauth-devel kf6-ki18n-devel python3-pyyaml
+            kf6-kcmutils-devel kf6-kconfig-devel kf6-kcoreaddons-devel kf6-kauth-devel kf6-ki18n-devel plasma-workspace-libs python3-pyyaml
 
       - name: Checkout
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6

@@ -15,6 +15,8 @@ BuildRequires:  gcc-c++
 BuildRequires:  gettext
 BuildRequires:  python3
 BuildRequires:  dbus-daemon
+# Real QML KCM smoke in %check (fonts/colors), in addition to the test fixture.
+BuildRequires:  plasma-workspace-libs
 BuildRequires:  kf6-rpm-macros
 BuildRequires:  kf6-kcmutils-devel
 BuildRequires:  kf6-kconfig-devel

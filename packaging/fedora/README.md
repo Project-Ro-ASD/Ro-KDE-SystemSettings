@@ -2,7 +2,7 @@
 
 Build in a disposable Fedora 44 environment, not the development user session.
 The spec BuildRequires public KF6 KCMUtils/CoreAddons/Config/Auth/I18n development
-packages and Qt6 base/declarative/quickcontrols2. QtTest builds source-only KCM
+packages, plasma-workspace-libs for real fonts/colors smoke, and Qt6 base/declarative/quickcontrols2. QtTest builds source-only KCM
 fixtures and behavior tests under `%check`. Runtime ELF dependencies are generated
 by RPM. Kirigami/QuickControls and stock plasma-systemsettings provide installed
 KCM dependencies/categories and the explicit fallback; no exact Plasma version pin.

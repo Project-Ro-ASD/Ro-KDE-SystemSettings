@@ -17,7 +17,7 @@ Headless tests do not establish visual, Polkit or hardware acceptance.
 3. Install the candidate only with operator approval. Open Ro via its own menu
    entry and executable. Confirm actual Ro sidebar, expanding categories, paths,
    cards, search (name/description/keyword), result opening, back/forward and
-   unsaved-change cancellation. KCM internal tabs/subpages must remain usable.
+   unsaved-change cancellation. KCM internal tabs/subpages must remain usable. Test KCMLauncher cross-module links separately; these currently launch upstream external windows and remain an integration blocker.
    Capture Ro/stock screenshots, TR/EN, light/dark, 100/150/200% scaling,
    resizing/minimum size, keyboard-only Ctrl+F/Tab/Enter/Alt+arrows and screen reader.
 4. For each real tested KCM record ID/provider/version and original state.
