@@ -41,17 +41,22 @@ with tempfile.TemporaryDirectory() as tmp:
     print('Real installed KCM load smoke:', tested)
     # Run both on the SAME isolated session bus; independent Ro must stay alive.
     script = '''
-import os, subprocess, time
+import subprocess, time
 stock = subprocess.Popen(['/usr/bin/systemsettings'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 ro = subprocess.Popen(['/usr/bin/ro-systemsettings', '--quit-after', '3000'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-time.sleep(1)
-assert stock.poll() is None, 'Stock exited/crashed (investigate touchpad separately)'
-assert ro.poll() is None, 'Ro forwarded to stock or exited early'
-ro_out, ro_err = ro.communicate(timeout=15)
-assert ro.returncode == 0, ro_err.decode()
-stock.terminate()
-stock_out, stock_err = stock.communicate(timeout=15)
-print(ro_err.decode(), stock_err.decode())
+try:
+    time.sleep(1)
+    assert stock.poll() is None, 'Stock exited/crashed (investigate touchpad separately)'
+    assert ro.poll() is None, 'Ro forwarded to stock or exited early'
+    ro_out, ro_err = ro.communicate(timeout=15)
+    assert ro.returncode == 0, ro_err.decode()
+finally:
+    for process in (ro, stock):
+        if process.poll() is None: process.terminate()
+        try: out, err = process.communicate(timeout=10)
+        except subprocess.TimeoutExpired:
+            process.kill(); out, err = process.communicate()
+        print(process.args[0], process.returncode, err.decode())
 '''
     output = run(['python3', '-c', script])
     for failure in failures:
