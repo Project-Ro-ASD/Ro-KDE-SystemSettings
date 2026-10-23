@@ -47,3 +47,10 @@ prove QML loading, a responsive event loop, visual changes, KCM functionality or
 performance. Offscreen results are never real Plasma acceptance. Excluding a
 crashing provider for diagnosis must be explicitly recorded; it invalidates any
 claim that all KCMs were tested. See [the decision record](../docs/NATIVE-SKIN-DECISION.md).
+
+The authorized isolated prototype now has real source/RPM/UI tests, documented
+in [prototypes/native-skin/README.md](../prototypes/native-skin/README.md).
+These build the original KDE application, not a replacement host. The normal
+producer workflow does not consume the prototype spec/resources. Recorded
+manual results and full acceptance limitations are in the
+[Turkish prototype report](../docs/NATIVE-SKIN-PROTOTYPE-REPORT.md).

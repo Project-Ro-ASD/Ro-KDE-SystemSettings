@@ -1,5 +1,10 @@
 # Runtime integration audit — 2026-10-23
 
+This audit describes the legacy production payload. The separately authorized
+native selector/skin prototype is implemented and tested only in isolation;
+see [its report](NATIVE-SKIN-PROTOTYPE-REPORT.md). It does not activate the
+legacy RCC/loader or change the production package described below.
+
 Reference: KDE systemsettings `v6.7.5`, commit
 `d126c08d14a2a0f44a1758fd25e945ae099e34bb`, matching the inspected
 Fedora `plasma-systemsettings-6.7.5-1.fc44.x86_64`. This is a compatibility

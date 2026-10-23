@@ -1,7 +1,9 @@
 # KDE-native Ro görünümü: mimari karar dosyası
 
-Tarih: 2026-10-23. Durum: **KULLANICI KARARI BEKLENİYOR**.
-Bu belge tamamlanmış bir skin veya üretime hazır paket raporu değildir.
+Tarih: 2026-10-23. Durum: **B SEÇENEĞİ YALNIZ İZOLE PROTOTİP İÇİN ONAYLANDI**.
+Bu belge ilk karar aşamasının kaydıdır. Sonraki uygulama ve test sonuçları
+[prototip teslim raporundadır](NATIVE-SKIN-PROTOTYPE-REPORT.md).
+Production paketinin değiştirilmesi/yayımlanması onaylanmadı.
 
 ## Mimari düzeltme
 
@@ -58,7 +60,7 @@ malformed QML ve skin kaldırma senaryoları test edilmeden güvenli fallback
 iddiası yapılmaz. KCM/IntroPage gibi diğer kökleri ayrıca değerlendirmek gerekir;
 tek URL seçimi bütün uygulamayı kendiliğinden Ro tasarımına dönüştürmez.
 
-Bu ikinci seçenek henüz uygulanmadı. Kullanıcının talimatı, Fedora RPM'inin
+İlk karar aşamasında bu ikinci seçenek henüz uygulanmamıştı. Kullanıcının talimatı, Fedora RPM'inin
 değişmesi gereken noktada önce mimari ve bakım seçeneklerini sunmayı gerektiriyor.
 Onaylanan mimari olmadan production spec veya Fedora binary değişimi yapılmayacak.
 LD_PRELOAD, sembol interposition, private ABI hook ve global QML replacement
@@ -97,7 +99,7 @@ Yamalı KDE paketini Fedora sürümüne döndürmek ise ayrı paket yöneticisi 
 RPM'ini silmek Fedora binary'sini geri yüklemez. Kaldırma scriptlet'i gizlice
 paket yöneticisi çalıştırmamalı. Bu transaction testleri henüz yapılmadı.
 
-## Test durumu ve kanıtlar
+## İlk karar aşamasının test durumu ve kanıtları
 
 Tekrarlanabilir manuel araç: `python3 tests/probe-native-skin.py --output
 .work/native-skin-evidence --seconds 3`. Yalıtılmış HOME/XDG ve D-Bus kullanır;
@@ -159,5 +161,6 @@ Tag/release, merge, production signing veya Ro-Repo kabulü başlatılmadı.
 
 Değişen dosyalar: bu karar dosyası, `INTEGRATION-STATUS.md`,
 `README.md`, `tests/README.md`, manuel `tests/probe-native-skin.py` ve test kanıt özeti.
-Upstream patch uygulanmadı; sınırlı override ile native binary yaması arasındaki
-kullanıcı kararı bekleniyor.
+Bu ilk karar aşamasında upstream patch uygulanmamıştı ve sınırlı override ile
+native binary yaması arasındaki kullanıcı kararı bekleniyordu. Sonraki izole
+prototip onayı ve uygulama sonuçları üstte bağlantısı verilen teslim raporundadır.
