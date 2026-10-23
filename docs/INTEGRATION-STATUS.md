@@ -32,7 +32,9 @@ custom shell as functional, restore preload, or overwrite Fedora files.
 For a custom shell, first resolve imported file provenance and the real
 KCM model/context requirements. Then evaluate a narrow, version-pinned
 systemsettings patch adding an explicit application-controlled shell resource
-selection contract, with a separately named executable/package and stock fallback.
+selection contract in the original KDE executable, with separate skin resources
+and stock fallback. A separate executable/KCM host is excluded by the current
+architecture requirement. See [the native-skin decision](NATIVE-SKIN-DECISION.md).
 That requires a packaging/architecture decision and real Plasma acceptance;
 it is not implemented or claimed here. Existing custom QML depends on model
 and context properties and cannot safely be enabled by pointing a standalone

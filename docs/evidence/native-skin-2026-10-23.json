@@ -1,0 +1,318 @@
+{
+  "date": "2026-10-23",
+  "branch_base": "7f12bac7b495aa81b22091d346ad346c35e92d15",
+  "upstream": {
+    "project": "KDE/systemsettings",
+    "tag": "v6.7.5",
+    "commit": "d126c08d14a2a0f44a1758fd25e945ae099e34bb"
+  },
+  "tests": {
+    "host": {
+      "scope": "offscreen host, isolated HOME/XDG/D-Bus; all providers discoverable",
+      "results": [
+        {
+          "mode": "stock",
+          "command": [
+            "dbus-run-session",
+            "--",
+            "/usr/bin/systemsettings"
+          ],
+          "status": "EARLY_EXIT",
+          "returncode": 139,
+          "stock_root_seen": false,
+          "real_plasma_acceptance": "NOT VERIFIED",
+          "visual_activation": "NOT VERIFIED",
+          "performance": "NOT MEASURED"
+        },
+        {
+          "mode": "qss",
+          "command": [
+            "dbus-run-session",
+            "--",
+            "/usr/bin/systemsettings",
+            "-stylesheet",
+            "/home/smurat/Ro-ASD/Ro-KDE-SystemSettings/overrides/theme/tabs.qss"
+          ],
+          "status": "EARLY_EXIT",
+          "returncode": 139,
+          "stock_root_seen": false,
+          "real_plasma_acceptance": "NOT VERIFIED",
+          "visual_activation": "NOT VERIFIED",
+          "performance": "NOT MEASURED"
+        },
+        {
+          "mode": "quick-basic",
+          "command": [
+            "dbus-run-session",
+            "--",
+            "/usr/bin/systemsettings"
+          ],
+          "status": "EARLY_EXIT",
+          "returncode": 139,
+          "stock_root_seen": false,
+          "real_plasma_acceptance": "NOT VERIFIED",
+          "visual_activation": "NOT VERIFIED",
+          "performance": "NOT MEASURED"
+        },
+        {
+          "mode": "quick-fusion",
+          "command": [
+            "dbus-run-session",
+            "--",
+            "/usr/bin/systemsettings"
+          ],
+          "status": "EARLY_EXIT",
+          "returncode": 139,
+          "stock_root_seen": false,
+          "real_plasma_acceptance": "NOT VERIFIED",
+          "visual_activation": "NOT VERIFIED",
+          "performance": "NOT MEASURED"
+        }
+      ],
+      "logs": {
+        "qss.log": {
+          "sha256": "ff361e48a9ea706259b2285f4ab40a16cb41fed5296a35d5869bd7ab4b2ff163",
+          "bytes": 75,
+          "tail": [
+            "KCrash: Application 'systemsettings' crashing... crashRecursionCounter = 2"
+          ]
+        },
+        "quick-basic.log": {
+          "sha256": "ff361e48a9ea706259b2285f4ab40a16cb41fed5296a35d5869bd7ab4b2ff163",
+          "bytes": 75,
+          "tail": [
+            "KCrash: Application 'systemsettings' crashing... crashRecursionCounter = 2"
+          ]
+        },
+        "quick-fusion.log": {
+          "sha256": "ff361e48a9ea706259b2285f4ab40a16cb41fed5296a35d5869bd7ab4b2ff163",
+          "bytes": 75,
+          "tail": [
+            "KCrash: Application 'systemsettings' crashing... crashRecursionCounter = 2"
+          ]
+        },
+        "stock.log": {
+          "sha256": "ff361e48a9ea706259b2285f4ab40a16cb41fed5296a35d5869bd7ab4b2ff163",
+          "bytes": 75,
+          "tail": [
+            "KCrash: Application 'systemsettings' crashing... crashRecursionCounter = 2"
+          ]
+        }
+      }
+    },
+    "container_stock": {
+      "scope": "Fedora44/Plasma6.7.5 cached harness image; no Ro RPM; all providers discoverable",
+      "results": [
+        {
+          "mode": "stock",
+          "command": [
+            "dbus-run-session",
+            "--",
+            "/usr/bin/systemsettings"
+          ],
+          "status": "EARLY_EXIT",
+          "returncode": 139,
+          "stock_root_seen": false,
+          "real_plasma_acceptance": "NOT VERIFIED",
+          "visual_activation": "NOT VERIFIED",
+          "performance": "NOT MEASURED"
+        },
+        {
+          "mode": "qss",
+          "command": [
+            "dbus-run-session",
+            "--",
+            "/usr/bin/systemsettings",
+            "-stylesheet",
+            "/src/overrides/theme/tabs.qss"
+          ],
+          "status": "EARLY_EXIT",
+          "returncode": 139,
+          "stock_root_seen": false,
+          "real_plasma_acceptance": "NOT VERIFIED",
+          "visual_activation": "NOT VERIFIED",
+          "performance": "NOT MEASURED"
+        },
+        {
+          "mode": "quick-basic",
+          "command": [
+            "dbus-run-session",
+            "--",
+            "/usr/bin/systemsettings"
+          ],
+          "status": "EARLY_EXIT",
+          "returncode": 139,
+          "stock_root_seen": false,
+          "real_plasma_acceptance": "NOT VERIFIED",
+          "visual_activation": "NOT VERIFIED",
+          "performance": "NOT MEASURED"
+        },
+        {
+          "mode": "quick-fusion",
+          "command": [
+            "dbus-run-session",
+            "--",
+            "/usr/bin/systemsettings"
+          ],
+          "status": "EARLY_EXIT",
+          "returncode": 139,
+          "stock_root_seen": false,
+          "real_plasma_acceptance": "NOT VERIFIED",
+          "visual_activation": "NOT VERIFIED",
+          "performance": "NOT MEASURED"
+        }
+      ],
+      "logs": {
+        "qss.log": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "tail": []
+        },
+        "quick-basic.log": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "tail": []
+        },
+        "quick-fusion.log": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "tail": []
+        },
+        "stock.log": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "tail": []
+        }
+      }
+    },
+    "container_without_touchpad": {
+      "scope": "DIAGNOSTIC ONLY: touchpad plugin temporarily moved out of discovery; restored afterwards; NOT all-KCM acceptance",
+      "results": [
+        {
+          "mode": "stock",
+          "command": [
+            "dbus-run-session",
+            "--",
+            "/usr/bin/systemsettings"
+          ],
+          "status": "PROCESS_SURVIVED",
+          "returncode": null,
+          "stock_root_seen": false,
+          "real_plasma_acceptance": "NOT VERIFIED",
+          "visual_activation": "NOT VERIFIED",
+          "performance": "NOT MEASURED"
+        },
+        {
+          "mode": "qss",
+          "command": [
+            "dbus-run-session",
+            "--",
+            "/usr/bin/systemsettings",
+            "-stylesheet",
+            "/src/overrides/theme/tabs.qss"
+          ],
+          "status": "PROCESS_SURVIVED",
+          "returncode": null,
+          "stock_root_seen": false,
+          "real_plasma_acceptance": "NOT VERIFIED",
+          "visual_activation": "NOT VERIFIED",
+          "performance": "NOT MEASURED"
+        },
+        {
+          "mode": "quick-basic",
+          "command": [
+            "dbus-run-session",
+            "--",
+            "/usr/bin/systemsettings"
+          ],
+          "status": "PROCESS_SURVIVED",
+          "returncode": null,
+          "stock_root_seen": false,
+          "real_plasma_acceptance": "NOT VERIFIED",
+          "visual_activation": "NOT VERIFIED",
+          "performance": "NOT MEASURED"
+        },
+        {
+          "mode": "quick-fusion",
+          "command": [
+            "dbus-run-session",
+            "--",
+            "/usr/bin/systemsettings"
+          ],
+          "status": "PROCESS_SURVIVED",
+          "returncode": null,
+          "stock_root_seen": false,
+          "real_plasma_acceptance": "NOT VERIFIED",
+          "visual_activation": "NOT VERIFIED",
+          "performance": "NOT MEASURED"
+        }
+      ],
+      "logs": {
+        "qss.log": {
+          "sha256": "9c1f7864c857f1b8332f7bc63bbdb87ac47bece77d296694e854459b9a2049d9",
+          "bytes": 11630,
+          "tail": [
+            "dbus-daemon[442]: [session uid=0 pid=442 pidfd=5] Successfully activated service 'org.freedesktop.portal.Desktop'",
+            "",
+            "** (process:443): CRITICAL **: 15:35:24.966: polkit_system_bus_name_new: assertion 'g_dbus_is_unique_name (name)' failed"
+          ]
+        },
+        "quick-basic.log": {
+          "sha256": "2a8989470a5b74d92e6838d2486f2ae5befcaaa20cdeda32aa97b44f32e6a084",
+          "bytes": 11576,
+          "tail": [
+            "dbus-daemon[515]: [session uid=0 pid=515 pidfd=5] Successfully activated service 'org.freedesktop.portal.Desktop'",
+            "",
+            "** (process:516): CRITICAL **: 15:35:27.947: polkit_system_bus_name_new: assertion 'g_dbus_is_unique_name (name)' failed"
+          ]
+        },
+        "quick-fusion.log": {
+          "sha256": "b2d62f6595d97e76a5b79067c4ca594e7fc067e22f6519ef23772fb774ed8330",
+          "bytes": 11576,
+          "tail": [
+            "dbus-daemon[587]: [session uid=0 pid=587 pidfd=5] Successfully activated service 'org.freedesktop.portal.Desktop'",
+            "",
+            "** (process:588): CRITICAL **: 15:35:30.952: polkit_system_bus_name_new: assertion 'g_dbus_is_unique_name (name)' failed"
+          ]
+        },
+        "stock.log": {
+          "sha256": "1e8bfd437bace10a358af9d7db45d96d76b6612e3005e278f9b4a81f5939d90a",
+          "bytes": 11576,
+          "tail": [
+            "dbus-daemon[370]: [session uid=0 pid=370 pidfd=5] Successfully activated service 'org.freedesktop.portal.Desktop'",
+            "",
+            "** (process:371): CRITICAL **: 15:35:21.974: polkit_system_bus_name_new: assertion 'g_dbus_is_unique_name (name)' failed"
+          ]
+        }
+      }
+    }
+  },
+  "container_packages_and_final_verification": "plasma-systemsettings-6.7.5-1.fc44.x86_64\nplasma-desktop-6.7.5-1.fc44.x86_64\npackage ro-kde-systemsettings is not installed\n",
+  "host_rpm_verification": {
+    "command": "rpm -V plasma-systemsettings",
+    "returncode": 1,
+    "observed_flags": ".....UG..",
+    "meaning": "user/group mismatches; NOT full integrity PASS"
+  },
+  "historical_stock_gdb": {
+    "scope": "previous task evidence, not a new backtrace",
+    "sha256": "51ff15d449ee4f1810b45d6b2e689e0b03fdc4e828d48ebdbaa68c07179493cf",
+    "frames": [
+      "#0  0x00007f8993de9789 in TouchpadModuleData::TouchpadModuleData(QObject*) () from /usr/lib64/qt6/plugins/plasma/kcms/systemsettings/kcm_touchpad.so",
+      "#1  0x00007f8993de984e in QObject* KPluginFactory::createInstance<TouchpadModuleData, QObject>(QWidget*, QObject*, KPluginMetaData const&, QList<QVariant> const&) () from /usr/lib64/qt6/plugins/plasma/kcms/systemsettings/kcm_touchpad.so",
+      "#2  0x00005562596b22b5 in MenuItem::setMetaData(KPluginMetaData const&) [clone .part.0] ()",
+      "#3  0x00005562596a5dd1 in SettingsBase::initMenuList(MenuItem*) ()",
+      "#4  0x00005562596a661d in SettingsBase::initMenuList(MenuItem*) ()",
+      "#5  0x00005562596a661d in SettingsBase::initMenuList(MenuItem*) ()",
+      "#6  0x00005562596a8ede in SettingsBase::initApplication() ()"
+    ]
+  },
+  "limitations": [
+    "No Ro skin implemented",
+    "No new Fedora RPM/SRPM built",
+    "No visual, responsive-event-loop, KCM-save or Polkit acceptance",
+    "No RAM/CPU measurement",
+    "No minor-version compatibility test",
+    "release.yml dispatch skipped per user instruction; new attestation BLOCKED / NOT VERIFIED"
+  ]
+}
